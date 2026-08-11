@@ -1,0 +1,35 @@
+{
+    "executable_paths": {
+        "linux": [
+            "~/.local/share/OldUnreal/UnrealTournament/System/ut-bin",
+            "~/.local/share/OldUnreal/UnrealTournament/System64/ut-bin",
+            "~/.local/share/OldUnreal/UnrealTournament/SystemARM64/ut-bin"
+        ],
+
+        "windows": [
+            "C:\\UnrealTournament\\System\\UnrealTournament.exe",
+            "%PROGRAMFILES%\\Unreal Tournament\\System\\UnrealTournament.exe",
+            "C:\\GOG Games\\Unreal Tournament GOTY\\System\\UnrealTournament.exe",
+            "%PROGRAMFILES(X86)%\\Unreal Tournament\\System\\UnrealTournament.exe",
+            "%PROGRAMFILES(X86)%\\Steam\\steamapps\\common\\Unreal Tournament\\System\\UnrealTournament.exe"
+        ]
+    },
+
+    "config_paths": {
+        "linux": [
+            "~/.utpg/System/UnrealTournament.ini",
+            "~/.local/share/OldUnreal/UnrealTournament/System/UnrealTournament.ini",
+            "~/.local/share/OldUnreal/UnrealTournament/System64/UnrealTournament.ini",
+            "~/.local/share/OldUnreal/UnrealTournament/SystemARM64/UnrealTournament.ini"
+        ],
+
+        "windows": [
+            "C:\\UnrealTournament\\System\\UnrealTournament.ini",
+            "%PROGRAMFILES%\\Unreal Tournament\\System\\UnrealTournament.ini",
+            "C:\\GOG Games\\Unreal Tournament GOTY\\System\\UnrealTournament.ini",
+            "%PROGRAMFILES(X86)%\\Unreal Tournament\\System\\UnrealTournament.ini",
+            "%PROGRAMFILES(X86)%\\Steam\\steamapps\\common\\Unreal Tournament\\System\\UnrealTournament.ini",
+            "%LOCALAPPDATA%\\VirtualStore\\Program Files (x86)\\Steam\\steamapps\\common\\Unreal Tournament\\System\\UnrealTournament.ini"
+        ]
+    }
+}
