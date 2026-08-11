@@ -1,15 +1,29 @@
+import re
+
 from pathlib import Path
 
 
-def append_to_ini_file(path: Path, section: str, new_content: str) -> str:
-    """Append new paths to an .ini file under the specified section and return the updated content."""
+def append_to_ini_file(path: str | Path, section: str, new_content: str) -> str:
+    """Append new lines under the specified INI section."""
 
-    with open(path, "r") as f:
-        content = f.read()
+    path_obj = Path(path)
+    content = path_obj.read_text(encoding="utf-8")
 
-    head, tail = content.split(f"[{section}]\n", 1)
+    pattern = re.compile(rf"^\[{re.escape(section)}\]\r?$", re.MULTILINE | re.IGNORECASE)
+    match = pattern.search(content)
 
-    section_body, sep, rest = tail.partition("\n[")
-    content = f"{head}[{section}]\n{section_body.strip()}\n{new_content}\n{sep}{rest}"
+    if not match:
+        raise ValueError(f"Section [{section}] not found in {path_obj}")
 
-    return content
+    start_idx = match.end()
+
+    # Find next section start or match end of file
+    next_section = re.search(r"^\[.*\]\r?$", content[start_idx:], re.MULTILINE)
+    split_point = (start_idx + next_section.start()) if next_section else len(content)
+
+    head = content[:split_point].rstrip()
+    tail = content[split_point:]
+
+    separator = "\n\n" if tail else "\n"
+
+    return f"{head}\n{new_content.strip()}{separator}{tail}"

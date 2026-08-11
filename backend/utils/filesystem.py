@@ -1,39 +1,42 @@
+import sys
+import os
+
 from pathlib import Path
 
 
-def is_path_valid(path: Path) -> bool:
-    """Check if the given path is valid."""
+def get_project_directory() -> Path:
+    """Returns base directory of the project."""
 
-    try:
-        Path(path).resolve(strict=True)
-        return True
+    if hasattr(sys, "_MEIPASS"):
+        return Path(sys._MEIPASS)
 
-    except Exception:
-        return False
+    return Path(__file__).resolve().parent.parent.parent
 
 
-def get_base_directory(path: Path) -> Path:
-    """Get the base directory of the given path."""
-
-    if not is_path_valid(path):
-        raise ValueError("Invalid path provided.")
-
+def get_base_directory(path: str | Path) -> Path:
+    """Get the parent directory of a path."""
     return Path(path).parent
 
 
-def traverse_directory_by_extension(base_path: Path, extension: str) -> list[Path]:
-    """Traverse the directory and return a list of files with the given extension."""
+def expand_path(path: str | Path) -> Path:
+    """Expands environment variables and user home."""
 
-    if not is_path_valid(base_path):
-        raise ValueError("Invalid base path provided.")
-
-    return [file for file in Path(base_path).rglob(f'*.{extension}') if file.is_file()]
+    expanded = os.path.expandvars(str(path))
+    return Path(expanded).expanduser()
 
 
-def get_relative_path(base_path: Path, target_path: Path) -> Path:
-    """Get the relative path from base_path to target_path."""
+def traverse_directory_by_extension(base_path: str | Path, extension: str) -> list[Path]:
+    """Traverse directory and return files matching extension."""
 
-    if not is_path_valid(base_path) or not is_path_valid(target_path):
-        raise ValueError("Invalid path provided.")
+    path_obj = Path(base_path)
 
-    return Path(target_path).relative_to(base_path, walk_up=True)
+    if not path_obj.exists():
+        raise ValueError(f"Base path does not exist: {base_path}")
+
+    ext = extension.lstrip(".")
+    return [f for f in path_obj.rglob(f"*.{ext}") if f.is_file()]
+
+
+def get_relative_path(base_path: str | Path, target_path: str | Path) -> Path:
+    """Get relative path from base_path to target_path."""
+    return Path(target_path).relative_to(Path(base_path), walk_up=True)

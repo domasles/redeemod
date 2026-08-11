@@ -1,18 +1,11 @@
 import json
 import sys
-import os
 
 from typing import Optional, Tuple
 from pathlib import Path
 
+from backend.utils.filesystem import expand_path
 from backend.models import Config
-
-
-def expand_path(path: str | Path) -> Path:
-    """Expands environment variables and user home."""
-
-    expanded = os.path.expandvars(str(path))
-    return Path(expanded).expanduser()
 
 
 def load_config(path: str | Path) -> Config:
