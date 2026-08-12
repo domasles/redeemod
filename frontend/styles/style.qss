@@ -1,0 +1,117 @@
+QMainWindow {
+    background-color: #121212;
+}
+
+QLabel#LibraryTitle {
+    color: #FFFFFF;
+    font-family: "Segoe UI";
+    font-size: 22px;
+    font-weight: bold;
+}
+
+QPushButton#AddFolderBtn {
+    background-color: #2a2a2a;
+    color: #FFFFFF;
+    font-family: "Segoe UI";
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 8px 16px;
+    border: none;
+}
+
+QPushButton#AddFolderBtn:hover {
+    background-color: #333333;
+}
+
+QPushButton#LaunchBtn {
+    background-color: #007ACC;
+    color: #FFFFFF;
+    font-family: "Segoe UI";
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 8px 16px;
+    border: none;
+}
+
+QPushButton#LaunchBtn:hover {
+    background-color: #005999;
+}
+
+QScrollArea#LibraryScrollArea {
+    border: none;
+    background: transparent;
+}
+
+QWidget#LibraryScrollContent {
+    background: transparent;
+}
+
+Card {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    border: 1px solid #2d2d2d;
+}
+
+Card[selected="true"] {
+    border: 2px solid #007ACC;
+}
+
+QFrame#BannerFrame {
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    border: none;
+}
+
+QLabel#BannerLabel {
+    color: #888888;
+    font-family: "Segoe UI";
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QLabel#CardTitleLabel {
+    color: #FFFFFF;
+    font-family: "Segoe UI";
+    font-size: 13px;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+}
+
+QCheckBox#CardCheckBox {
+    color: #888888;
+    font-family: "Segoe UI";
+    font-size: 11px;
+    background: transparent;
+    border: none;
+}
+
+QCheckBox#CardCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid #444444;
+    background-color: #2a2a2a;
+}
+
+QCheckBox#CardCheckBox::indicator:checked {
+    background-color: #007ACC;
+    border-color: #007ACC;
+}
+
+QPushButton#RemoveBtn {
+    background: transparent;
+    color: #FF5555;
+    font-family: "Segoe UI";
+    font-size: 11px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+}
+
+QPushButton#RemoveBtn:hover {
+    background-color: #3d0000;
+    color: #FFFFFF;
+}
