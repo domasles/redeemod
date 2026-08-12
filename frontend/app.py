@@ -1,13 +1,18 @@
 import sys
+import os
 
 from pathlib import Path
 
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget
+from PySide6.QtCore import QTimer
 
-from backend.manager import Manager, get_project_directory
+from backend.utils.filesystem import get_project_directory
 from backend.games.ut99 import UT99GameAdapter
+from backend.manager import Manager
 
+from frontend.components.sidebar import Sidebar
 from frontend.views.library import Library
+from frontend.views.games import Games
 
 
 class App(QMainWindow):
@@ -16,15 +21,51 @@ class App(QMainWindow):
 
         self.setWindowTitle("RedeeMOD")
         self.resize(960, 600)
-        self.setMinimumSize(720, 480)
-        self.setMaximumSize(1920, 1080)
+        self.setMinimumSize(960, 600)
+        self.setMaximumSize(1270, 720)
 
-        self.mod_manager = Manager()
-        self.game_adapter = UT99GameAdapter()
+        self.manager = Manager(parent=self)
+        self.ut99_adapter = UT99GameAdapter()
+        self.adapters = { self.ut99_adapter.game_id: self.ut99_adapter }
 
-        # Load Library View
-        self.library_view = Library(self, self.mod_manager, self.game_adapter)
-        self.setCentralWidget(self.library_view)
+        central_widget = QWidget()
+
+        main_layout = QHBoxLayout(central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+
+        self.sidebar = Sidebar(self.manager, self)
+        self.sidebar.navigated.connect(self._navigate_screen)
+        self.manager.games_changed.connect(self.sidebar.refresh_visibility)
+
+        main_layout.addWidget(self.sidebar)
+
+        self.screen_stack = QStackedWidget()
+        self.library_view = Library(self, self.manager, self.adapters)
+        self.games_view = Games(self, self.manager, self.adapters)
+
+        self.screen_stack.addWidget(self.library_view)
+        self.screen_stack.addWidget(self.games_view)
+
+        main_layout.addWidget(self.screen_stack)
+
+        self.setCentralWidget(central_widget)
+        self.screen_stack.setCurrentWidget(self.games_view)
+
+        QTimer.singleShot(0, self.games_view.refresh_games)
+
+    def _navigate_screen(self, screen_name: str):
+        if screen_name == "library":
+            self.library_view.refresh_cards()
+            self.screen_stack.setCurrentWidget(self.library_view)
+
+            QTimer.singleShot(0, self.library_view.refresh_cards)
+
+        elif screen_name == "games":
+            self.games_view.refresh_games()
+            self.screen_stack.setCurrentWidget(self.games_view)
+
+            QTimer.singleShot(0, self.games_view.refresh_games)
 
 
 def load_stylesheet(app: QApplication):
@@ -38,6 +79,8 @@ def load_stylesheet(app: QApplication):
 
 
 if __name__ == "__main__":
+    os.environ["QT_LOGGING_RULES"] = "qt.qpa.wayland.textinput=false"
+
     app = QApplication(sys.argv)
 
     load_stylesheet(app)

@@ -1,78 +1,95 @@
 from pathlib import Path
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QFileDialog, QGridLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QFileDialog, QGridLayout, QSizePolicy, QSpacerItem
 from PySide6.QtCore import Qt
 
+from frontend.components.cards import GameCard, ModCard, ActionCard
 from frontend.components.card import Card
 
 
 class Library(QWidget):
-    CARD_WIDTH = 200
+    CARD_WIDTH = Card.CARD_WIDTH
     CARD_GAP = 20
 
-    def __init__(self, parent, mod_manager, game_adapter):
+    def __init__(self, parent, manager, adapters: dict):
         super().__init__(parent)
-        self.mod_manager = mod_manager
-        self.game_adapter = game_adapter
+
+        self.manager = manager
+        self.adapters = adapters
+        self.selected_game_id: str | None = None
         self.selected_mods: set[str] = set()
-        self.last_cols = -1
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
 
-        # Top Control Bar
         top_bar = QWidget()
+        top_bar.setFixedHeight(65)
+
         top_layout = QHBoxLayout(top_bar)
-        top_layout.setContentsMargins(20, 20, 20, 10)
+        top_layout.setContentsMargins(20, 15, 20, 10)
 
-        title = QLabel("Mod Library")
-        title.setObjectName("LibraryTitle")
+        self.title_label = QLabel("Mod Library")
+        self.title_label.setObjectName("LibraryTitle")
 
-        top_layout.addWidget(title)
+        top_layout.addWidget(self.title_label)
         top_layout.addStretch()
 
-        btn_add = QPushButton("+ Add Mod Folder")
-        btn_add.setObjectName("AddFolderBtn")
-        btn_add.setCursor(Qt.CursorShape.PointingHandCursor)
-        btn_add.clicked.connect(self._add_mod_dialog)
+        self.btn_back = QPushButton("Back to Games")
+        self.btn_back.setObjectName("AddFolderBtn")
+        self.btn_back.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_back.clicked.connect(self._go_back_to_games)
 
-        top_layout.addWidget(btn_add)
+        sp_back = self.btn_back.sizePolicy()
+        sp_back.setRetainSizeWhenHidden(True)
 
-        self.btn_launch = QPushButton("Launch standalone")
+        self.btn_back.setSizePolicy(sp_back)
+        self.btn_back.setVisible(False)
+
+        top_layout.addWidget(self.btn_back)
+
+        self.btn_launch = QPushButton("Launch Game")
         self.btn_launch.setObjectName("LaunchBtn")
         self.btn_launch.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_launch.clicked.connect(self._launch_game)
 
+        sp_launch = self.btn_launch.sizePolicy()
+        sp_launch.setRetainSizeWhenHidden(True)
+
+        self.btn_launch.setSizePolicy(sp_launch)
+        self.btn_launch.setVisible(False)
+
         top_layout.addWidget(self.btn_launch)
         main_layout.addWidget(top_bar)
 
-        # Scrollable Grid Area
         self.scroll_area = QScrollArea()
         self.scroll_area.setObjectName("LibraryScrollArea")
         self.scroll_area.setWidgetResizable(True)
 
         self.scroll_content = QWidget()
         self.scroll_content.setObjectName("LibraryScrollContent")
+
         self.grid_layout = QGridLayout(self.scroll_content)
-        self.grid_layout.setContentsMargins(10, 10, 10, 10)
-        self.grid_layout.setSpacing(self.CARD_GAP)
+        self.grid_layout.setContentsMargins(20, 10, 20, 10)
+        self.grid_layout.setHorizontalSpacing(self.CARD_GAP)
+        self.grid_layout.setVerticalSpacing(self.CARD_GAP)
 
         self.scroll_area.setWidget(self.scroll_content)
         main_layout.addWidget(self.scroll_area)
+
         self.refresh_cards()
+
+    def _get_columns_count(self) -> int:
+        viewport_width = self.scroll_area.viewport().width() - 40
+
+        if viewport_width <= 0:
+            return 3
+
+        return max(1, viewport_width // (self.CARD_WIDTH + self.CARD_GAP))
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        container_width = self.scroll_area.viewport().width()
-
-        if container_width <= 10:
-            return
-
-        cols = max(1, container_width // (self.CARD_WIDTH + self.CARD_GAP))
-
-        if cols != self.last_cols:
-            self.last_cols = cols
-            self.refresh_cards()
+        self.refresh_cards()
 
     def refresh_cards(self):
         while self.grid_layout.count():
@@ -81,17 +98,60 @@ class Library(QWidget):
             if item.widget():
                 item.widget().deleteLater()
 
-        mods = self.mod_manager.get_mods()
-        cols = max(1, self.last_cols)
+        cols = self._get_columns_count()
 
-        for c in range(cols + 1):
+        for c in range(cols):
             self.grid_layout.setColumnStretch(c, 0)
 
-        for idx, (mod_name, _) in enumerate(mods.items()):
-            row = idx // cols
-            col = idx % cols
+        if self.selected_game_id is None:
+            idx = self._render_game_selection(cols)
 
-            card = Card(
+        else:
+            idx = self._render_mod_selection(cols)
+
+        self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)
+        self.grid_layout.setColumnStretch(cols, 1)
+
+        if idx > 0:
+            bottom_row = ((idx - 1) // cols) + 1
+            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)
+            self.grid_layout.setRowStretch(bottom_row, 1)
+
+    def _render_game_selection(self, cols: int) -> int:
+        self.title_label.setText("Mod Library - Select Game")
+        self.btn_back.setVisible(False)
+        self.btn_launch.setVisible(False)
+
+        added_games = self.manager.get_added_games()
+        idx = 0
+
+        for game_id in added_games:
+            adapter = self.adapters.get(game_id)
+            name = adapter.display_name if adapter else game_id.upper()
+
+            card = GameCard(self.scroll_content, display_name=name, subtitle="Select to manage mods")
+            card.clicked.connect(lambda g_id=game_id: self._select_game(g_id))
+            row, col = idx // cols, idx % cols
+
+            self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+            idx += 1
+
+        return idx
+
+    def _render_mod_selection(self, cols: int) -> int:
+        adapter = self.adapters.get(self.selected_game_id)
+        name = adapter.display_name if adapter else self.selected_game_id.upper()
+
+        self.title_label.setText(f"Mods for {name}")
+        self.btn_back.setVisible(True)
+        self.btn_launch.setVisible(True)
+
+        mods = self.manager.get_mods(self.selected_game_id)
+        idx = 0
+
+        for mod_name, _ in mods.items():
+            card = ModCard(
                 self.scroll_content,
                 mod_name=mod_name,
                 is_selected=(mod_name in self.selected_mods),
@@ -99,10 +159,30 @@ class Library(QWidget):
                 on_delete=self._delete_mod,
             )
 
+            row, col = idx // cols, idx % cols
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+            idx += 1
 
-        self.grid_layout.setColumnStretch(cols, 1)
+        add_card = ActionCard(self.scroll_content, title="Add Mod", subtitle=f"for {name}")
+        add_card.clicked.connect(self._add_mod_dialog)
+        row, col = idx // cols, idx % cols
+
+        self.grid_layout.addWidget(add_card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        idx += 1
+
         self._update_launch_button_text()
+
+        return idx
+
+    def _select_game(self, game_id: str):
+        self.selected_game_id = game_id
+        self.selected_mods.clear()
+        self.refresh_cards()
+
+    def _go_back_to_games(self):
+        self.selected_game_id = None
+        self.selected_mods.clear()
+        self.refresh_cards()
 
     def _toggle_mod(self, mod_name: str, enabled: bool):
         if enabled:
@@ -114,16 +194,24 @@ class Library(QWidget):
         self._update_launch_button_text()
 
     def _delete_mod(self, mod_name: str):
-        self.mod_manager.remove_mod(mod_name)
-        self.selected_mods.discard(mod_name)
-        self.refresh_cards()
+        if self.selected_game_id:
+            self.manager.remove_mod(self.selected_game_id, mod_name)
+            self.selected_mods.discard(mod_name)
+            self.refresh_cards()
+
+    def _pick_directory(self) -> str:
+        return QFileDialog.getExistingDirectory(self, "Select Mod Directory")
 
     def _add_mod_dialog(self):
-        path = QFileDialog.getExistingDirectory(self, "Select Mod Directory")
+        if self.selected_game_id:
+            path = self._pick_directory()
 
-        if path:
-            self.mod_manager.add_mod(path)
-            self.refresh_cards()
+            if path:
+                adapter = self.adapters.get(self.selected_game_id)
+
+                if adapter and adapter.scan_mod_directory(Path(path)):
+                    self.manager.add_mod(self.selected_game_id, path)
+                    self.refresh_cards()
 
     def _update_launch_button_text(self):
         if len(self.selected_mods) == 0:
@@ -133,6 +221,12 @@ class Library(QWidget):
             self.btn_launch.setText("Launch with mods")
 
     def _launch_game(self):
-        all_mods = self.mod_manager.get_mods()
-        selected_paths = [Path(all_mods[name]) for name in self.selected_mods if name in all_mods]
-        self.game_adapter.launch(selected_paths)
+        if not self.selected_game_id:
+            return
+
+        adapter = self.adapters.get(self.selected_game_id)
+
+        if adapter:
+            all_mods = self.manager.get_mods(self.selected_game_id)
+            selected_paths = [Path(all_mods[name]) for name in self.selected_mods if name in all_mods]
+            adapter.launch(selected_paths)

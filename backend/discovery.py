@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 from pathlib import Path
 
 from backend.utils.filesystem import expand_path
-from backend.models import Config
+from backend.models import Config, GameConfig
 
 
 def load_config(path: str | Path) -> Config:
@@ -15,7 +15,7 @@ def load_config(path: str | Path) -> Config:
 
     if not path.exists():
         raise FileNotFoundError(f"Config file not found: {path}")
-    
+
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -34,16 +34,16 @@ def find_first_valid_path(paths: list[str]) -> Optional[Path]:
     return None
 
 
-def discover_installation(config: Config) -> Tuple[Optional[Path], Optional[Path]]:
+def discover_installation(game_config: GameConfig) -> Tuple[Optional[Path], Optional[Path]]:
     """Detects the host OS and finds the matching executable and config file paths."""
 
     if sys.platform.startswith("linux"):
-        exec_candidates = config.executable_paths.linux
-        cfg_candidates = config.config_paths.linux
+        exec_candidates = game_config.executable_paths.linux
+        cfg_candidates = game_config.config_paths.linux
 
     elif sys.platform in ("win32", "cygwin"):
-        exec_candidates = config.executable_paths.windows
-        cfg_candidates = config.config_paths.windows
+        exec_candidates = game_config.executable_paths.windows
+        cfg_candidates = game_config.config_paths.windows
 
     else:
         raise RuntimeError(f"Unsupported platform: {sys.platform}")
