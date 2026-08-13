@@ -27,7 +27,7 @@ class Games(QWidget):
         top_layout = QVBoxLayout(top_bar)
         top_layout.setContentsMargins(20, 15, 20, 10)
 
-        title = QLabel("Installed Games")
+        title = QLabel("Installed games")
         title.setObjectName("LibraryTitle")
 
         top_layout.addWidget(title)
@@ -83,7 +83,7 @@ class Games(QWidget):
             card = GameCard(
                 self.scroll_content,
                 display_name=name,
-                subtitle="Ready",
+                subtitle="Add mods in Library",
                 on_delete=lambda g_id=game_id: self._remove_game(g_id)
             )
 
@@ -91,7 +91,7 @@ class Games(QWidget):
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
             idx += 1
 
-        add_card = ActionCard(self.scroll_content, title="Add Game", subtitle="to your library")
+        add_card = ActionCard(self.scroll_content, title="Add game", subtitle="to your start modding")
         add_card.clicked.connect(self._open_add_game_modal)
         row, col = idx // cols, idx % cols
 
@@ -119,5 +119,5 @@ class Games(QWidget):
             self.refresh_games()
 
         body = AddGameModalBody(on_add=handle_add)
-        modal = ModalDialog(self, title="Select Game", body_widget=body)
+        modal = ModalDialog(self, title="Select game", body_widget=body)
         modal.exec()

@@ -31,7 +31,7 @@ class ModCard(Card):
         banner_layout = QVBoxLayout(banner)
         banner_layout.setContentsMargins(0, 0, 0, 0)
 
-        banner_lbl = QLabel("MOD BANNER")
+        banner_lbl = QLabel("MOD")
         banner_lbl.setObjectName("BannerLabel")
         banner_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -43,7 +43,7 @@ class ModCard(Card):
 
         self.card_layout.addWidget(lbl_title)
 
-        self.chk = QCheckBox("Enable Mod")
+        self.chk = QCheckBox("Enable mod")
         self.chk.setObjectName("CardCheckBox")
         self.chk.setChecked(is_selected)
         self.chk.toggled.connect(self._handle_toggle)
@@ -51,7 +51,7 @@ class ModCard(Card):
 
         self.card_layout.addStretch()
 
-        btn_delete = QPushButton("Remove")
+        btn_delete = QPushButton("Remove mod")
         btn_delete.setObjectName("RemoveBtn")
         btn_delete.setFixedHeight(24)
         btn_delete.setCursor(Qt.CursorShape.PointingHandCursor)

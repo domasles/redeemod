@@ -18,4 +18,4 @@ class Card(QFrame):
 
         self.card_layout = QVBoxLayout(self)
         self.card_layout.setContentsMargins(12, 12, 12, 12)
-        self.card_layout.setSpacing(6)
+        self.card_layout.setSpacing(12)

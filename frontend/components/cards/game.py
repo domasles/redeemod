@@ -24,7 +24,7 @@ class GameCard(Card):
         banner_layout = QVBoxLayout(banner)
         banner_layout.setContentsMargins(0, 0, 0, 0)
 
-        banner_lbl = QLabel("GAME BANNER")
+        banner_lbl = QLabel("GAME")
         banner_lbl.setObjectName("BannerLabel")
         banner_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -33,19 +33,21 @@ class GameCard(Card):
 
         lbl_title = QLabel(display_name)
         lbl_title.setObjectName("CardTitleLabel")
+        lbl_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.card_layout.addWidget(lbl_title)
 
         if subtitle:
             lbl_sub = QLabel(subtitle)
             lbl_sub.setObjectName("BannerLabel")
+            lbl_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.card_layout.addWidget(lbl_sub)
 
         self.card_layout.addStretch()
 
         if self.on_delete:
-            btn_delete = QPushButton("Remove Game")
+            btn_delete = QPushButton("Remove game")
             btn_delete.setObjectName("RemoveBtn")
             btn_delete.setFixedHeight(24)
             btn_delete.setCursor(Qt.CursorShape.PointingHandCursor)

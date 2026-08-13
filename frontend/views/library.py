@@ -118,7 +118,7 @@ class Library(QWidget):
             self.grid_layout.setRowStretch(bottom_row, 1)
 
     def _render_game_selection(self, cols: int) -> int:
-        self.title_label.setText("Mod Library - Select Game")
+        self.title_label.setText("Your games")
         self.btn_back.setVisible(False)
         self.btn_launch.setVisible(False)
 

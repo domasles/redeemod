@@ -39,7 +39,6 @@ class Dropdown(QWidget):
 
         self.popup_frame = QFrame(None, flags, objectName="DropdownPopupFrame")
         self.popup_frame.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
-        self.popup_frame.setStyleSheet("#DropdownPopupFrame { min-height: 0px; max-height: 9999px; }")
 
         popup_layout = QVBoxLayout(self.popup_frame)
         popup_layout.setContentsMargins(0, 0, 0, 0)
@@ -113,7 +112,7 @@ class Dropdown(QWidget):
     def eventFilter(self, obj, event):
         try:
             if self.popup_frame.isVisible() and event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.MouseButtonDblClick):
-                pos = event.globalPosition().toPoint() if hasattr(event, 'globalPosition') else event.globalPos()
+                pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
 
                 if not self.popup_frame.frameGeometry().contains(pos):
                     self._close_popup()
