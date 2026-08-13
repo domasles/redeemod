@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 
 from frontend.components.dropdown import Dropdown
+from backend.games import get_adapter_classes
 
 
 class AddGameModalBody(QWidget):
@@ -10,7 +11,14 @@ class AddGameModalBody(QWidget):
         layout = QVBoxLayout(self)
 
         self.combo = Dropdown()
-        self.combo.addItem("Unreal Tournament '99", "ut99")
+
+        for game_id, adapter_class in get_adapter_classes().items():
+            try:
+                adapter = adapter_class()
+                self.combo.addItem(adapter.display_name, game_id)
+
+            except Exception:
+                continue
 
         layout.addWidget(self.combo)
 

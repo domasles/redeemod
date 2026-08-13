@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, Q
 from PySide6.QtCore import QTimer
 
 from backend.utils.filesystem import get_project_directory
-from backend.games.ut99 import UT99GameAdapter
+from backend.games import get_adapter_classes
 from backend.manager import Manager
 
 from frontend.components.sidebar import Sidebar
@@ -25,8 +25,16 @@ class App(QMainWindow):
         self.setMaximumSize(1270, 720)
 
         self.manager = Manager(parent=self)
-        self.ut99_adapter = UT99GameAdapter()
-        self.adapters = { self.ut99_adapter.game_id: self.ut99_adapter }
+
+        self.adapters = {}
+
+        for game_id, adapter_class in get_adapter_classes().items():
+            try:
+                adapter = adapter_class()
+                self.adapters[game_id] = adapter
+
+            except Exception:
+                continue
 
         central_widget = QWidget()
 

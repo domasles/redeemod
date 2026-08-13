@@ -20,6 +20,7 @@ class Sidebar(QWidget):
 
         title = QLabel("RedeeMOD")
         title.setObjectName("LibraryTitle")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(title)
         layout.addSpacing(15)
