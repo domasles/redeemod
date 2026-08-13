@@ -5,6 +5,7 @@ from pathlib import Path
 from PySide6.QtCore import QObject, Signal, QStandardPaths
 
 from backend.utils.filesystem import expand_path
+from backend.constants import *
 
 
 class Manager(QObject):
@@ -13,10 +14,10 @@ class Manager(QObject):
     def __init__(self, parent: QObject | None = None):
         super().__init__(parent)
 
-        storage_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)) / "RedeeMOD"
+        storage_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)) / APP_NAME
         storage_dir.mkdir(parents=True, exist_ok=True)
 
-        self.storage_file = storage_dir / "user_mods.json"
+        self.storage_file = storage_dir / USER_SETTINGS_FILE_NAME
         self.data: dict = {"games": [], "mods": {}}
 
         self.load()

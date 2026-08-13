@@ -7,6 +7,7 @@ from backend.utils.filesystem import expand_path, get_base_directory, get_projec
 from backend.discovery import discover_installation, load_config
 from backend.utils.ini import append_to_ini_file
 from backend.games.base import BaseGameAdapter
+from backend.constants import *
 
 
 class UT99GameAdapter(BaseGameAdapter):
@@ -85,7 +86,7 @@ class UT99GameAdapter(BaseGameAdapter):
 
         new_content = "\n".join(sorted(path_entries | lang_entries)) + "\n"
 
-        mod_ini_path = get_base_directory(self.cfg_path) / "redeemod.ini"
+        mod_ini_path = get_base_directory(self.cfg_path) / CONFIG_FILE_NAME
         mod_ini_path.parent.mkdir(parents=True, exist_ok=True)
 
         if new_content.strip():

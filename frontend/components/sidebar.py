@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, Signal
 
+from frontend.constants import *
+
 
 class Sidebar(QWidget):
     navigated = Signal(str)
@@ -18,7 +20,7 @@ class Sidebar(QWidget):
         layout.setContentsMargins(15, 20, 15, 20)
         layout.setSpacing(10)
 
-        title = QLabel("RedeeMOD")
+        title = QLabel(APP_NAME)
         title.setObjectName("LibraryTitle")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

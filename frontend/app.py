@@ -13,13 +13,14 @@ from backend.manager import Manager
 from frontend.components.sidebar import Sidebar
 from frontend.views.library import Library
 from frontend.views.games import Games
+from frontend.constants import *
 
 
 class App(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("RedeeMOD")
+        self.setWindowTitle(APP_NAME)
         self.resize(960, 600)
         self.setMinimumSize(960, 600)
         self.setMaximumSize(1270, 720)
