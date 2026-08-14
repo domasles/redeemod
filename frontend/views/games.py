@@ -79,19 +79,18 @@ class Games(QWidget):
         for game_id in added_games:
             adapter = self.adapters.get(game_id)
             name = adapter.display_name if adapter else game_id.upper()
-
             card = GameCard(
                 self.scroll_content,
-                display_name=name,
-                subtitle="Add mods in Library",
-                on_delete=lambda g_id=game_id: self._remove_game(g_id)
+                name,
+                "Add mods in Library",
+                lambda g_id = game_id: self._remove_game(g_id)
             )
 
             row, col = idx // cols, idx % cols
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
             idx += 1
 
-        add_card = ActionCard(self.scroll_content, title="Add game", subtitle="to your start modding")
+        add_card = ActionCard(self.scroll_content, "Add game", "to your start modding")
         add_card.clicked.connect(self._open_add_game_modal)
         row, col = idx // cols, idx % cols
 
@@ -118,6 +117,6 @@ class Games(QWidget):
             modal.accept()
             self.refresh_games()
 
-        body = AddGameModalBody(on_add=handle_add)
-        modal = ModalDialog(self, title="Select game", body_widget=body)
+        body = AddGameModalBody(handle_add)
+        modal = ModalDialog(self, "Select game", body)
         modal.exec()

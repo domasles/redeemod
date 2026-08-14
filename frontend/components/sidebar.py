@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, Signal
 
-from frontend.constants import *
+from backend.constants import *
 
 
 class Sidebar(QWidget):

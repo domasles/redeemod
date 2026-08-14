@@ -7,7 +7,7 @@ class Dropdown(QWidget):
 
     currentIndexChanged = Signal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent = None):
         super().__init__(parent)
 
         self.setObjectName("DropdownContainer")
@@ -56,7 +56,7 @@ class Dropdown(QWidget):
 
         popup_layout.addWidget(self.popup_list)
 
-    def addItem(self, text: str, userData=None):
+    def addItem(self, text: str, userData = None):
         self._items.append((text, userData))
         self.popup_list.addItem(text)
 

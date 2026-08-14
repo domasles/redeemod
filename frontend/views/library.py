@@ -129,7 +129,7 @@ class Library(QWidget):
             adapter = self.adapters.get(game_id)
             name = adapter.display_name if adapter else game_id.upper()
 
-            card = GameCard(self.scroll_content, display_name=name, subtitle="Select to manage mods")
+            card = GameCard(self.scroll_content, name, "Select to manage mods")
             card.clicked.connect(lambda g_id=game_id: self._select_game(g_id))
             row, col = idx // cols, idx % cols
 
@@ -153,17 +153,17 @@ class Library(QWidget):
         for mod_name, _ in mods.items():
             card = ModCard(
                 self.scroll_content,
-                mod_name=mod_name,
-                is_selected=(mod_name in self.selected_mods),
-                on_toggle=self._toggle_mod,
-                on_delete=self._delete_mod,
+                mod_name,
+                (mod_name in self.selected_mods),
+                self._toggle_mod,
+                self._delete_mod,
             )
 
             row, col = idx // cols, idx % cols
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
             idx += 1
 
-        add_card = ActionCard(self.scroll_content, title="Add Mod", subtitle=f"for {name}")
+        add_card = ActionCard(self.scroll_content, "Add Mod", f"for {name}")
         add_card.clicked.connect(self._add_mod_dialog)
         row, col = idx // cols, idx % cols
 

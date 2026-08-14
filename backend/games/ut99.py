@@ -91,6 +91,6 @@ class UT99GameAdapter(BaseGameAdapter):
 
         if new_content.strip():
             updated_ini = append_to_ini_file(self.cfg_path, "Core.System", new_content)
-            mod_ini_path.write_text(updated_ini, encoding="utf-8")
+            mod_ini_path.write_text(updated_ini, "utf-8")
 
         return mod_ini_path

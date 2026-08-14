@@ -9,11 +9,11 @@ from PySide6.QtCore import QTimer
 from backend.utils.filesystem import get_project_directory
 from backend.games import get_adapter_classes
 from backend.manager import Manager
+from backend.constants import *
 
 from frontend.components.sidebar import Sidebar
 from frontend.views.library import Library
 from frontend.views.games import Games
-from frontend.constants import *
 
 
 class App(QMainWindow):
