@@ -22,9 +22,6 @@ class Manager(QObject):
 
         self.load()
 
-    def get_added_games(self) -> list[str]:
-        return self.data.get("games", [])
-
     def add_game(self, game_id: str) -> None:
         if game_id not in self.data["games"]:
             self.data["games"].append(game_id)
@@ -57,8 +54,21 @@ class Manager(QObject):
             del self.data["mods"][game_id][mod_name]
             self.save()
 
+    def save_custom_paths(self, game_id: str, paths: dict[str, str]) -> None:
+        if "paths" not in self.data:
+            self.data["paths"] = {}
+
+        self.data["paths"][game_id] = paths
+        self.save()
+
+    def get_added_games(self) -> list[str]:
+        return self.data.get("games", [])
+
     def get_mods(self, game_id: str) -> dict[str, str]:
         return self.data["mods"].get(game_id, {})
+
+    def get_custom_paths(self, game_id: str) -> dict[str, str]:
+        return self.data.get("paths", {}).get(game_id, {})
 
     def save(self) -> None:
         with open(self.storage_file, "w", encoding="utf-8") as f:

@@ -1,5 +1,7 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QWidget
 
+from backend.constants import APP_NAME
+
 
 class ModalDialog(QDialog):
     """Modal dialog."""
@@ -7,7 +9,7 @@ class ModalDialog(QDialog):
     def __init__(self, parent: QWidget, title: str, body_widget: QWidget):
         super().__init__(parent)
 
-        self.setWindowTitle(title)
+        self.setWindowTitle(APP_NAME)
         self.setModal(True)
         self.setMinimumWidth(380)
 

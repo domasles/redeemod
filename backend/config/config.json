@@ -3,8 +3,8 @@
         "executable_paths": {
             "linux": [
                 "~/.local/share/OldUnreal/UnrealTournament/System/ut-bin",
-                "~/.local/share/OldUnreal/UnrealTournament/System64/ut-bin",
-                "~/.local/share/OldUnreal/UnrealTournament/SystemARM64/ut-bin"
+                "~/.local/share/OldUnreal/UnrealTournament/System64/ut-bin-amd64",
+                "~/.local/share/OldUnreal/UnrealTournament/SystemARM64/ut-bin-arm64"
             ],
 
             "windows": [

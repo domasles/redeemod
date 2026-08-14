@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QGridLayout, QSpacerItem, QSizePolicy
 from PySide6.QtCore import Qt
 
+from frontend.components.modals.check_paths import CheckPathsModalBody
 from frontend.components.modals.game_body import AddGameModalBody
 from frontend.components.cards import GameCard, ActionCard
 from frontend.components.modal import ModalDialog
@@ -79,12 +80,7 @@ class Games(QWidget):
         for game_id in added_games:
             adapter = self.adapters.get(game_id)
             name = adapter.display_name if adapter else game_id.upper()
-            card = GameCard(
-                self.scroll_content,
-                name,
-                "Add mods in Library",
-                lambda g_id = game_id: self._remove_game(g_id)
-            )
+            card = GameCard(self.scroll_content, name, "Add mods in Library", lambda g_id=game_id: self._remove_game(g_id))
 
             row, col = idx // cols, idx % cols
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
@@ -113,10 +109,40 @@ class Games(QWidget):
 
     def _open_add_game_modal(self):
         def handle_add(game_id: str):
-            self.manager.add_game(game_id)
             modal.accept()
-            self.refresh_games()
+
+            custom_paths = self.manager.get_custom_paths(game_id)
+            adapter_cls = type(self.adapters.get(game_id)) if game_id in self.adapters else None
+
+            if adapter_cls:
+                adapter = adapter_cls(custom_paths=custom_paths)
+                missing = adapter.get_missing_paths()
+
+                if missing:
+                    self._open_check_paths_modal(game_id, missing)
+
+                else:
+                    self.manager.add_game(game_id)
+                    self.refresh_games()
 
         body = AddGameModalBody(handle_add)
         modal = ModalDialog(self, "Select game", body)
         modal.exec()
+
+    def _open_check_paths_modal(self, game_id: str, missing_path_keys: list[str]):
+        def handle_paths_confirmed(paths: dict[str, str]):
+            self.manager.save_custom_paths(game_id, paths)
+            adapter_cls = type(self.adapters.get(game_id))
+
+            if adapter_cls:
+                self.adapters[game_id] = adapter_cls(custom_paths=paths)
+
+            self.manager.add_game(game_id)
+            paths_modal.accept()
+            self.refresh_games()
+
+        body = CheckPathsModalBody(game_id=game_id, missing_path_keys=missing_path_keys)
+        body.paths_confirmed.connect(handle_paths_confirmed)
+
+        paths_modal = ModalDialog(self, f"Configure Paths", body)
+        paths_modal.exec()
