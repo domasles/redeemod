@@ -23,8 +23,8 @@ class UT99GameAdapter(BaseGameAdapter):
         config_file = get_project_directory() / "backend/config/config.json"
 
         self.config = load_config(config_file)
-        self.content_exts = ["u", "unr", "utx", "uax", "umx"]
-        self.loc_exts = ["int", "det", "frt", "est", "itt", "rut"]
+        self.content_exts = {"u", "unr", "utx", "uax", "umx"}
+        self.loc_exts = {"int", "det", "frt", "est", "itt", "rut"}
 
         custom_paths = custom_paths or {}
 
@@ -94,7 +94,7 @@ class UT99GameAdapter(BaseGameAdapter):
 
         new_content = "\n".join(sorted(path_entries | lang_entries)) + "\n"
 
-        mod_ini_path = get_base_directory(self.config_path) / CONFIG_FILE_NAME
+        mod_ini_path = get_base_directory(self.config_path) / f"{APP_NAME}.ini"
         mod_ini_path.parent.mkdir(parents=True, exist_ok=True)
 
         if new_content.strip():
