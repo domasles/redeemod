@@ -24,25 +24,22 @@ class ActionCard(Card):
         banner_layout = QVBoxLayout(banner)
         banner_layout.setContentsMargins(0, 0, 0, 0)
 
-        plus_lbl = QLabel("+")
-        plus_lbl.setObjectName("ActionPlusLabel")
-        plus_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        banner_lbl = QLabel("+")
+        banner_lbl.setObjectName("ActionPlusLabel")
 
-        banner_layout.addWidget(plus_lbl)
+        banner_layout.addWidget(banner_lbl, alignment=Qt.AlignmentFlag.AlignCenter)
         self.card_layout.addWidget(banner)
 
         lbl_title = QLabel(title)
         lbl_title.setObjectName("CardTitleLabel")
-        lbl_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.card_layout.addWidget(lbl_title)
+        self.card_layout.addWidget(lbl_title, alignment=Qt.AlignmentFlag.AlignCenter)
 
         if subtitle:
             lbl_sub = QLabel(subtitle)
             lbl_sub.setObjectName("BannerLabel")
-            lbl_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-            self.card_layout.addWidget(lbl_sub)
+            self.card_layout.addWidget(lbl_sub, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.card_layout.addStretch()
 

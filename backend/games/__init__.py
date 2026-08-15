@@ -1,5 +1,6 @@
 from .base import BaseGameAdapter
-from .ut99 import UT99GameAdapter
+
+from .ut99.adapter import UT99GameAdapter
 
 
 ADAPTERS = [

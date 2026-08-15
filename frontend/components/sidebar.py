@@ -22,9 +22,8 @@ class Sidebar(QWidget):
 
         title = QLabel(APP_NAME)
         title.setObjectName("LibraryTitle")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(title)
+        layout.addWidget(title, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addSpacing(15)
 
         btn_games = QPushButton("Games")

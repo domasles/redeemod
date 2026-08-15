@@ -8,7 +8,7 @@ class Card(QFrame):
     """Base composable Card container."""
 
     CARD_WIDTH = 200
-    CARD_HEIGHT = 240
+    CARD_HEIGHT = 250
 
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
@@ -18,4 +18,4 @@ class Card(QFrame):
 
         self.card_layout = QVBoxLayout(self)
         self.card_layout.setContentsMargins(12, 12, 12, 12)
-        self.card_layout.setSpacing(12)
+        self.card_layout.setSpacing(10)

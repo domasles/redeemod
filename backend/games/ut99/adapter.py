@@ -5,7 +5,7 @@ from pathlib import Path
 
 from backend.utils.filesystem import expand_path, get_base_directory, get_project_directory, get_relative_path
 from backend.discovery import discover_installation, load_config
-from backend.utils.ini import append_to_ini_file
+from backend.games.ut99.ini import append_to_ini_file
 from backend.games.base import BaseGameAdapter
 from backend.constants import *
 
@@ -19,12 +19,16 @@ class UT99GameAdapter(BaseGameAdapter):
     def display_name(self) -> str:
         return "Unreal Tournament '99"
 
-    def __init__(self, custom_paths: Optional[Dict[str, str]] = None):
-        config_file = get_project_directory() / "backend/config/config.json"
+    @property
+    def file_extensions(self) -> set[str]:
+        return self.content_extensions | self.locale_extensions
 
+    def __init__(self, custom_paths: Optional[Dict[str, str]] = None):
+        self.content_extensions = {"u", "unr", "utx", "uax", "umx"}
+        self.locale_extensions = {"int", "det", "frt", "est", "itt", "rut"}
+
+        config_file = get_project_directory() / "backend/config/config.json"
         self.config = load_config(config_file)
-        self.content_exts = {"u", "unr", "utx", "uax", "umx"}
-        self.loc_exts = {"int", "det", "frt", "est", "itt", "rut"}
 
         custom_paths = custom_paths or {}
 
@@ -34,13 +38,13 @@ class UT99GameAdapter(BaseGameAdapter):
         game_cfg = self.config.games.get(self.game_id)
 
         if game_cfg:
-            auto_exe, auto_cfg = discover_installation(game_cfg)
+            exe, cfg = discover_installation(game_cfg)
 
             if not self.executable_path:
-                self.executable_path = auto_exe
+                self.executable_path = exe
 
             if not self.config_path:
-                self.config_path = auto_cfg
+                self.config_path = cfg
 
     def launch(self, selected_mod_paths: List[Path]) -> None:
         if not self.executable_path or not self.executable_path.exists():
@@ -53,24 +57,6 @@ class UT99GameAdapter(BaseGameAdapter):
             cmd.append(f"INI={mod_ini_path}")
 
         subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
-
-    def scan_mod_directory(self, target_dir: Path) -> List[tuple[Path, str]]:
-        target_dir = expand_path(target_dir)
-        mod_files = []
-
-        if not target_dir.exists():
-            return mod_files
-
-        for item in target_dir.rglob("*"):
-            if not item.is_file():
-                continue
-
-            ext = item.suffix.lstrip(".").lower()
-
-            if ext in self.content_exts or ext in self.loc_exts:
-                mod_files.append((item, ext))
-
-        return mod_files
 
     def _apply_mods_to_ini(self, mod_paths: List[Path]) -> Path:
         exe_base = get_base_directory(self.executable_path)
@@ -86,10 +72,10 @@ class UT99GameAdapter(BaseGameAdapter):
                 except ValueError:
                     rel_dir = item.parent
 
-                if ext in self.content_exts:
+                if ext in self.content_extensions:
                     path_entries.add(f"Paths={rel_dir}/*.{ext}")
 
-                elif ext in self.loc_exts:
+                elif ext in self.locale_extensions:
                     lang_entries.add(f"LangPaths={rel_dir}/*.<lang>")
 
         new_content = "\n".join(sorted(path_entries | lang_entries)) + "\n"

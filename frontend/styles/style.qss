@@ -81,7 +81,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 Card, ActionCard, ModCard, GameCard {
     background-color: #1e1e1e;
     border-radius: 12px;
-    border: 1px solid #2d2d2d;
+    border: 2px solid #2d2d2d;
 }
 
 Card[selected="true"] {
@@ -142,10 +142,11 @@ QPushButton#RemoveBtn {
     background: transparent;
     color: #FF5555;
     font-family: "Segoe UI";
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
+    border-radius: 6px;
+    padding: 6px 16px;
     border: none;
-    border-radius: 4px;
 }
 
 QPushButton#RemoveBtn:hover {
