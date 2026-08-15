@@ -3,6 +3,7 @@ from typing import Callable
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QWidget
 from PySide6.QtCore import Qt
 
+from frontend.components.elided_label import ElidedLabel
 from frontend.components.card import Card
 
 
@@ -37,7 +38,7 @@ class ModCard(Card):
         banner_layout.addWidget(banner_lbl, alignment=Qt.AlignmentFlag.AlignCenter)
         self.card_layout.addWidget(banner)
 
-        lbl_title = QLabel(mod_name)
+        lbl_title = ElidedLabel(mod_name)
         lbl_title.setObjectName("CardTitleLabel")
 
         self.card_layout.addWidget(lbl_title, alignment=Qt.AlignmentFlag.AlignCenter)

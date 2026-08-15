@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import QWidget, QPushButton, QListWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QApplication, QScroller
 from PySide6.QtCore import Qt, QPoint, Signal, QEvent
 
+from frontend.components.elided_label import ElidedLabel
+
 
 class Dropdown(QWidget):
     """Custom dropdown component."""
@@ -24,15 +26,15 @@ class Dropdown(QWidget):
         btn_layout = QHBoxLayout(self.trigger_btn)
         btn_layout.setContentsMargins(12, 0, 12, 0)
 
-        self.text_label = QLabel(self, objectName="DropdownTextLabel")
+        self.text_label = ElidedLabel(self, objectName="DropdownTextLabel")
         self.arrow_label = QLabel("▼", self, objectName="DropdownArrowLabel")
 
         for lbl in (self.text_label, self.arrow_label):
             lbl.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
 
-        btn_layout.addWidget(self.text_label)
-        btn_layout.addStretch()
+        btn_layout.addWidget(self.text_label, 1)
         btn_layout.addWidget(self.arrow_label)
+
         main_layout.addWidget(self.trigger_btn)
 
         flags = Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint | Qt.WindowType.NoDropShadowWindowHint

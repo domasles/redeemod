@@ -1,9 +1,10 @@
 from pathlib import Path
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QFileDialog, QGridLayout, QSizePolicy, QSpacerItem
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QScrollArea, QFileDialog, QGridLayout, QSizePolicy, QSpacerItem
 from PySide6.QtCore import Qt
 
 from frontend.components.cards import GameCard, ModCard, ActionCard
+from frontend.components.elided_label import ElidedLabel
 from frontend.components.card import Card
 
 
@@ -29,7 +30,7 @@ class Library(QWidget):
         top_layout = QHBoxLayout(top_bar)
         top_layout.setContentsMargins(20, 15, 20, 10)
 
-        self.title_label = QLabel("Mod Library")
+        self.title_label = ElidedLabel("Mod Library")
         self.title_label.setObjectName("LibraryTitle")
 
         top_layout.addWidget(self.title_label)

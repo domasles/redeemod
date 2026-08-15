@@ -3,6 +3,7 @@ from typing import Optional
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget
 from PySide6.QtCore import Qt, Signal
 
+from frontend.components.elided_label import ElidedLabel
 from frontend.components.card import Card
 
 
@@ -36,7 +37,7 @@ class ActionCard(Card):
         self.card_layout.addWidget(lbl_title, alignment=Qt.AlignmentFlag.AlignCenter)
 
         if subtitle:
-            lbl_sub = QLabel(subtitle)
+            lbl_sub = ElidedLabel(subtitle)
             lbl_sub.setObjectName("BannerLabel")
 
             self.card_layout.addWidget(lbl_sub, alignment=Qt.AlignmentFlag.AlignCenter)

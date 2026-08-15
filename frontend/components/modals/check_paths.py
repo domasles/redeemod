@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog
 from PySide6.QtCore import Signal, Qt
 
@@ -48,22 +50,30 @@ class CheckPathsModalBody(QWidget):
             layout.addLayout(picker_layout)
             self.inputs[key] = line_edit
 
-        self.btn_save = QPushButton("Add selected game")
-        self.btn_save.setObjectName("LaunchBtn")
-        self.btn_save.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.btn_save.setEnabled(False)
-        self.btn_save.clicked.connect(self._on_save)
+        self.btn_add = QPushButton("Add selected game")
+        self.btn_add.setObjectName("LaunchBtn")
+        self.btn_add.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_add.setEnabled(False)
+        self.btn_add.clicked.connect(self._on_save)
 
-        layout.addWidget(self.btn_save)
+        layout.addWidget(self.btn_add)
 
     def _browse_file(self, key: str, line_edit: QLineEdit):
-
         label_text = key.replace("_", " ").title()
         file_path, _ = QFileDialog.getOpenFileName(self, f"Select {label_text}")
 
         if file_path:
-            line_edit.setText(file_path)
-            self.selected_paths[key] = file_path
+            resolved_path = Path(file_path).resolve()
+
+            if resolved_path.exists():
+                resolved_str = str(resolved_path)
+                line_edit.setText(resolved_str)
+                self.selected_paths[key] = resolved_str
+
+            else:
+                line_edit.clear()
+                self.selected_paths.pop(key, None)
+
             self._validate_all()
 
     def _validate_all(self):
@@ -71,7 +81,7 @@ class CheckPathsModalBody(QWidget):
             bool(path) for path in self.selected_paths.values()
         )
 
-        self.btn_save.setEnabled(all_filled)
+        self.btn_add.setEnabled(all_filled)
 
     def _on_save(self):
         self.paths_confirmed.emit(self.selected_paths)

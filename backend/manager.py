@@ -32,9 +32,9 @@ class Manager(QObject):
         if game_id in self.data["games"]:
             self.data["games"].remove(game_id)
             self.data["mods"].pop(game_id, None)
+            self.data["paths"].pop(game_id, None)
 
             self.save()
-
             self.games_changed.emit()
 
     def add_mod(self, game_id: str, path_str: str) -> str:
