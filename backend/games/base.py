@@ -1,13 +1,16 @@
+from typing import Dict, List, Optional, Any
 from abc import ABC, abstractmethod
-from dataclasses import fields
 from pathlib import Path
-from typing import List
 
-from backend.utils.filesystem import expand_path
+from backend.utils.filesystem import expand_path, get_project_directory
+from backend.discovery import discover_all_paths, load_config
 
 
 class BaseGameAdapter(ABC):
     """Abstract base class for all game adapters."""
+
+    def __init__(self, custom_paths: Optional[Dict[str, Any]] = None):
+        self.init_paths(custom_paths)
 
     @property
     @abstractmethod
@@ -31,18 +34,55 @@ class BaseGameAdapter(ABC):
         """Required path keys parsed from config.json."""
 
         game_cfg = getattr(self, "config", None)
-        cfg = game_cfg.games.get(self.game_id)
+        cfg = game_cfg.games.get(self.game_id) if game_cfg else None
+
+        if not cfg or not hasattr(cfg, "paths"):
+            return []
 
         return [
-            f.name.removesuffix("_paths") + "_path"
-            for f in fields(cfg)
-            if f.name.endswith("_paths")
+            key.removesuffix("_paths") + "_path"
+            for key in cfg.paths.keys()
+            if key.endswith("_paths")
         ]
 
     @abstractmethod
     def launch(self, selected_mod_paths: List[Path]) -> None:
         """Prepares configuration/INI files and launches the executable."""
         pass
+
+    def init_paths(self, custom_paths: Optional[Dict[str, Any]] = None) -> None:
+        config_file = get_project_directory() / "backend/config/config.json"
+        self.config = load_config(config_file)
+
+        custom_paths = custom_paths or {}
+        game_cfg = self.config.games.get(self.game_id)
+
+        self.all_configured_data = (discover_all_paths(game_cfg, custom_paths) if game_cfg else {})
+
+        for key, value in self.all_configured_data.items():
+            if key.endswith("_paths"):
+                singular_key = key.removesuffix("_paths") + "_path"
+                custom_val = custom_paths.get(singular_key)
+
+                if custom_val:
+                    setattr(self, singular_key, expand_path(custom_val))
+
+                else:
+                    valid_path = None
+                    paths_list = value if isinstance(value, list) else [value]
+
+                    for p in paths_list:
+                        if isinstance(p, (str, Path)) and Path(p).exists():
+                            valid_path = Path(p)
+                            break
+
+                    if not valid_path and paths_list:
+                        valid_path = Path(paths_list[0]) if isinstance(paths_list[0], (str, Path)) else paths_list[0]
+
+                    setattr(self, singular_key, valid_path)
+
+            else:
+                setattr(self, key, value)
 
     def get_missing_paths(self) -> list[str]:
         """Checks all required_path_keys."""

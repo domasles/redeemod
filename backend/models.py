@@ -17,15 +17,17 @@ class PlatformPaths:
 
 @dataclass
 class GameConfig:
-    executable_paths: PlatformPaths
-    config_paths: PlatformPaths
+    paths: Dict[str, PlatformPaths] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "GameConfig":
-        return cls(
-            executable_paths=PlatformPaths.from_dict(data.get("executable_paths", {})),
-            config_paths=PlatformPaths.from_dict(data.get("config_paths", {}))
-        )
+        paths = {
+            key: PlatformPaths.from_dict(val)
+            for key, val in data.items()
+            if isinstance(val, dict)
+        }
+
+        return cls(paths=paths)
 
 
 @dataclass

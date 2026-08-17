@@ -59,13 +59,15 @@ class App(QMainWindow):
         main_layout.addWidget(self.screen_stack)
 
         self.setCentralWidget(central_widget)
+
+        self.games_view.refresh_games()
         self.screen_stack.setCurrentWidget(self.games_view)
 
         QTimer.singleShot(0, self.games_view.refresh_games)
 
     def _navigate_screen(self, screen_name: str):
         if screen_name == "library":
-            self.library_view.refresh_cards()
+            self.library_view.reset_state()
             self.screen_stack.setCurrentWidget(self.library_view)
 
             QTimer.singleShot(0, self.library_view.refresh_cards)

@@ -49,7 +49,7 @@ class Library(QWidget):
 
         top_layout.addWidget(self.btn_back)
 
-        self.btn_launch = QPushButton("Launch Game")
+        self.btn_launch = QPushButton("Launch standalone")
         self.btn_launch.setObjectName("LaunchBtn")
         self.btn_launch.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_launch.clicked.connect(self._launch_game)
@@ -90,6 +90,11 @@ class Library(QWidget):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        self.refresh_cards()
+
+    def reset_state(self):
+        self.selected_game_id = None
+        self.selected_mods.clear()
         self.refresh_cards()
 
     def refresh_cards(self):
@@ -228,6 +233,9 @@ class Library(QWidget):
         adapter = self.adapters.get(self.selected_game_id)
 
         if adapter:
+            custom_paths = self.manager.get_custom_paths(self.selected_game_id)
+            adapter.init_paths(custom_paths)
+
             all_mods = self.manager.get_mods(self.selected_game_id)
             selected_paths = [Path(all_mods[name]) for name in self.selected_mods if name in all_mods]
             adapter.launch(selected_paths)

@@ -1,7 +1,7 @@
 import json
 import sys
 
-from typing import Optional, Tuple
+from typing import Optional, Dict, List
 from pathlib import Path
 
 from backend.utils.filesystem import expand_path
@@ -22,7 +22,7 @@ def load_config(path: str | Path) -> Config:
     return Config.from_dict(data)
 
 
-def find_first_valid_path(paths: list[str]) -> Optional[Path]:
+def find_first_valid_path(paths: List[str]) -> Optional[Path]:
     """Returns the first path that exists on disk."""
 
     for raw_path in paths:
@@ -34,21 +34,62 @@ def find_first_valid_path(paths: list[str]) -> Optional[Path]:
     return None
 
 
-def discover_installation(game_config: GameConfig) -> Tuple[Optional[Path], Optional[Path]]:
-    """Detects the host OS and finds the matching executable and config file paths."""
+def _get_platform_key() -> str:
+    """Determines the current platform key."""
 
     if sys.platform.startswith("linux"):
-        exec_candidates = game_config.executable_paths.linux
-        cfg_candidates = game_config.config_paths.linux
+        return "linux"
 
-    elif sys.platform in ("win32", "cygwin"):
-        exec_candidates = game_config.executable_paths.windows
-        cfg_candidates = game_config.config_paths.windows
+    if sys.platform in ("win32", "cygwin"):
+        return "windows"
 
-    else:
-        raise RuntimeError(f"Unsupported platform: {sys.platform}")
+    raise RuntimeError(f"Unsupported platform: {sys.platform}")
 
-    exe_path = find_first_valid_path(exec_candidates)
-    cfg_path = find_first_valid_path(cfg_candidates)
 
-    return exe_path, cfg_path
+def discover_all_paths(game_config: GameConfig, custom_paths: Optional[Dict[str, str]] = None) -> Dict[str, List[Path]]:
+    """Discovers all configured paths for a game and merges custom paths."""
+
+    discovered: Dict[str, List[Path]] = {}
+
+    if not game_config or not hasattr(game_config, "paths"):
+        return discovered
+
+    platform_key = _get_platform_key()
+
+    # Load pre-configured paths
+    for path_key, platform_paths in game_config.paths.items():
+        candidates = getattr(platform_paths, platform_key, [])
+        discovered[path_key] = [expand_path(p) for p in candidates]
+
+    # Merge custom path overrides
+    for custom_key, custom_val in (custom_paths or {}).items():
+        if not custom_val:
+            continue
+
+        target_key = (
+            custom_key.removesuffix("_path") + "_paths"
+            if custom_key.endswith("_path") and not custom_key.endswith("_paths")
+            else custom_key
+        )
+
+        expanded = expand_path(custom_val)
+
+        if target_key in discovered:
+            if expanded not in discovered[target_key]:
+                discovered[target_key].append(expanded)
+
+        else:
+            discovered[target_key] = [expanded]
+
+    return discovered
+
+
+def discover_installation(game_config: GameConfig, custom_paths: Optional[Dict[str, str]] = None) -> Dict[str, Optional[Path]]:
+    """Discovers game installation based on configured data."""
+
+    all_data = discover_all_paths(game_config, custom_paths)
+
+    return {
+        path_key.removesuffix("_paths") + "_path": find_first_valid_path([str(p) for p in paths])
+        for path_key, paths in all_data.items()
+    }

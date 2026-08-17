@@ -3,8 +3,7 @@ import subprocess
 from typing import List, Dict, Optional
 from pathlib import Path
 
-from backend.utils.filesystem import expand_path, get_base_directory, get_project_directory, get_relative_path
-from backend.discovery import discover_installation, load_config
+from backend.utils.filesystem import get_base_directory, get_relative_path
 from backend.games.ut99.ini import append_to_ini_file
 from backend.games.base import BaseGameAdapter
 from backend.constants import *
@@ -21,30 +20,14 @@ class UT99GameAdapter(BaseGameAdapter):
 
     @property
     def file_extensions(self) -> set[str]:
-        return self.content_extensions | self.locale_extensions
+        return self.all_extensions
 
     def __init__(self, custom_paths: Optional[Dict[str, str]] = None):
         self.content_extensions = {"u", "unr", "utx", "uax", "umx"}
         self.locale_extensions = {"int", "det", "frt", "est", "itt", "rut"}
+        self.all_extensions = self.content_extensions | self.locale_extensions
 
-        config_file = get_project_directory() / "backend/config/config.json"
-        self.config = load_config(config_file)
-
-        custom_paths = custom_paths or {}
-
-        self.executable_path = expand_path(custom_paths["executable_path"]) if custom_paths.get("executable_path") else None
-        self.config_path = expand_path(custom_paths["config_path"]) if custom_paths.get("config_path") else None
-
-        game_cfg = self.config.games.get(self.game_id)
-
-        if game_cfg:
-            exe, cfg = discover_installation(game_cfg)
-
-            if not self.executable_path:
-                self.executable_path = exe
-
-            if not self.config_path:
-                self.config_path = cfg
+        super().__init__(custom_paths)
 
     def launch(self, selected_mod_paths: List[Path]) -> None:
         if not self.executable_path or not self.executable_path.exists():
