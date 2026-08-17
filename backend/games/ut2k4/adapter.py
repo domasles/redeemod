@@ -80,9 +80,9 @@ class UT2K4GameAdapter(BaseGameAdapter):
 
         default_ini_content = self._generate_default_ini(mod_paths, exe_base)
 
-        (app_mod_dir / "UT2K4Mod.ini").write_bytes(ut2k4mod_content.encode("utf-8"))
-        (app_sys_dir / "Default.ini").write_bytes(default_ini_content.encode("utf-8"))
-        (app_sys_dir / "DefUser.ini").write_bytes("\r\n".encode("utf-8"))
+        (app_mod_dir / "UT2K4Mod.ini").write_text(ut2k4mod_content, "utf-8")
+        (app_sys_dir / "Default.ini").write_text(default_ini_content, "utf-8")
+        (app_sys_dir / "DefUser.ini").write_text("\r\n", "utf-8")
 
     def _generate_default_ini(self, mod_paths: List[Path], exe_base: Path) -> str:
         cache_entries: set[str] = set()
