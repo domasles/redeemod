@@ -134,8 +134,9 @@ class Library(QWidget):
         for game_id in added_games:
             adapter = self.adapters.get(game_id)
             name = adapter.display_name if adapter else game_id.upper()
+            logo = adapter.logo if adapter and adapter.logo else None
 
-            card = GameCard(self.scroll_content, name, "Select to manage mods")
+            card = GameCard(self.scroll_content, name, "Select to manage mods", logo=logo)
             card.clicked.connect(lambda g_id=game_id: self._select_game(g_id))
             row, col = idx // cols, idx % cols
 
@@ -148,6 +149,7 @@ class Library(QWidget):
     def _render_mod_selection(self, cols: int) -> int:
         adapter = self.adapters.get(self.selected_game_id)
         name = adapter.display_name if adapter else self.selected_game_id.upper()
+        logo = adapter.logo if adapter and adapter.logo else None
 
         self.title_label.setText(f"Mods for {name}")
         self.btn_back.setVisible(True)
@@ -163,6 +165,7 @@ class Library(QWidget):
                 (mod_name in self.selected_mods),
                 self._toggle_mod,
                 self._delete_mod,
+                logo=logo,
             )
 
             row, col = idx // cols, idx % cols

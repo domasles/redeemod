@@ -1,7 +1,7 @@
 import json
 import sys
 
-from typing import Optional, Dict, List
+from typing import Dict, List
 from pathlib import Path
 
 from backend.utils.filesystem import expand_path
@@ -22,7 +22,7 @@ def load_config(path: str | Path) -> Config:
     return Config.from_dict(data)
 
 
-def find_first_valid_path(paths: List[str]) -> Optional[Path]:
+def find_first_valid_path(paths: List[str]) -> Path | None:
     """Returns the first path that exists on disk."""
 
     for raw_path in paths:
@@ -46,7 +46,7 @@ def _get_platform_key() -> str:
     raise RuntimeError(f"Unsupported platform: {sys.platform}")
 
 
-def discover_all_paths(game_config: GameConfig, custom_paths: Optional[Dict[str, str]] = None) -> Dict[str, List[Path]]:
+def discover_all_paths(game_config: GameConfig, custom_paths: Dict[str, str] | None = None) -> Dict[str, List[Path]]:
     """Discovers all configured paths for a game and merges custom paths."""
 
     discovered: Dict[str, List[Path]] = {}
@@ -84,7 +84,7 @@ def discover_all_paths(game_config: GameConfig, custom_paths: Optional[Dict[str,
     return discovered
 
 
-def discover_installation(game_config: GameConfig, custom_paths: Optional[Dict[str, str]] = None) -> Dict[str, Optional[Path]]:
+def discover_installation(game_config: GameConfig, custom_paths: Dict[str, str] | None = None) -> Dict[str, Path | None]:
     """Discovers game installation based on configured data."""
 
     all_data = discover_all_paths(game_config, custom_paths)

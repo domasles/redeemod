@@ -1,5 +1,5 @@
-from typing import Dict, List, Optional, Any
 from abc import ABC, abstractmethod
+from typing import Dict, List, Any
 from pathlib import Path
 
 from backend.utils.filesystem import expand_path, get_project_directory
@@ -9,7 +9,7 @@ from backend.discovery import discover_all_paths, load_config
 class BaseGameAdapter(ABC):
     """Abstract base class for all game adapters."""
 
-    def __init__(self, custom_paths: Optional[Dict[str, Any]] = None):
+    def __init__(self, custom_paths: Dict[str, Any] | None = None):
         self.init_paths(custom_paths)
 
     @property
@@ -22,6 +22,11 @@ class BaseGameAdapter(ABC):
     @abstractmethod
     def display_name(self) -> str:
         """User-friendly name."""
+        pass
+
+    @property
+    def logo(self) -> Path | None:
+        """Path to the game's logo image."""
         pass
 
     @property
@@ -45,12 +50,17 @@ class BaseGameAdapter(ABC):
             if key.endswith("_paths")
         ]
 
+    @property
+    def adapter_assets_path(self) -> Path | None:
+        """Path to the game adapter assets directory."""
+        return get_project_directory() / "backend/games" / self.game_id / "assets"
+
     @abstractmethod
     def launch(self, selected_mod_paths: List[Path]) -> None:
         """Prepares configuration/INI files and launches the executable."""
         pass
 
-    def init_paths(self, custom_paths: Optional[Dict[str, Any]] = None) -> None:
+    def init_paths(self, custom_paths: Dict[str, Any] | None = None) -> None:
         config_file = get_project_directory() / "backend/config/config.json"
         self.config = load_config(config_file)
 

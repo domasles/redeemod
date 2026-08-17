@@ -79,8 +79,9 @@ class Games(QWidget):
 
         for game_id in added_games:
             adapter = self.adapters.get(game_id)
-            name = adapter.display_name if adapter else game_id.upper()
-            card = GameCard(self.scroll_content, name, "Add mods in Library", lambda g_id=game_id: self._remove_game(g_id))
+            name = adapter.display_name if adapter else game_id
+            logo = adapter.logo if adapter and adapter.logo else None
+            card = GameCard(self.scroll_content, name, "Add mods in Library", lambda g_id=game_id: self._remove_game(g_id), logo=logo)
 
             row, col = idx // cols, idx % cols
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)

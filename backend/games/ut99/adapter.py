@@ -1,6 +1,6 @@
 import subprocess
 
-from typing import List, Dict, Optional
+from typing import List, Dict
 from pathlib import Path
 
 from backend.utils.filesystem import get_base_directory, get_relative_path
@@ -19,10 +19,14 @@ class UT99GameAdapter(BaseGameAdapter):
         return "Unreal Tournament '99"
 
     @property
+    def logo(self) -> Path | None:
+        return self.adapter_assets_path / "logo.png"
+
+    @property
     def file_extensions(self) -> set[str]:
         return self.all_extensions
 
-    def __init__(self, custom_paths: Optional[Dict[str, str]] = None):
+    def __init__(self, custom_paths: Dict[str, str] | None = None):
         self.content_extensions = {"u", "unr", "utx", "uax", "umx"}
         self.locale_extensions = {"int", "det", "frt", "est", "itt", "rut"}
         self.all_extensions = self.content_extensions | self.locale_extensions

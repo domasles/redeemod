@@ -1,10 +1,12 @@
 from typing import Callable
+from pathlib import Path
 
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QWidget
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QPushButton, QWidget
+from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 
+from frontend.components.card import Card, BannerImageLabel
 from frontend.components.elided_label import ElidedLabel
-from frontend.components.card import Card
 
 
 class ModCard(Card):
@@ -17,6 +19,7 @@ class ModCard(Card):
         is_selected: bool,
         on_toggle: Callable[[str, bool], None],
         on_delete: Callable[[str], None],
+        logo: str | Path | QPixmap | None = None,
     ):
         super().__init__(parent)
 
@@ -32,10 +35,29 @@ class ModCard(Card):
         banner_layout = QVBoxLayout(banner)
         banner_layout.setContentsMargins(0, 0, 0, 0)
 
-        banner_lbl = QLabel("MOD")
+        banner_lbl = BannerImageLabel()
         banner_lbl.setObjectName("BannerLabel")
+        banner_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        banner_layout.addWidget(banner_lbl, alignment=Qt.AlignmentFlag.AlignCenter)
+        loaded_pixmap = None
+
+        if logo:
+            if isinstance(logo, QPixmap):
+                loaded_pixmap = logo
+
+            else:
+                pixmap = QPixmap(str(logo))
+
+                if not pixmap.isNull():
+                    loaded_pixmap = pixmap
+
+        if loaded_pixmap:
+            banner_lbl.set_banner_pixmap(loaded_pixmap)
+
+        else:
+            banner_lbl.setText("MOD")
+
+        banner_layout.addWidget(banner_lbl)
         self.card_layout.addWidget(banner)
 
         lbl_title = ElidedLabel(mod_name)

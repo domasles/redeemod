@@ -1,5 +1,3 @@
-from typing import Optional
-
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget
 from PySide6.QtCore import Qt, Signal
 
@@ -12,7 +10,7 @@ class ActionCard(Card):
 
     clicked = Signal()
 
-    def __init__(self, parent: Optional[QWidget], title: str, subtitle: str = ""):
+    def __init__(self, parent: QWidget | None, title: str, subtitle: str = ""):
         super().__init__(parent)
 
         self.setObjectName("ActionCard")
