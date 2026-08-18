@@ -146,7 +146,7 @@ class Library(QWidget):
             self.setUpdatesEnabled(True)
 
     def _render_game_selection(self, cols: int) -> int:
-        self.title_label.setText("Your games")
+        self.title_label.setText("Your mods")
         self.btn_back.setVisible(False)
         self.btn_launch.setVisible(False)
 

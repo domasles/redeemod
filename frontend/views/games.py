@@ -32,7 +32,7 @@ class Games(QWidget):
         top_layout = QVBoxLayout(top_bar)
         top_layout.setContentsMargins(20, 15, 20, 10)
 
-        title = QLabel("Installed games")
+        title = QLabel("Your games")
         title.setObjectName("LibraryTitle")
 
         top_layout.addWidget(title)
@@ -102,7 +102,7 @@ class Games(QWidget):
                 name = adapter.display_name if adapter else game_id
                 logo = adapter.logo if adapter and adapter.logo else None
 
-                card = GameCard(self.scroll_content, name, "To add mods, visit Library", on_delete=lambda g_id=game_id: self._remove_game(g_id), logo=logo)
+                card = GameCard(self.scroll_content, name, "To manage mods, visit Library", on_delete=lambda g_id=game_id: self._remove_game(g_id), logo=logo)
 
                 row, col = idx // cols, idx % cols
                 self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)

@@ -4,10 +4,7 @@ from .ut2k4.adapter import UT2K4GameAdapter
 from .ut99.adapter import UT99GameAdapter
 
 
-ADAPTERS = [
-    UT2K4GameAdapter,
-    UT99GameAdapter,
-]
+ADAPTERS: list[type[BaseGameAdapter]] = BaseGameAdapter.__subclasses__()
 
 
 def get_adapter_class(game_id: str) -> type[BaseGameAdapter]:
