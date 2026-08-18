@@ -15,6 +15,8 @@ class Library(QWidget):
     def __init__(self, parent, manager, adapters: dict):
         super().__init__(parent)
 
+        self._last_width = 0
+
         self.manager = manager
         self.adapters = adapters
         self.selected_game_id: str | None = None
@@ -66,6 +68,7 @@ class Library(QWidget):
         self.scroll_area = QScrollArea()
         self.scroll_area.setObjectName("LibraryScrollArea")
         self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.scroll_content = QWidget()
         self.scroll_content.setObjectName("LibraryScrollContent")
@@ -78,8 +81,6 @@ class Library(QWidget):
         self.scroll_area.setWidget(self.scroll_content)
         main_layout.addWidget(self.scroll_area)
 
-        self.refresh_cards()
-
     def _get_columns_count(self) -> int:
         viewport_width = self.scroll_area.viewport().width() - 40
 
@@ -88,9 +89,18 @@ class Library(QWidget):
 
         return max(1, viewport_width // (self.CARD_WIDTH + self.CARD_GAP))
 
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.refresh_cards()
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self.refresh_cards()
+
+        current_width = self.scroll_area.viewport().width()
+
+        if current_width > 0 and abs(current_width - self._last_width) > 10:
+            self._last_width = current_width
+            self.refresh_cards()
 
     def reset_state(self):
         self.selected_game_id = None
@@ -98,30 +108,40 @@ class Library(QWidget):
         self.refresh_cards()
 
     def refresh_cards(self):
-        while self.grid_layout.count():
-            item = self.grid_layout.takeAt(0)
+        if self.scroll_area.viewport().width() <= 0:
+            return
 
-            if item.widget():
-                item.widget().deleteLater()
+        self.setUpdatesEnabled(False)
 
-        cols = self._get_columns_count()
+        try:
+            while self.grid_layout.count():
+                item = self.grid_layout.takeAt(0)
 
-        for c in range(cols):
-            self.grid_layout.setColumnStretch(c, 0)
+                if item.widget():
+                    item.widget().deleteLater()
 
-        if self.selected_game_id is None:
-            idx = self._render_game_selection(cols)
+            cols = self._get_columns_count()
 
-        else:
-            idx = self._render_mod_selection(cols)
+            for c in range(cols):
+                self.grid_layout.setColumnStretch(c, 0)
 
-        self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)
-        self.grid_layout.setColumnStretch(cols, 1)
+            if self.selected_game_id is None:
+                idx = self._render_game_selection(cols)
 
-        if idx > 0:
-            bottom_row = ((idx - 1) // cols) + 1
-            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)
-            self.grid_layout.setRowStretch(bottom_row, 1)
+            else:
+                idx = self._render_mod_selection(cols)
+
+            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)
+            self.grid_layout.setColumnStretch(cols, 1)
+
+            if idx > 0:
+                bottom_row = ((idx - 1) // cols) + 1
+
+                self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)
+                self.grid_layout.setRowStretch(bottom_row, 1)
+
+        finally:
+            self.setUpdatesEnabled(True)
 
     def _render_game_selection(self, cols: int) -> int:
         self.title_label.setText("Your games")
@@ -133,21 +153,22 @@ class Library(QWidget):
 
         for game_id in added_games:
             adapter = self.adapters.get(game_id)
+
             name = adapter.display_name if adapter else game_id.upper()
             logo = adapter.logo if adapter and adapter.logo else None
 
             card = GameCard(self.scroll_content, name, "Select to manage mods", logo=logo)
             card.clicked.connect(lambda g_id=game_id: self._select_game(g_id))
+
             row, col = idx // cols, idx % cols
-
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-
             idx += 1
 
         return idx
 
     def _render_mod_selection(self, cols: int) -> int:
         adapter = self.adapters.get(self.selected_game_id)
+
         name = adapter.display_name if adapter else self.selected_game_id.upper()
         logo = adapter.logo if adapter and adapter.logo else None
 
@@ -174,8 +195,8 @@ class Library(QWidget):
 
         add_card = ActionCard(self.scroll_content, "Add Mod", f"for {name}")
         add_card.clicked.connect(self._add_mod_dialog)
-        row, col = idx // cols, idx % cols
 
+        row, col = idx // cols, idx % cols
         self.grid_layout.addWidget(add_card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         idx += 1
 

@@ -2,7 +2,6 @@ import sys
 import os
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget
-from PySide6.QtCore import QTimer
 from PySide6.QtGui import QIcon
 
 from backend.utils.filesystem import get_project_directory
@@ -61,21 +60,22 @@ class App(QMainWindow):
 
         self.games_view.refresh_games()
         self.screen_stack.setCurrentWidget(self.games_view)
-
-        QTimer.singleShot(0, self.games_view.refresh_games)
+        self.sidebar.refresh_visibility()
 
     def _navigate_screen(self, screen_name: str):
+        self.sidebar.refresh_visibility()
+
         if screen_name == "library":
+            if not self.manager.get_added_games():
+                self.screen_stack.setCurrentWidget(self.games_view)
+                return
+
             self.library_view.reset_state()
             self.screen_stack.setCurrentWidget(self.library_view)
-
-            QTimer.singleShot(0, self.library_view.refresh_cards)
 
         elif screen_name == "games":
             self.games_view.refresh_games()
             self.screen_stack.setCurrentWidget(self.games_view)
-
-            QTimer.singleShot(0, self.games_view.refresh_games)
 
 
 def load_stylesheet(app: QApplication):

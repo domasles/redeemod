@@ -15,6 +15,8 @@ class Games(QWidget):
     def __init__(self, parent, manager, adapters: dict):
         super().__init__(parent)
 
+        self._last_width = 0
+
         self.manager = manager
         self.adapters = adapters
 
@@ -37,6 +39,7 @@ class Games(QWidget):
         self.scroll_area = QScrollArea()
         self.scroll_area.setObjectName("LibraryScrollArea")
         self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.scroll_content = QWidget()
         self.scroll_content.setObjectName("LibraryScrollContent")
@@ -48,7 +51,6 @@ class Games(QWidget):
 
         self.scroll_area.setWidget(self.scroll_content)
         layout.addWidget(self.scroll_area)
-        self.refresh_games()
 
     def _get_columns_count(self) -> int:
         viewport_width = self.scroll_area.viewport().width() - 40
@@ -58,51 +60,70 @@ class Games(QWidget):
 
         return max(1, viewport_width // (self.CARD_WIDTH + self.CARD_GAP))
 
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
+    def showEvent(self, event):
+        super().showEvent(event)
         self.refresh_games()
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+
+        current_width = self.scroll_area.viewport().width()
+
+        if current_width > 0 and abs(current_width - self._last_width) > 10:
+            self._last_width = current_width
+            self.refresh_games()
+
     def refresh_games(self):
-        while self.grid_layout.count():
-            item = self.grid_layout.takeAt(0)
+        if self.scroll_area.viewport().width() <= 0:
+            return
 
-            if item.widget():
-                item.widget().deleteLater()
+        self.setUpdatesEnabled(False)
 
-        cols = self._get_columns_count()
+        try:
+            while self.grid_layout.count():
+                item = self.grid_layout.takeAt(0)
 
-        for c in range(cols):
-            self.grid_layout.setColumnStretch(c, 0)
+                if item.widget():
+                    item.widget().deleteLater()
 
-        added_games = self.manager.get_added_games()
-        idx = 0
+            cols = self._get_columns_count()
 
-        for game_id in added_games:
-            adapter = self.adapters.get(game_id)
-            name = adapter.display_name if adapter else game_id
-            logo = adapter.logo if adapter and adapter.logo else None
-            card = GameCard(self.scroll_content, name, "Add mods in Library", lambda g_id=game_id: self._remove_game(g_id), logo=logo)
+            for c in range(cols):
+                self.grid_layout.setColumnStretch(c, 0)
+
+            added_games = self.manager.get_added_games()
+            idx = 0
+
+            for game_id in added_games:
+                adapter = self.adapters.get(game_id)
+
+                name = adapter.display_name if adapter else game_id
+                logo = adapter.logo if adapter and adapter.logo else None
+
+                card = GameCard(self.scroll_content, name, "Add mods in Library", lambda g_id=game_id: self._remove_game(g_id), logo=logo)
+
+                row, col = idx // cols, idx % cols
+                self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+                idx += 1
+
+            add_card = ActionCard(self.scroll_content, "Add game", "to your start modding")
+            add_card.clicked.connect(self._open_add_game_modal)
 
             row, col = idx // cols, idx % cols
-            self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+            self.grid_layout.addWidget(add_card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
             idx += 1
 
-        add_card = ActionCard(self.scroll_content, "Add game", "to your start modding")
-        add_card.clicked.connect(self._open_add_game_modal)
-        row, col = idx // cols, idx % cols
+            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)
+            self.grid_layout.setColumnStretch(cols, 1)
 
-        self.grid_layout.addWidget(add_card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+            if idx > 0:
+                bottom_row = ((idx - 1) // cols) + 1
 
-        idx += 1
+                self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)
+                self.grid_layout.setRowStretch(bottom_row, 1)
 
-        self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)
-        self.grid_layout.setColumnStretch(cols, 1)
-
-        if idx > 0:
-            bottom_row = ((idx - 1) // cols) + 1
-
-            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)
-            self.grid_layout.setRowStretch(bottom_row, 1)
+        finally:
+            self.setUpdatesEnabled(True)
 
     def _remove_game(self, game_id: str):
         self.manager.remove_game(game_id)
