@@ -1,10 +1,9 @@
 import sys
 import os
 
-from pathlib import Path
-
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget
 from PySide6.QtCore import QTimer
+from PySide6.QtGui import QIcon
 
 from backend.utils.filesystem import get_project_directory
 from backend.games import get_adapter_classes
@@ -80,7 +79,7 @@ class App(QMainWindow):
 
 
 def load_stylesheet(app: QApplication):
-    style_path = Path(get_project_directory()) / "frontend" / "styles" / "style.qss"
+    style_path = get_project_directory() / "frontend" / "styles" / "style.qss"
 
     if not style_path.exists():
         raise FileNotFoundError(f"Stylesheet missing at expected location: {style_path}")
@@ -93,6 +92,7 @@ if __name__ == "__main__":
     os.environ["QT_LOGGING_RULES"] = "qt.qpa.wayland.textinput=false"
 
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(str(APP_ICON_FILE_PATH)))
 
     load_stylesheet(app)
 

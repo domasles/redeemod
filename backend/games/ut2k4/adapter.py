@@ -20,7 +20,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
 
     @property
     def logo(self) -> Path | None:
-        return self.adapter_assets_path / "logo.png"
+        return self.adapter_assets_path / "logo.svg"
 
     @property
     def file_extensions(self) -> set[str]:
