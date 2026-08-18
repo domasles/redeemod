@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=83.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "RedeeMOD"
+version = "0.1.0"
+description = "A custom and easily extensible game launcher with modding capabilities, made primarily for Unreal Tournament game series."
+readme = "README.md"
+requires-python = ">=3.11"
+
+authors = [
+    { name = "Domas Leščinskas", email = "domas.lescinskas@gmail.com" }
+]
+
+license = { text = "Apache-2.0" }
+keywords = ["gui", "game", "gaming", "unreal", "unreal tournament"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: Windows",
+    "Operating System :: Linux"
+]
+
+dependencies = [
+    "pyside6>=6.11.2"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/domasles/redeemod"
+"Bug Reports" = "https://github.com/domasles/redeemod/issues"
+"Source" = "https://github.com/domasles/redeemod"
+
+[project.scripts]
+redeemod = "frontend.app:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*", "frontend*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.svg", "*.qss"]

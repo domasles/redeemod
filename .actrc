@@ -1,0 +1,2 @@
+--artifact-server-path ./build
+--matrix target-os:linux

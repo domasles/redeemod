@@ -1,0 +1,68 @@
+name: Build RedeeMOD Executables
+
+on:
+  workflow_dispatch:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-app:
+    name: Build Executable (${{ matrix.target-os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target-os: [ linux, windows ]
+        include:
+          - target-os: linux
+            os: ubuntu-latest
+            binary_name: redeemod-linux
+            path_sep: ":"
+          - target-os: windows
+            os: windows-latest
+            binary_name: redeemod-windows.exe
+            path_sep: ";"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies & PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install . pyinstaller
+
+      - name: Compile Standalone Binary
+        shell: bash
+        run: |
+          python -m PyInstaller --onefile \
+            --paths . \
+            --name="${{ matrix.binary_name }}" \
+            --add-data "frontend${{ matrix.path_sep }}frontend" \
+            --add-data "backend${{ matrix.path_sep }}backend" \
+            frontend/app.py
+
+      - name: Make Binary Executable
+        if: ${{ matrix.target-os == 'linux' }}
+        run: chmod +x dist/${{ matrix.binary_name }}
+
+      - name: Upload Binary Artifact (Local Builds Only)
+        if: ${{ env.ACT == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.binary_name }}
+          path: dist/${{ matrix.binary_name }}
+          if-no-files-found: error
+
+      - name: Upload Executable to GitHub Release
+        if: ${{ env.ACT != 'true' && github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ matrix.binary_name }}
