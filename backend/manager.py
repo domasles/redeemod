@@ -11,14 +11,14 @@ from backend.constants import *
 class Manager(QObject):
     games_changed = Signal()
 
-    def __init__(self, parent: QObject | None = None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
 
         storage_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)) / APP_NAME
         storage_dir.mkdir(parents=True, exist_ok=True)
 
         self.storage_file = storage_dir / USER_SETTINGS_FILE_NAME
-        self.data: dict = {"games": [], "mods": {}}
+        self.data: dict = {"games": [], "mods": {}, "paths": {}}
 
         self.load()
 

@@ -23,8 +23,7 @@ class App(QMainWindow):
         self.setMinimumSize(960, 600)
         self.setMaximumSize(1270, 720)
 
-        self.manager = Manager(parent=self)
-
+        self.manager = Manager()
         self.adapters = {}
 
         for game_id, adapter_class in get_adapter_classes().items():
@@ -41,7 +40,7 @@ class App(QMainWindow):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        self.sidebar = Sidebar(self.manager, self)
+        self.sidebar = Sidebar(self, self.manager)
         self.sidebar.navigated.connect(self._navigate_screen)
         self.manager.games_changed.connect(self.sidebar.refresh_visibility)
 

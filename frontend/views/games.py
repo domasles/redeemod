@@ -1,5 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QGridLayout, QSpacerItem, QSizePolicy
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QObject, Qt
+
+from backend.manager import Manager
 
 from frontend.components.modals.check_paths import CheckPathsModalBody
 from frontend.components.modals.game_body import AddGameModalBody
@@ -12,7 +14,7 @@ class Games(QWidget):
     CARD_WIDTH = Card.CARD_WIDTH
     CARD_GAP = 20
 
-    def __init__(self, parent, manager, adapters: dict):
+    def __init__(self, parent: QObject, manager: Manager, adapters: dict):
         super().__init__(parent)
 
         self._last_width = 0
@@ -100,13 +102,13 @@ class Games(QWidget):
                 name = adapter.display_name if adapter else game_id
                 logo = adapter.logo if adapter and adapter.logo else None
 
-                card = GameCard(self.scroll_content, name, "Add mods in Library", lambda g_id=game_id: self._remove_game(g_id), logo=logo)
+                card = GameCard(self.scroll_content, name, "To add mods, visit Library", on_delete=lambda g_id=game_id: self._remove_game(g_id), logo=logo)
 
                 row, col = idx // cols, idx % cols
                 self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
                 idx += 1
 
-            add_card = ActionCard(self.scroll_content, "Add game", "to your start modding")
+            add_card = ActionCard(self.scroll_content, "Add a game", "Before adding, launch it once", "to set up necessary files!")
             add_card.clicked.connect(self._open_add_game_modal)
 
             row, col = idx // cols, idx % cols
@@ -148,7 +150,7 @@ class Games(QWidget):
                     self.refresh_games()
 
         body = AddGameModalBody(handle_add)
-        modal = ModalDialog(self, "Select game", body)
+        modal = ModalDialog("Select game", body)
         modal.exec()
 
     def _open_check_paths_modal(self, game_id: str, missing_path_keys: list[str]):
@@ -160,11 +162,11 @@ class Games(QWidget):
                 self.adapters[game_id] = adapter_cls(custom_paths=paths)
 
             self.manager.add_game(game_id)
-            paths_modal.accept()
+            modal.accept()
             self.refresh_games()
 
-        body = CheckPathsModalBody(game_id=game_id, missing_path_keys=missing_path_keys)
+        body = CheckPathsModalBody(game_id, missing_path_keys)
         body.paths_confirmed.connect(handle_paths_confirmed)
 
-        paths_modal = ModalDialog(self, f"Configure Paths", body)
-        paths_modal.exec()
+        modal = ModalDialog(f"Configure Paths", body)
+        modal.exec()

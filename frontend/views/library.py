@@ -1,7 +1,9 @@
 from pathlib import Path
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QScrollArea, QFileDialog, QGridLayout, QSizePolicy, QSpacerItem
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QObject, Qt
+
+from backend.manager import Manager
 
 from frontend.components.cards import GameCard, ModCard, ActionCard
 from frontend.components.elided_label import ElidedLabel
@@ -12,7 +14,7 @@ class Library(QWidget):
     CARD_WIDTH = Card.CARD_WIDTH
     CARD_GAP = 20
 
-    def __init__(self, parent, manager, adapters: dict):
+    def __init__(self, parent: QObject, manager: Manager, adapters: dict):
         super().__init__(parent)
 
         self._last_width = 0
@@ -193,7 +195,7 @@ class Library(QWidget):
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
             idx += 1
 
-        add_card = ActionCard(self.scroll_content, "Add Mod", f"for {name}")
+        add_card = ActionCard(self.scroll_content, "Add a mod", f"for {name}")
         add_card.clicked.connect(self._add_mod_dialog)
 
         row, col = idx // cols, idx % cols
@@ -230,7 +232,7 @@ class Library(QWidget):
             self.refresh_cards()
 
     def _pick_directory(self) -> str:
-        return QFileDialog.getExistingDirectory(self, "Select Mod Directory")
+        return QFileDialog.getExistingDirectory(caption="Select Mod Directory")
 
     def _add_mod_dialog(self):
         if self.selected_game_id:

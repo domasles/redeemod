@@ -1,13 +1,14 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QObject, Qt, Signal
 
+from backend.manager import Manager
 from backend.constants import *
 
 
 class Sidebar(QWidget):
     navigated = Signal(str)
 
-    def __init__(self, manager, parent=None):
+    def __init__(self, parent: QObject, manager: Manager):
         super().__init__(parent)
 
         self.manager = manager

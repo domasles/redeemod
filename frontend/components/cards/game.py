@@ -1,8 +1,8 @@
 from typing import Callable
 from pathlib import Path
 
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QWidget
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QPushButton
+from PySide6.QtCore import QObject, Qt, Signal
 from PySide6.QtGui import QPixmap
 
 from frontend.components.card import Card, BannerImageLabel
@@ -16,9 +16,9 @@ class GameCard(Card):
 
     def __init__(
         self,
-        parent: QWidget,
+        parent: QObject,
         display_name: str,
-        subtitle: str = "",
+        subtitle: str | None = None,
         on_delete: Callable[[], None] | None = None,
         logo: str | Path | QPixmap | None = None,
     ):
@@ -65,7 +65,7 @@ class GameCard(Card):
         self.card_layout.addWidget(lbl_title, alignment=Qt.AlignmentFlag.AlignCenter)
 
         if subtitle:
-            lbl_sub = QLabel(subtitle)
+            lbl_sub = ElidedLabel(subtitle)
             lbl_sub.setObjectName("BannerLabel")
 
             self.card_layout.addWidget(lbl_sub, alignment=Qt.AlignmentFlag.AlignCenter)

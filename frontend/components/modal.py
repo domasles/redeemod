@@ -1,17 +1,18 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QWidget
+from PySide6.QtCore import QObject
 
-from backend.constants import APP_NAME
+from backend.constants import *
 
 
 class ModalDialog(QDialog):
     """Modal dialog."""
 
-    def __init__(self, parent: QWidget, title: str, body_widget: QWidget):
+    def __init__(self, title: str, body_widget: QWidget, parent: QObject | None = None):
         super().__init__(parent)
 
         self.setWindowTitle(APP_NAME)
         self.setModal(True)
-        self.setMinimumWidth(380)
+        self.setMinimumWidth(400)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
@@ -23,7 +24,8 @@ class ModalDialog(QDialog):
         layout.addWidget(title_lbl)
         layout.addWidget(body_widget)
 
-        self.setFixedSize(self.width(), self.sizeHint().height())
+        self.adjustSize()
+        self.setFixedSize(self.size())
 
     def _clear_focus_before_close(self):
         focused = self.focusWidget()

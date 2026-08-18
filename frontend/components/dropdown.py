@@ -9,8 +9,8 @@ class Dropdown(QWidget):
 
     currentIndexChanged = Signal(int)
 
-    def __init__(self, parent = None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
 
         self.setObjectName("DropdownContainer")
         self._items, self._current_index = [], -1

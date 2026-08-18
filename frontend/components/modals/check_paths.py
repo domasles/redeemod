@@ -7,8 +7,8 @@ from PySide6.QtCore import Signal, Qt
 class CheckPathsModalBody(QWidget):
     paths_confirmed = Signal(dict)
 
-    def __init__(self, game_id: str, missing_path_keys: list[str], parent=None):
-        super().__init__(parent)
+    def __init__(self, game_id: str, missing_path_keys: list[str]):
+        super().__init__()
 
         self.setObjectName("CheckPathsModalBody")
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
@@ -60,7 +60,7 @@ class CheckPathsModalBody(QWidget):
 
     def _browse_file(self, key: str, line_edit: QLineEdit):
         label_text = key.replace("_", " ").title()
-        file_path, _ = QFileDialog.getOpenFileName(self, f"Select {label_text}")
+        file_path, _ = QFileDialog.getOpenFileName(caption=f"Select {label_text}")
 
         if file_path:
             resolved_path = Path(file_path).resolve()

@@ -27,12 +27,12 @@ class UT2K4GameAdapter(BaseGameAdapter):
         return self.all_extensions
 
     def __init__(self, custom_paths: Dict[str, str] | None = None):
+        super().__init__(custom_paths)
+
         self.content_extensions = {"u", "ut2", "utx", "usx", "ukx", "uax"}
         self.music_extensions = {"ogg"}
         self.cache_extensions = {"ucl"}
         self.all_extensions = self.content_extensions | self.music_extensions | self.cache_extensions
-
-        super().__init__(custom_paths)
 
     def launch(self, selected_mod_paths: List[Path]) -> None:
         if not self.executable_path or not self.executable_path.exists():

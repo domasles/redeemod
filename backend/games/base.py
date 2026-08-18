@@ -53,7 +53,7 @@ class BaseGameAdapter(ABC):
     @property
     def adapter_assets_path(self) -> Path | None:
         """Path to the game adapter assets directory."""
-        return get_project_directory() / "backend/games" / self.game_id / "assets"
+        return get_project_directory() / "backend" / "games" / self.game_id / "assets"
 
     @abstractmethod
     def launch(self, selected_mod_paths: List[Path]) -> None:

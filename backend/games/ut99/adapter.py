@@ -27,11 +27,11 @@ class UT99GameAdapter(BaseGameAdapter):
         return self.all_extensions
 
     def __init__(self, custom_paths: Dict[str, str] | None = None):
+        super().__init__(custom_paths)
+
         self.content_extensions = {"u", "unr", "utx", "uax", "umx"}
         self.locale_extensions = {"int", "det", "frt", "est", "itt", "rut"}
         self.all_extensions = self.content_extensions | self.locale_extensions
-
-        super().__init__(custom_paths)
 
     def launch(self, selected_mod_paths: List[Path]) -> None:
         if not self.executable_path or not self.executable_path.exists():

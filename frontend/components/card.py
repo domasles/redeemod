@@ -1,12 +1,12 @@
-from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout
 from PySide6.QtGui import QPixmap, QPainter, QPainterPath
-from PySide6.QtCore import Qt, QRectF
+from PySide6.QtCore import QObject, Qt, QRectF
 
 class BannerImageLabel(QLabel):
     """QLabel that center-crops and clips an image."""
 
-    def __init__(self, pixmap: QPixmap | None = None, corner_radius: float = 8.0, parent: QWidget | None = None):
-        super().__init__(parent)
+    def __init__(self, pixmap: QPixmap | None = None, corner_radius: float = 8.0):
+        super().__init__()
 
         self._pixmap = pixmap
         self._corner_radius = corner_radius
@@ -53,7 +53,7 @@ class Card(QFrame):
     CARD_WIDTH = 200
     CARD_HEIGHT = 250
 
-    def __init__(self, parent: QWidget | None = None):
+    def __init__(self, parent: QObject):
         super().__init__(parent)
 
         self.setFixedSize(self.CARD_WIDTH, self.CARD_HEIGHT)
