@@ -87,7 +87,7 @@ def load_stylesheet(app: QApplication):
         app.setStyleSheet(f.read())
 
 
-if __name__ == "__main__":
+def main():
     os.environ["QT_LOGGING_RULES"] = "qt.qpa.wayland.textinput=false"
 
     app = QApplication(sys.argv)
@@ -99,3 +99,7 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
