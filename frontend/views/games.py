@@ -6,7 +6,7 @@ from backend.manager import Manager
 from frontend.components.modals.check_paths import CheckPathsModalBody
 from frontend.components.modals.game_body import AddGameModalBody
 from frontend.components.cards import GameCard, ActionCard
-from frontend.components.modal import ModalDialog
+from frontend.components.modal_dialog import ModalDialog
 from frontend.components.card import Card
 
 
@@ -93,27 +93,7 @@ class Games(QWidget):
             for c in range(cols):
                 self.grid_layout.setColumnStretch(c, 0)
 
-            added_games = self.manager.get_added_games()
-            idx = 0
-
-            for game_id in added_games:
-                adapter = self.adapters.get(game_id)
-
-                name = adapter.display_name if adapter else game_id
-                logo = adapter.logo if adapter and adapter.logo else None
-
-                card = GameCard(self.scroll_content, name, "To manage mods, visit Library", on_delete=lambda g_id=game_id: self._remove_game(g_id), logo=logo)
-
-                row, col = idx // cols, idx % cols
-                self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-                idx += 1
-
-            add_card = ActionCard(self.scroll_content, "Add a game", "Before adding, launch it once", "to set up necessary files!")
-            add_card.clicked.connect(self._open_add_game_modal)
-
-            row, col = idx // cols, idx % cols
-            self.grid_layout.addWidget(add_card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-            idx += 1
+            idx = self._render_game_selection(cols)
 
             self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)
             self.grid_layout.setColumnStretch(cols, 1)
@@ -126,6 +106,37 @@ class Games(QWidget):
 
         finally:
             self.setUpdatesEnabled(True)
+
+    def _render_game_selection(self, cols: int) -> int:
+        added_games = self.manager.get_added_games()
+        idx = 0
+
+        for game_id in added_games:
+            adapter = self.adapters.get(game_id)
+
+            name = adapter.display_name if adapter else game_id
+            logo = adapter.logo if adapter and adapter.logo else None
+
+            card = GameCard(
+                self.scroll_content,
+                name,
+                "To manage mods, visit Library",
+                on_delete=lambda g_id=game_id: self._remove_game(g_id),
+                logo=logo
+            )
+
+            row, col = idx // cols, idx % cols
+            self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+            idx += 1
+
+        add_card = ActionCard(self.scroll_content, "Add a game", "Before adding, launch it once", "to set up necessary files!")
+        add_card.clicked.connect(self._open_add_game_modal)
+
+        row, col = idx // cols, idx % cols
+        self.grid_layout.addWidget(add_card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        idx += 1
+
+        return idx
 
     def _remove_game(self, game_id: str):
         self.manager.remove_game(game_id)

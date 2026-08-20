@@ -42,9 +42,9 @@ jobs:
       - name: Compile Standalone Binary
         shell: bash
         run: |
-          python -m PyInstaller --onefile \
-            --paths . \
-            --name="${{ matrix.binary_name }}" \
+          python -m PyInstaller \
+            -w -F -p . -n "${{ matrix.binary_name }}" \
+            -i frontend/assets/logo.ico \
             --add-data "frontend${{ matrix.path_sep }}frontend" \
             --add-data "backend${{ matrix.path_sep }}backend" \
             frontend/app.py

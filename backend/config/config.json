@@ -29,7 +29,7 @@
             ],
 
             "windows": [
-                "C:\\UnrealTournament2004\\System\\UnrealTournament.exe"
+                "C:\\UnrealTournament2004\\System\\UT2004.exe"
             ]
         },
 
@@ -40,7 +40,7 @@
             ],
 
             "windows": [
-                "C:\\UnrealTournament2004\\System\\UnrealTournament.ini"
+                "C:\\UnrealTournament2004\\System\\UT2004.ini"
             ]
         }
     }

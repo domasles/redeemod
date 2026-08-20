@@ -5,8 +5,9 @@ from PySide6.QtWidgets import QFrame, QVBoxLayout, QPushButton
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtGui import QPixmap
 
-from frontend.components.card import Card, BannerImageLabel
+from frontend.components.images.banner import BannerImageLabel
 from frontend.components.elided_label import ElidedLabel
+from frontend.components.card import Card
 
 
 class ModCard(Card):

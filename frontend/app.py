@@ -21,7 +21,6 @@ class App(QMainWindow):
         self.setWindowTitle(APP_NAME)
         self.resize(960, 600)
         self.setMinimumSize(960, 600)
-        self.setMaximumSize(1270, 720)
 
         self.manager = Manager()
         self.adapters = {}
@@ -42,7 +41,7 @@ class App(QMainWindow):
 
         self.sidebar = Sidebar(self, self.manager)
         self.sidebar.navigated.connect(self._navigate_screen)
-        self.manager.games_changed.connect(self.sidebar.refresh_visibility)
+        self.manager.games_changed.connect(self.sidebar.refresh_library_visibility)
 
         main_layout.addWidget(self.sidebar)
 
@@ -59,10 +58,10 @@ class App(QMainWindow):
 
         self.games_view.refresh_games()
         self.screen_stack.setCurrentWidget(self.games_view)
-        self.sidebar.refresh_visibility()
+        self.sidebar.refresh_library_visibility()
 
     def _navigate_screen(self, screen_name: str):
-        self.sidebar.refresh_visibility()
+        self.sidebar.refresh_library_visibility()
 
         if screen_name == "library":
             if not self.manager.get_added_games():

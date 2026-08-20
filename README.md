@@ -48,50 +48,66 @@ cd redeemod
 ### Method 1 (Python and PyInstaller, Default for Most)
 
 1. **Create a virtual environment (recommended)**:
+
+Linux:
 ```bash
 python -m venv venv
-
-# Activation for Linux:
 source ./venv/bin/activate
+```
 
-# Activation for Windows :
-# CMD:
+Windows CMD:
+```bash
+python -m venv venv
 .\venv\Scripts\activate.bat
+```
 
-# PowerShell:
+PowerShell:
+```bash
+python -m venv venv
 .\venv\Scripts\Activate.ps1
 ```
 
-2.1. **Either install the package**:
+2. **Either install the package and run directly**:
 ```bash
-pip install -e .  # Omit -e flag if you are not planning to edit the source files
-```
-
-2.2. **And run it directly**:
-```bash
+pip install -e .
 redeemod
 ```
 
+> NOTE: Omit -e flag if you are not planning to edit the source files
+
 3. **OR build a standalone binary**:
+
+Linux:
 ```bash
-# Linux
-python -m PyInstaller --onefile \
-    --paths . \
-    --name redeemod \
+python -m PyInstaller \
+    -F -p . -n redeemod \
+    -i frontend/assets/logo.ico \
     --add-data "frontend:frontend" \
     --add-data "backend:backend" \
     frontend/app.py
+```
 
-# Windows
-python -m PyInstaller --onefile \
-    --paths . \
-    --name redeemod \
-    --add-data "frontend;frontend" \
-    --add-data "backend;backend" \
+Windows CMD:
+```bash
+python -m PyInstaller ^
+    -w -F -p . -n redeemod ^
+    -i frontend/assets/logo.ico ^
+    --add-data "frontend;frontend" ^
+    --add-data "backend;backend" ^
     frontend/app.py
 ```
 
-> NOTE: you'll find the executable in `dist` directory
+Powershell:
+```bash
+python -m PyInstaller `
+    -w -F -p . -n redeemod `
+    -i frontend/assets/logo.ico `
+    --add-data "frontend;frontend" `
+    --add-data "backend;backend" `
+    frontend/app.py
+```
+
+> NOTE: You'll find the executable in `dist` directory
 
 ### Method 2 (act)
 
@@ -100,11 +116,11 @@ python -m PyInstaller --onefile \
 act workflow_dispatch
 ```
 
-> NOTE: you'll find the executable in `build` directory
+> NOTE: You'll find the executable in `build` directory
 
 ## Architecture
 
-Pretty straightforward separation between backend and frontend:
+Pretty straightforward and easily maintainable:
 
 ```
 redeemod/

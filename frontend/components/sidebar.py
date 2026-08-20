@@ -1,8 +1,10 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
-from PySide6.QtCore import QObject, Qt, Signal
+from PySide6.QtCore import QObject, QSize, Signal, Qt
 
 from backend.manager import Manager
 from backend.constants import *
+
+from frontend.components.image import Image
 
 
 class Sidebar(QWidget):
@@ -20,6 +22,11 @@ class Sidebar(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(15, 20, 15, 20)
         layout.setSpacing(10)
+
+        self.logo_widget = Image(APP_ICON_FILE_PATH, QSize(64, 64))
+
+        layout.addWidget(self.logo_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addSpacing(5)
 
         title = QLabel(APP_NAME)
         title.setObjectName("LibraryTitle")
@@ -42,10 +49,8 @@ class Sidebar(QWidget):
         layout.addWidget(self.btn_library)
         layout.addStretch()
 
-        self.refresh_visibility()
+        self.refresh_library_visibility()
 
-    def refresh_visibility(self):
-        """Checks whether the Library button should be visible."""
-
+    def refresh_library_visibility(self):
         has_games = bool(self.manager.get_added_games())
         self.btn_library.setVisible(has_games)
