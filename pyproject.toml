@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "RedeeMOD"
-version = "0.1.0"
+version = "1.0.0"
 description = "A custom and easily extensible game launcher with modding capabilities, made primarily for Unreal Tournament game series."
 readme = "README.md"
 requires-python = ">=3.11"
