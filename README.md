@@ -28,12 +28,12 @@ As of today, RedeeMOD supports **Unreal Tournament 99** and **Unreal Tournament 
 
 These only apply if you want to run RedeeMOD from downloaded source. If not, look [here](https://github.com/domasles/redeemod/releases)!
 
-- **Python 3.11** or higher
+- **Python 3.12** or higher
 - **PySide6** - The Qt framework powering the interface
 
 ## Requirements for a Build
 
-- **Python 3.11+**
+- **Python 3.12+**
 - **PyInstaller** - To compile everything into a single binary
 - **act** - To run the local GitHub actions runner (optional)
 

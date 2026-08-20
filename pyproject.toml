@@ -7,7 +7,7 @@ name = "RedeeMOD"
 version = "1.0.0"
 description = "A custom and easily extensible game launcher with modding capabilities, made primarily for Unreal Tournament game series."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 authors = [
     { name = "Domas Leščinskas", email = "domas.lescinskas@gmail.com" }
@@ -21,7 +21,6 @@ classifiers = [
     "Intended Audience :: System Administrators",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
