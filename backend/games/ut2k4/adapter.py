@@ -76,7 +76,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
             "[MOD]\r\n"
             'ModTitle="RedeeMOD"\r\n'
             'ModDesc="A package of selected mods through RedeeMOD launcher."\r\n'
-        )
+        )  # fmt: skip
 
         default_ini_content = self._generate_default_ini(mod_paths, exe_base)
 

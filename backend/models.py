@@ -12,7 +12,7 @@ class PlatformPaths:
         return cls(
             linux=data.get("linux", []),
             windows=data.get("windows", [])
-        )
+        )  # fmt: skip
 
 
 @dataclass
@@ -25,7 +25,7 @@ class GameConfig:
             key: PlatformPaths.from_dict(val)
             for key, val in data.items()
             if isinstance(val, dict)
-        }
+        }  # fmt: skip
 
         return cls(paths=paths)
 

@@ -1,6 +1,5 @@
 from backend.utils.filesystem import get_project_directory
 
-
 APP_NAME = "RedeeMOD"
 
 USER_SETTINGS_FILE_NAME = "user_settings.json"

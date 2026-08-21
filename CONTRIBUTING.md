@@ -1,5 +1,10 @@
 # RedeeMOD Contributing Guide
 
+[![Python code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
+[![Supported Python version](https://img.shields.io/badge/python-3.12%2B-green?style=flat-square)](https://github.com/domasles/redeemod)
+[![License](https://img.shields.io/github/license/domasles/redeemod?color=red&style=flat-square)](https://github.com/domasles/redeemod/blob/main/LICENSE)
+[![Build status](https://img.shields.io/github/actions/workflow/status/domasles/redeemod/build-app.yml?color=blue&style=flat-square)](https://github.com/domasles/redeemod/actions)
+
 Welcome! If you wish to add any new game adapter, improve the interface or anyhow add to the development of RedeeMOD, you've come to the right place!
 
 ## Setup
@@ -9,6 +14,13 @@ As almost any other project, RedeeMOD has dependencies and follows strict develo
 2. Everything must be modularized (to be easily maintainable)
 3. Do NOT modify anything that's unnecessary for the planned improvement
 4. As this is both a fully-built application and a framework, coding style and file architecture must remain intact
+
+This repository utilizes the [_Black_ formatter](https://github.com/psf/black) that you must set up by running:
+```bash
+pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
 
 To get started and make your first build, ensure you're using **Python 3.12** or later. Then you can either:
 - Install this repo as an editable package (recommended):

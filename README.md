@@ -2,6 +2,11 @@
 
 # RedeeMOD
 
+[![Python code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
+[![Supported Python version](https://img.shields.io/badge/python-3.12%2B-green?style=flat-square)](https://github.com/domasles/redeemod)
+[![License](https://img.shields.io/github/license/domasles/redeemod?color=red&style=flat-square)](https://github.com/domasles/redeemod/blob/main/LICENSE)
+[![Build status](https://img.shields.io/github/actions/workflow/status/domasles/redeemod/build-app.yml?color=blue&style=flat-square)](https://github.com/domasles/redeemod/actions)
+
 A custom and easily extensible game launcher with modding capabilities.
 
 ## What is It?

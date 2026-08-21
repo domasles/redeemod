@@ -27,11 +27,11 @@ class Image(QLabel):
 
         dpr = self.devicePixelRatio()
         pixmap = QPixmap(self.path)
-        
+
         scaled = pixmap.scaled(
             self.image_size * dpr,
             Qt.AspectRatioMode.KeepAspectRatioByExpanding,
-            Qt.TransformationMode.SmoothTransformation
+            Qt.TransformationMode.SmoothTransformation,
         )
 
         scaled.setDevicePixelRatio(dpr)

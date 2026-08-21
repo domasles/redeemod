@@ -32,7 +32,7 @@ class BannerImageLabel(Image):
                 scaled = pixmap.scaled(
                     rect.size() * dpr,
                     Qt.AspectRatioMode.KeepAspectRatioByExpanding,
-                    Qt.TransformationMode.SmoothTransformation
+                    Qt.TransformationMode.SmoothTransformation,
                 )
 
                 x = (scaled.width() - int(w * dpr)) // 2

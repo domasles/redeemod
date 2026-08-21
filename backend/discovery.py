@@ -84,7 +84,7 @@ def discover_all_paths(game_config: GameConfig, custom_paths: Dict[str, str] | N
     return discovered
 
 
-def discover_installation(game_config: GameConfig, custom_paths: Dict[str, str] | None = None) -> Dict[str, Path | None]:
+def discover_installation(game_config: GameConfig, custom_paths: Dict[str, str] | None = None) -> Dict[str, Path | None]:  # fmt: skip
     """Discovers game installation based on configured data."""
 
     all_data = discover_all_paths(game_config, custom_paths)

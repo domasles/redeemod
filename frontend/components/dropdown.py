@@ -1,4 +1,15 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QListWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QApplication, QScroller
+from PySide6.QtWidgets import (
+    QWidget,
+    QPushButton,
+    QListWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QFrame,
+    QApplication,
+    QScroller,
+)
+
 from PySide6.QtCore import Qt, QPoint, Signal, QEvent
 
 from frontend.components.elided_label import ElidedLabel
@@ -58,7 +69,7 @@ class Dropdown(QWidget):
 
         popup_layout.addWidget(self.popup_list)
 
-    def addItem(self, text: str, userData = None):
+    def addItem(self, text: str, userData=None):
         self._items.append((text, userData))
         self.popup_list.addItem(text)
 
@@ -113,7 +124,7 @@ class Dropdown(QWidget):
 
     def eventFilter(self, obj, event):
         try:
-            if self.popup_frame.isVisible() and event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.MouseButtonDblClick):
+            if self.popup_frame.isVisible() and event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.MouseButtonDblClick):  # fmt: skip
                 pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
 
                 if not self.popup_frame.frameGeometry().contains(pos):

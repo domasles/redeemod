@@ -48,7 +48,7 @@ class BaseGameAdapter(ABC):
             key.removesuffix("_paths") + "_path"
             for key in cfg.paths.keys()
             if key.endswith("_paths")
-        ]
+        ]  # fmt: skip
 
     @property
     def adapter_assets_path(self) -> Path | None:
@@ -67,7 +67,7 @@ class BaseGameAdapter(ABC):
         custom_paths = custom_paths or {}
         game_cfg = self.config.games.get(self.game_id)
 
-        self.all_configured_data = (discover_all_paths(game_cfg, custom_paths) if game_cfg else {})
+        self.all_configured_data = discover_all_paths(game_cfg, custom_paths) if game_cfg else {}
 
         for key, value in self.all_configured_data.items():
             if key.endswith("_paths"):

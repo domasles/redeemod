@@ -1,6 +1,17 @@
 from pathlib import Path
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QScrollArea, QFileDialog, QGridLayout, QSizePolicy, QSpacerItem
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QPushButton,
+    QScrollArea,
+    QFileDialog,
+    QGridLayout,
+    QSizePolicy,
+    QSpacerItem,
+)
+
 from PySide6.QtCore import QObject, Qt
 
 from backend.manager import Manager
@@ -133,13 +144,13 @@ class Library(QWidget):
             else:
                 idx = self._render_mod_selection(cols)
 
-            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)
+            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)  # fmt: skip
             self.grid_layout.setColumnStretch(cols, 1)
 
             if idx > 0:
                 bottom_row = ((idx - 1) // cols) + 1
 
-                self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)
+                self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)  # fmt: skip
                 self.grid_layout.setRowStretch(bottom_row, 1)
 
         finally:

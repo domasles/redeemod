@@ -1,4 +1,13 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QGridLayout, QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QScrollArea,
+    QGridLayout,
+    QSpacerItem,
+    QSizePolicy,
+)
+
 from PySide6.QtCore import QObject, Qt
 
 from backend.manager import Manager
@@ -95,13 +104,13 @@ class Games(QWidget):
 
             idx = self._render_game_selection(cols)
 
-            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)
+            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)  # fmt: skip
             self.grid_layout.setColumnStretch(cols, 1)
 
             if idx > 0:
                 bottom_row = ((idx - 1) // cols) + 1
 
-                self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)
+                self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)  # fmt: skip
                 self.grid_layout.setRowStretch(bottom_row, 1)
 
         finally:
@@ -122,14 +131,20 @@ class Games(QWidget):
                 name,
                 "To manage mods, visit Library",
                 on_delete=lambda g_id=game_id: self._remove_game(g_id),
-                logo=logo
+                logo=logo,
             )
 
             row, col = idx // cols, idx % cols
             self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
             idx += 1
 
-        add_card = ActionCard(self.scroll_content, "Add a game", "Before adding, launch it once", "to set up necessary files!")
+        add_card = ActionCard(
+            self.scroll_content,
+            "Add a game",
+            "Before adding, launch it once",
+            "to set up necessary files!",
+        )
+
         add_card.clicked.connect(self._open_add_game_modal)
 
         row, col = idx // cols, idx % cols

@@ -1,7 +1,14 @@
 import sys
 import os
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QHBoxLayout,
+    QStackedWidget,
+)
+
 from PySide6.QtGui import QIcon
 
 from backend.utils.filesystem import get_project_directory

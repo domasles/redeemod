@@ -46,3 +46,6 @@ include = ["backend*", "frontend*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.svg", "*.qss"]
+
+[tool.black]
+line-length = 120

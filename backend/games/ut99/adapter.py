@@ -40,7 +40,11 @@ class UT99GameAdapter(BaseGameAdapter):
         cmd = [str(self.executable_path)]
 
         if selected_mod_paths and self.config_path and self.config_path.exists():
-            mod_ini_path = get_relative_path(get_base_directory(self.executable_path), self._apply_mods_to_ini(selected_mod_paths))
+            mod_ini_path = get_relative_path(
+                get_base_directory(self.executable_path),
+                self._apply_mods_to_ini(selected_mod_paths),
+            )
+
             cmd.append(f"INI={mod_ini_path}")
 
         subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
