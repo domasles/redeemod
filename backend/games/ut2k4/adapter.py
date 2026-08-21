@@ -36,7 +36,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
 
     def launch(self, selected_mod_paths: List[Path]) -> None:
         if not self.executable_path or not self.executable_path.exists():
-            raise FileNotFoundError("UT2K4 installation not found.")
+            raise FileNotFoundError(f"{self.display_name} installation not found.")
 
         cmd = [str(self.executable_path)]
 

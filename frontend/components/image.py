@@ -17,6 +17,10 @@ class Image(QLabel):
         self.setFixedSize(self.image_size)
 
     def paintEvent(self, event):
+        if type(self) is not Image:
+            super().paintEvent(event)
+            return
+
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)

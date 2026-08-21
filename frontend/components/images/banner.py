@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from PySide6.QtGui import QPixmap, QPainter, QPainterPath
 from PySide6.QtCore import QRectF, Qt
 
@@ -7,18 +9,16 @@ from frontend.components.image import Image
 class BannerImageLabel(Image):
     """Image label that center-crops and clips an image."""
 
-    def __init__(self, pixmap: QPixmap | None = None, corner_radius: float = 8.0, parent=None):
+    def __init__(self, path: str | Path | None = None, corner_radius: float = 8.0, parent=None):
         super(Image, self).__init__(parent)
 
-        self._pixmap = pixmap
+        self.path = path
         self._corner_radius = corner_radius
 
-    def set_banner_pixmap(self, pixmap: QPixmap | None):
-        self._pixmap = pixmap
-        self.update()
-
     def paintEvent(self, event):
-        if self._pixmap and not self._pixmap.isNull():
+        pixmap = QPixmap(str(self.path)) if self.path else QPixmap()
+
+        if not pixmap.isNull():
             painter = QPainter(self)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
             painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
@@ -29,7 +29,7 @@ class BannerImageLabel(Image):
             if w > 0 and h > 0:
                 dpr = self.devicePixelRatio()
 
-                scaled = self._pixmap.scaled(
+                scaled = pixmap.scaled(
                     rect.size() * dpr,
                     Qt.AspectRatioMode.KeepAspectRatioByExpanding,
                     Qt.TransformationMode.SmoothTransformation
@@ -41,10 +41,10 @@ class BannerImageLabel(Image):
                 cropped = scaled.copy(x, y, int(w * dpr), int(h * dpr))
                 cropped.setDevicePixelRatio(dpr)
 
-                path = QPainterPath()
-                path.addRoundedRect(QRectF(rect), self._corner_radius, self._corner_radius)
+                clip_path = QPainterPath()
+                clip_path.addRoundedRect(QRectF(rect), self._corner_radius, self._corner_radius)
 
-                painter.setClipPath(path)
+                painter.setClipPath(clip_path)
                 painter.drawPixmap(0, 0, cropped)
                 painter.end()
 

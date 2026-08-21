@@ -162,9 +162,17 @@ redeemod/
 └── pyproject.toml         # Project metadata and dependencies
 ```
 
-## Known issues
+## Known Issues
 
 This project isn't without its flaws, and they could get pretty irritating:
+
+1. **On Windows, Smart App Control blocks RedeeMOD from launching**<br>
+    Unfortunately, there is no way around that. As long as this project doesn't receive its certificate for signing Windows apps, Windows will block the executable, even when it doesn't have any malicious code. Your options are either:
+    1. Disable **Smart App Control** (and re-enable it after, if you feel like needing it)
+    2. Download source and build yourself
+    3. Install it as a pip module and launch from terminal/make a shortcut
+
+    Linux installations are not affected by this and should work perfectly fine.
 
 1. **Some mods not working**<br>
     If you're on **Linux**, this might be due to the Linux nature of case sensitivity and the mod files must be either:

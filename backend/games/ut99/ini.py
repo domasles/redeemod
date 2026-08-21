@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def append_to_ini_file(path: str | Path, section: str, new_content: str) -> str:
-    """Append new lines under the specified INI section."""
+    """Appends new lines under the specified INI section."""
 
     path_obj = Path(path)
     content = path_obj.read_text(encoding="utf-8")

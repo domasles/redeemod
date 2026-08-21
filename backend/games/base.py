@@ -61,7 +61,7 @@ class BaseGameAdapter(ABC):
         pass
 
     def init_paths(self, custom_paths: Dict[str, Any] | None = None) -> None:
-        config_file = get_project_directory() / "backend/config/config.json"
+        config_file = get_project_directory() / "backend" / "config" / "config.json"
         self.config = load_config(config_file)
 
         custom_paths = custom_paths or {}
@@ -120,7 +120,11 @@ class BaseGameAdapter(ABC):
 
             ext = item.suffix.lstrip(".").lower()
 
-            if ext in self.file_extensions:
+            if self.file_extensions:
+                if ext in self.file_extensions:
+                    mod_files.append((item, ext))
+
+            else:
                 mod_files.append((item, ext))
 
         return mod_files

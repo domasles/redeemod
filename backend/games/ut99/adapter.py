@@ -35,7 +35,7 @@ class UT99GameAdapter(BaseGameAdapter):
 
     def launch(self, selected_mod_paths: List[Path]) -> None:
         if not self.executable_path or not self.executable_path.exists():
-            raise FileNotFoundError("UT99 installation not found.")
+            raise FileNotFoundError(f"{self.display_name} installation not found.")
 
         cmd = [str(self.executable_path)]
 

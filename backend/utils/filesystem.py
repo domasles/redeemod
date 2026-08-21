@@ -14,7 +14,7 @@ def get_project_directory() -> Path:
 
 
 def get_base_directory(path: str | Path) -> Path:
-    """Get the parent directory of a path."""
+    """Gets the parent directory of a path."""
     return Path(path).parent
 
 
@@ -26,7 +26,7 @@ def expand_path(path: str | Path) -> Path:
 
 
 def traverse_directory_by_extension(base_path: str | Path, extension: str) -> list[Path]:
-    """Traverse directory and return files matching extension."""
+    """Traverses a directory and return files with matching extension."""
 
     path_obj = Path(base_path)
 
@@ -38,5 +38,5 @@ def traverse_directory_by_extension(base_path: str | Path, extension: str) -> li
 
 
 def get_relative_path(base_path: str | Path, target_path: str | Path) -> Path:
-    """Get relative path from base_path to target_path."""
+    """Gets relative path from base_path to target_path."""
     return Path(target_path).relative_to(Path(base_path), walk_up=True)
