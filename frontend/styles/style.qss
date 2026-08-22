@@ -10,7 +10,6 @@ QWidget#SidebarWidget {
 
 QLabel#LibraryTitle {
     color: #FFFFFF;
-    font-family: "Segoe UI";
     font-size: 22px;
     font-weight: bold;
 }
@@ -18,7 +17,6 @@ QLabel#LibraryTitle {
 QPushButton#AddFolderBtn {
     background-color: #2a2a2a;
     color: #FFFFFF;
-    font-family: "Segoe UI";
     font-size: 12px;
     font-weight: bold;
     border-radius: 6px;
@@ -33,7 +31,6 @@ QPushButton#AddFolderBtn:hover {
 QPushButton#LaunchBtn {
     background-color: #007ACC;
     color: #FFFFFF;
-    font-family: "Segoe UI";
     font-size: 12px;
     font-weight: bold;
     border-radius: 6px;
@@ -96,21 +93,18 @@ QFrame#BannerFrame {
 
 QLabel#BannerLabel {
     color: #888888;
-    font-family: "Segoe UI";
     font-size: 11px;
     font-weight: bold;
 }
 
 QLabel#ActionPlusLabel {
     color: #FFFFFF;
-    font-family: "Segoe UI";
     font-size: 32px;
     font-weight: bold;
 }
 
 QLabel#CardTitleLabel {
     color: #FFFFFF;
-    font-family: "Segoe UI";
     font-size: 13px;
     font-weight: bold;
     border: none;
@@ -119,7 +113,6 @@ QLabel#CardTitleLabel {
 
 QCheckBox#CardCheckBox {
     color: #888888;
-    font-family: "Segoe UI";
     font-size: 11px;
     background: transparent;
     border: none;
@@ -141,7 +134,6 @@ QCheckBox#CardCheckBox::indicator:checked {
 QPushButton#RemoveBtn {
     background: transparent;
     color: #FF5555;
-    font-family: "Segoe UI";
     font-size: 12px;
     font-weight: bold;
     border-radius: 6px;
@@ -171,7 +163,6 @@ QPushButton#DropdownTrigger:focus {
 
 QLabel#DropdownTextLabel {
     color: #FFFFFF;
-    font-family: "Segoe UI";
     font-size: 13px;
     background: transparent;
     border: none;
