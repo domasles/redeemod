@@ -13,10 +13,12 @@ from PySide6.QtCore import QObject, Qt
 from backend.manager import Manager
 
 from frontend.components.modals.check_paths import CheckPathsModalBody
-from frontend.components.modals.game_body import AddGameModalBody
+from frontend.components.modals.add_game import AddGameModalBody
 from frontend.components.cards import GameCard, ActionCard
 from frontend.components.modal_dialog import ModalDialog
 from frontend.components.card import Card
+
+from frontend.components.modals.error import show_error_modal
 
 
 class Games(QWidget):
@@ -165,8 +167,13 @@ class Games(QWidget):
             adapter_cls = type(self.adapters.get(game_id)) if game_id in self.adapters else None
 
             if adapter_cls:
-                adapter = adapter_cls(custom_paths=custom_paths)
-                missing = adapter.get_missing_paths()
+                try:
+                    adapter = adapter_cls(custom_paths=custom_paths)
+                    missing = adapter.get_missing_paths()
+
+                except Exception as e:
+                    show_error_modal(str(e))
+                    return
 
                 if missing:
                     self._open_check_paths_modal(game_id, missing)
@@ -181,13 +188,19 @@ class Games(QWidget):
 
     def _open_check_paths_modal(self, game_id: str, missing_path_keys: list[str]):
         def handle_paths_confirmed(paths: dict[str, str]):
-            self.manager.save_custom_paths(game_id, paths)
-            adapter_cls = type(self.adapters.get(game_id))
+            try:
+                self.manager.save_custom_paths(game_id, paths)
+                adapter_cls = type(self.adapters.get(game_id))
 
-            if adapter_cls:
-                self.adapters[game_id] = adapter_cls(custom_paths=paths)
+                if adapter_cls:
+                    self.adapters[game_id] = adapter_cls(custom_paths=paths)
 
-            self.manager.add_game(game_id)
+                self.manager.add_game(game_id)
+
+            except Exception as e:
+                show_error_modal(str(e))
+                return
+
             modal.accept()
             self.refresh_games()
 

@@ -9,6 +9,7 @@ class AddGameModalBody(QWidget):
         super().__init__()
 
         layout = QVBoxLayout(self)
+        layout.setSpacing(12)
 
         self.combo = Dropdown()
 

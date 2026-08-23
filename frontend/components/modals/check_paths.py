@@ -27,7 +27,6 @@ class CheckPathsModalBody(QWidget):
         self.selected_paths: dict[str, str] = {}
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(15, 15, 15, 15)
         layout.setSpacing(12)
 
         info_label = QLabel(f"Some required paths were not found. Please locate them:")

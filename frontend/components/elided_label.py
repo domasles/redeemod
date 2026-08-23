@@ -1,6 +1,6 @@
 from PySide6.QtGui import QPainter, QFontMetrics
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import Qt
 
 
 class ElidedLabel(QLabel):
@@ -8,7 +8,15 @@ class ElidedLabel(QLabel):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setMinimumWidth(0)
+
+    def minimumSizeHint(self) -> QSize:
+        hint = super().minimumSizeHint()
+        hint.setWidth(0)
+
+        return hint
+
+    def sizeHint(self) -> QSize:
+        return super().sizeHint()
 
     def paintEvent(self, event):
         painter = QPainter(self)

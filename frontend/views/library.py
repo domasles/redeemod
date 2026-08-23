@@ -20,6 +20,8 @@ from frontend.components.cards import GameCard, ModCard, ActionCard
 from frontend.components.elided_label import ElidedLabel
 from frontend.components.card import Card
 
+from frontend.components.modals.error import show_error_modal
+
 
 class Library(QWidget):
     CARD_WIDTH = Card.CARD_WIDTH
@@ -45,7 +47,7 @@ class Library(QWidget):
         top_layout = QHBoxLayout(top_bar)
         top_layout.setContentsMargins(20, 15, 20, 10)
 
-        self.title_label = ElidedLabel("Mod Library")
+        self.title_label = ElidedLabel("Your mods")
         self.title_label.setObjectName("LibraryTitle")
 
         top_layout.addWidget(self.title_label)
@@ -57,7 +59,6 @@ class Library(QWidget):
         self.btn_back.clicked.connect(self._go_back_to_games)
 
         sp_back = self.btn_back.sizePolicy()
-        sp_back.setRetainSizeWhenHidden(True)
 
         self.btn_back.setSizePolicy(sp_back)
         self.btn_back.setVisible(False)
@@ -70,7 +71,6 @@ class Library(QWidget):
         self.btn_launch.clicked.connect(self._launch_game)
 
         sp_launch = self.btn_launch.sizePolicy()
-        sp_launch.setRetainSizeWhenHidden(True)
 
         self.btn_launch.setSizePolicy(sp_launch)
         self.btn_launch.setVisible(False)
@@ -271,8 +271,45 @@ class Library(QWidget):
 
         if adapter:
             custom_paths = self.manager.get_custom_paths(self.selected_game_id)
-            adapter.init_paths(custom_paths)
+
+            try:
+                adapter.init_paths(custom_paths)
+
+            except Exception as e:
+                show_error_modal(str(e))
+                return
 
             all_mods = self.manager.get_mods(self.selected_game_id)
-            selected_paths = [Path(all_mods[name]) for name in self.selected_mods if name in all_mods]
-            adapter.launch(selected_paths)
+
+            selected_paths = []
+            missing_mods = []
+
+            for name in sorted(self.selected_mods):
+                if name not in all_mods:
+                    continue
+
+                path = Path(all_mods[name])
+
+                if path.exists():
+                    selected_paths.append(path)
+
+                else:
+                    missing_mods.append(name)
+
+            if missing_mods:
+                listing = "\n".join(f"- {name}" for name in missing_mods)
+
+                message = (
+                    "The following mods are missing from disk:\n\n"
+                    f"{listing}\n\n"
+                    "Remove them from your library or restore their folders."
+                )
+
+                show_error_modal(message)
+                return
+
+            try:
+                adapter.launch(selected_paths)
+
+            except Exception as e:
+                show_error_modal(str(e))

@@ -29,7 +29,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
     def __init__(self, custom_paths: Dict[str, str] | None = None):
         super().__init__(custom_paths)
 
-        self.content_extensions = {"u", "ut2", "utx", "usx", "ukx", "uax"}
+        self.content_extensions = {"u", "ut2", "utx", "usx", "ukx", "uax", "upl"}
         self.music_extensions = {"ogg"}
         self.cache_extensions = {"ucl"}
         self.all_extensions = self.content_extensions | self.music_extensions | self.cache_extensions
