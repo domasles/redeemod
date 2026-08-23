@@ -4,7 +4,7 @@ from typing import List, Dict
 from pathlib import Path
 
 from backend.utils.filesystem import get_base_directory, get_relative_path
-from backend.games.ut99.ini import append_to_ini_file
+from backend.games.ut99.ini import prepend_to_ini_section
 from backend.games.base import BaseGameAdapter
 from backend.constants import *
 
@@ -75,7 +75,7 @@ class UT99GameAdapter(BaseGameAdapter):
         mod_ini_path.parent.mkdir(parents=True, exist_ok=True)
 
         if new_content.strip():
-            updated_ini = append_to_ini_file(self.config_path, "Core.System", new_content)
+            updated_ini = prepend_to_ini_section(self.config_path, "Core.System", new_content)
             mod_ini_path.write_text(updated_ini, "utf-8")
 
         return mod_ini_path
