@@ -125,50 +125,6 @@ act workflow_dispatch
 
 > NOTE: You'll find the executable in `build` directory
 
-## Architecture
-
-Pretty straightforward and easily maintainable:
-
-```
-redeemod/
-├── backend/
-│   ├── config/
-│   │   └── config.json    # Default game-specific paths per platform
-│   │
-│   ├── games/
-│   │   ├── base.py        # Abstract BaseGameAdapter class
-│   │   ├── ut99/          # Unreal Tournament 99 adapter
-│   │   └── ut2k4/         # Unreal Tournament 2004 adapter
-│   │
-│   ├── discovery.py       # Game installation path discovery
-│   ├── manager.py         # Persistent user settings and mod tracking
-│   ├── models.py          # Data models for configuration
-│   └── constants.py       # Application-wide constants
-│
-├── frontend/
-│   ├── app.py             # Application entry point and main window
-│   ├── components/
-│   │   ├── cards/         # UI cards for games and mods
-│   │   ├── modals/        # Dialog windows
-│   │   ├── sidebar.py     # Navigation sidebar
-│   │   └── ...
-│   │
-│   ├── views/
-│   │   ├── library.py     # Mod library view
-│   │   └── games.py       # Game browser/selection view
-│   │
-│   └── styles/            # QSS stylesheets
-│
-├── .github/
-│   └── workflows/
-│       └── build-app.yml  # CI pipeline for Linux/Windows builds
-│
-├── LICENSING/
-│   └── Epic.txt           # Epic Games fan content disclaimer
-│
-└── pyproject.toml         # Project metadata and dependencies
-```
-
 ## Known Issues
 
 This project isn't without its flaws, and they could get pretty irritating:
