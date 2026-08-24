@@ -20,7 +20,7 @@ from frontend.components.cards import GameCard, ModCard, ActionCard
 from frontend.components.elided_label import ElidedLabel
 from frontend.components.card import Card
 
-from frontend.components.modals.error import show_error_modal
+from frontend.components.modals.message import show_error_modal, show_info_modal
 
 
 class Library(QWidget):
@@ -227,8 +227,26 @@ class Library(QWidget):
         self.selected_mods.clear()
         self.refresh_cards()
 
+    def _show_mod_limit_reached(self, adapter):
+        amount = adapter.allowed_mod_amount
+        unit = "mod" if amount == 1 else "mods"
+
+        show_info_modal("Mod limit reached", f"{adapter.display_name} allows only {amount} {unit} to be selected.")
+
     def _toggle_mod(self, mod_name: str, enabled: bool):
         if enabled:
+            adapter = self.adapters.get(self.selected_game_id) if self.selected_game_id else None
+
+            if (
+                adapter
+                and adapter.allowed_mod_amount is not None
+                and len(self.selected_mods) >= adapter.allowed_mod_amount
+            ):
+                self._show_mod_limit_reached(adapter)
+                self.refresh_cards()
+
+                return
+
             self.selected_mods.add(mod_name)
 
         else:
@@ -277,6 +295,10 @@ class Library(QWidget):
 
             except Exception as e:
                 show_error_modal(str(e))
+                return
+
+            if adapter.allowed_mod_amount is not None and len(self.selected_mods) > adapter.allowed_mod_amount:
+                self._show_mod_limit_reached(adapter)
                 return
 
             all_mods = self.manager.get_mods(self.selected_game_id)

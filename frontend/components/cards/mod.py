@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 from pathlib import Path
 
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QPushButton

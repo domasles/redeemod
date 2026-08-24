@@ -1,7 +1,6 @@
 import subprocess
 import shutil
 
-from typing import List, Dict
 from pathlib import Path
 
 from backend.utils.filesystem import get_base_directory, get_relative_path
@@ -26,7 +25,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
     def file_extensions(self) -> set[str]:
         return self.all_extensions
 
-    def __init__(self, custom_paths: Dict[str, str] | None = None):
+    def __init__(self, custom_paths: dict[str, str] | None = None):
         super().__init__(custom_paths)
 
         self.content_extensions = {"u", "ut2", "utx", "usx", "ukx", "uax", "upl"}
@@ -34,7 +33,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
         self.cache_extensions = {"ucl"}
         self.all_extensions = self.content_extensions | self.music_extensions | self.cache_extensions
 
-    def launch(self, selected_mod_paths: List[Path]) -> None:
+    def launch(self, selected_mod_paths: list[Path]):
         if not self.executable_path or not self.executable_path.exists():
             raise FileNotFoundError(f"{self.display_name} installation not found.")
 
@@ -48,7 +47,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
 
         subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
 
-    def _cleanup_generated_files(self) -> None:
+    def _cleanup_generated_files(self):
         candidate_config_paths = self.all_configured_data.get("config_paths", [])
         cleaned_dirs = set()
 
@@ -64,7 +63,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
                 if target_app_dir.exists():
                     shutil.rmtree(target_app_dir)
 
-    def _write_mod_files(self, mod_paths: List[Path]) -> None:
+    def _write_mod_files(self, mod_paths: list[Path]):
         exe_base = get_base_directory(self.executable_path)
         install_dir = exe_base.parent
         app_mod_dir = install_dir / APP_NAME
@@ -84,7 +83,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
         (app_sys_dir / "Default.ini").write_text(default_ini_content, "utf-8")
         (app_sys_dir / "DefUser.ini").write_text("\r\n", "utf-8")
 
-    def _generate_default_ini(self, mod_paths: List[Path], exe_base: Path) -> str:
+    def _generate_default_ini(self, mod_paths: list[Path], exe_base: Path) -> str:
         cache_entries: set[str] = set()
         music_entries: set[str] = set()
         path_entries: set[str] = set()

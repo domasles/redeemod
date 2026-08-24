@@ -1,14 +1,16 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from typing import Any
 
 
 @dataclass
 class PlatformPaths:
-    linux: List[str] = field(default_factory=list)
-    windows: List[str] = field(default_factory=list)
+    linux: list[str] = field(default_factory=list)
+    windows: list[str] = field(default_factory=list)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "PlatformPaths":
+    def from_dict(cls, data: dict[str, Any]) -> PlatformPaths:
         return cls(
             linux=data.get("linux", []),
             windows=data.get("windows", [])
@@ -17,10 +19,10 @@ class PlatformPaths:
 
 @dataclass
 class GameConfig:
-    paths: Dict[str, PlatformPaths] = field(default_factory=dict)
+    paths: dict[str, PlatformPaths] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "GameConfig":
+    def from_dict(cls, data: dict[str, Any]) -> GameConfig:
         paths = {
             key: PlatformPaths.from_dict(val)
             for key, val in data.items()
@@ -32,9 +34,8 @@ class GameConfig:
 
 @dataclass
 class Config:
-    games: Dict[str, GameConfig]
+    games: dict[str, GameConfig]
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Config":
-        games_data = data if isinstance(data, dict) else {}
-        return cls(games={game_id: GameConfig.from_dict(cfg) for game_id, cfg in games_data.items()})
+    def from_dict(cls, data: dict[str, Any]) -> Config:
+        return cls(games={game_id: GameConfig.from_dict(cfg) for game_id, cfg in data.items() if isinstance(cfg, dict)})

@@ -1,6 +1,5 @@
 import subprocess
 
-from typing import List, Dict
 from pathlib import Path
 
 from backend.games.base import BaseGameAdapter
@@ -16,8 +15,8 @@ class TemplateAdapter(BaseGameAdapter):
     def display_name(self) -> str:
         return "Game Adapter Template"
 
-    def __init__(self, custom_paths: Dict[str, str] | None = None):
+    def __init__(self, custom_paths: dict[str, str] | None = None):
         super().__init__(custom_paths)
 
-    def launch(self, selected_mod_paths: List[Path]) -> None:
+    def launch(self, selected_mod_paths: list[Path]):
         print(f"Launching {self.display_name}!")

@@ -64,6 +64,8 @@ Override the following properties on your adapter class:
 - `display_name` (**required**) - the user-friendly name shown on game cards in the UI
 - `logo` (**optional**) - path to your game's logo image, displayed on its card in the UI
 - `file_extensions` (**optional**) - set of extensions RedeeMOD treats as mod files when scanning mod directories. Without it, every file in a selected directory will be added as a mod file. Useful when you want to restrict which files can be treated as mod files and which not
+- `allowed_mod_amount` (**optional**) - caps how many mods may be selected simultaneously when launching. When unset, selection is unlimited
+- `setup_message` (**optional**) - returning a non-empty string opts your game into a first-run setup flow: right after your game is added, users are shown this text, and upon confirming, your optional `setup()` override runs. Closing the prompt instead rolls back the addition. Implement `setup()` only alongside this message
 
 Alongside these, you inherit several helpers:
 
@@ -73,6 +75,12 @@ Alongside these, you inherit several helpers:
 - `self.get_missing_paths()` - names of paths within `config.json` that couldn't be resolved on a machine (the interface uses this to warn users before launching)
 
 You are not **required** to use any of these, but they can speed up development significantly!
+
+#### Game Setup
+
+If your game requires some form of setup before being added to RedeeMOD, instead of prompting users, any game can be set up automatically!
+
+By implementing the `setup_message` property and `setup` method you can control what happens when a user adds the game.
 
 #### Launching the Game
 

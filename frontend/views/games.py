@@ -18,7 +18,7 @@ from frontend.components.cards import GameCard, ActionCard
 from frontend.components.modal_dialog import ModalDialog
 from frontend.components.card import Card
 
-from frontend.components.modals.error import show_error_modal
+from frontend.components.modals.message import show_error_modal, show_setup_modal
 
 
 class Games(QWidget):
@@ -179,8 +179,7 @@ class Games(QWidget):
                     self._open_check_paths_modal(game_id, missing)
 
                 else:
-                    self.manager.add_game(game_id)
-                    self.refresh_games()
+                    self._finish_add(game_id)
 
         body = AddGameModalBody(handle_add)
         modal = ModalDialog("Select game", body)
@@ -195,17 +194,42 @@ class Games(QWidget):
                 if adapter_cls:
                     self.adapters[game_id] = adapter_cls(custom_paths=paths)
 
-                self.manager.add_game(game_id)
-
             except Exception as e:
                 show_error_modal(str(e))
                 return
 
             modal.accept()
-            self.refresh_games()
+            self._finish_add(game_id)
 
         body = CheckPathsModalBody(game_id, missing_path_keys)
         body.paths_confirmed.connect(handle_paths_confirmed)
 
         modal = ModalDialog(f"Configure Paths", body)
         modal.exec()
+
+    def _finish_add(self, game_id: str):
+        self.manager.add_game(game_id)
+        self.refresh_games()
+        self._open_setup_modal(game_id)
+
+    def _open_setup_modal(self, game_id: str):
+        adapter = self.adapters.get(game_id)
+
+        if not adapter or not adapter.setup_message:
+            return
+
+        def run_setup():
+            try:
+                adapter.setup()
+
+            except Exception as e:
+                self.manager.remove_game(game_id)
+                self.refresh_games()
+
+                show_error_modal(str(e))
+
+        confirmed = show_setup_modal(f"Set up {adapter.display_name}", adapter.setup_message, run_setup)
+
+        if not confirmed:
+            self.manager.remove_game(game_id)
+            self.refresh_games()

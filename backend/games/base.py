@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any
 from pathlib import Path
 
 from backend.utils.filesystem import expand_path, get_project_directory
@@ -9,7 +8,7 @@ from backend.discovery import discover_all_paths, load_config
 class BaseGameAdapter(ABC):
     """Abstract base class for all game adapters."""
 
-    def __init__(self, custom_paths: Dict[str, Any] | None = None):
+    def __init__(self, custom_paths: dict[str, str] | None = None):
         self.init_paths(custom_paths)
 
     @property
@@ -35,6 +34,16 @@ class BaseGameAdapter(ABC):
         pass
 
     @property
+    def allowed_mod_amount(self) -> int | None:
+        """Maximum number of mods selectable simultaneously, or None for unlimited."""
+        return None
+
+    @property
+    def setup_message(self) -> str | None:
+        """User-friendly description of what setup() does. Returning None skips the setup flow."""
+        return None
+
+    @property
     def required_path_keys(self) -> list[str]:
         """Required path keys parsed from config.json."""
 
@@ -55,12 +64,16 @@ class BaseGameAdapter(ABC):
         """Path to the game adapter assets directory."""
         return get_project_directory() / "backend" / "games" / self.game_id / "assets"
 
+    def setup(self):
+        """Optional initialization executed after adding the game, once the user confirms."""
+        pass
+
     @abstractmethod
-    def launch(self, selected_mod_paths: List[Path]) -> None:
+    def launch(self, selected_mod_paths: list[Path]):
         """Prepares configuration/INI files and launches the executable."""
         pass
 
-    def init_paths(self, custom_paths: Dict[str, Any] | None = None) -> None:
+    def init_paths(self, custom_paths: dict[str, str] | None = None):
         config_file = get_project_directory() / "backend" / "config" / "config.json"
         self.config = load_config(config_file)
 
@@ -107,7 +120,7 @@ class BaseGameAdapter(ABC):
 
         return missing
 
-    def scan_mod_directory(self, target_dir: Path) -> List[tuple[Path, str]]:
+    def scan_mod_directory(self, target_dir: Path) -> list[tuple[Path, str]]:
         target_dir = expand_path(target_dir)
         mod_files = []
 

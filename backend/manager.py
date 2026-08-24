@@ -22,13 +22,13 @@ class Manager(QObject):
 
         self.load()
 
-    def add_game(self, game_id: str) -> None:
+    def add_game(self, game_id: str):
         if game_id not in self.data["games"]:
             self.data["games"].append(game_id)
             self.save()
             self.games_changed.emit()
 
-    def remove_game(self, game_id: str) -> None:
+    def remove_game(self, game_id: str):
         if game_id in self.data["games"]:
             self.data["games"].remove(game_id)
             self.data["mods"].pop(game_id, None)
@@ -49,12 +49,12 @@ class Manager(QObject):
 
         return mod_name
 
-    def remove_mod(self, game_id: str, mod_name: str) -> None:
+    def remove_mod(self, game_id: str, mod_name: str):
         if game_id in self.data["mods"] and mod_name in self.data["mods"][game_id]:
             del self.data["mods"][game_id][mod_name]
             self.save()
 
-    def save_custom_paths(self, game_id: str, paths: dict[str, str]) -> None:
+    def save_custom_paths(self, game_id: str, paths: dict[str, str]):
         if "paths" not in self.data:
             self.data["paths"] = {}
 
@@ -70,11 +70,11 @@ class Manager(QObject):
     def get_custom_paths(self, game_id: str) -> dict[str, str]:
         return self.data.get("paths", {}).get(game_id, {})
 
-    def save(self) -> None:
+    def save(self):
         with open(self.storage_file, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=4)
 
-    def load(self) -> None:
+    def load(self):
         if self.storage_file.exists():
             try:
                 with open(self.storage_file, "r", encoding="utf-8") as f:

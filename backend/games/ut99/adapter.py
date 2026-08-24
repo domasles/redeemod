@@ -1,6 +1,5 @@
 import subprocess
 
-from typing import List, Dict
 from pathlib import Path
 
 from backend.utils.filesystem import get_base_directory, get_relative_path
@@ -26,14 +25,14 @@ class UT99GameAdapter(BaseGameAdapter):
     def file_extensions(self) -> set[str]:
         return self.all_extensions
 
-    def __init__(self, custom_paths: Dict[str, str] | None = None):
+    def __init__(self, custom_paths: dict[str, str] | None = None):
         super().__init__(custom_paths)
 
         self.content_extensions = {"u", "unr", "utx", "uax", "umx"}
         self.locale_extensions = {"int", "det", "frt", "est", "itt", "rut"}
         self.all_extensions = self.content_extensions | self.locale_extensions
 
-    def launch(self, selected_mod_paths: List[Path]) -> None:
+    def launch(self, selected_mod_paths: list[Path]):
         if not self.executable_path or not self.executable_path.exists():
             raise FileNotFoundError(f"{self.display_name} installation not found.")
 
@@ -49,7 +48,7 @@ class UT99GameAdapter(BaseGameAdapter):
 
         subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
 
-    def _apply_mods_to_ini(self, mod_paths: List[Path]) -> Path:
+    def _apply_mods_to_ini(self, mod_paths: list[Path]) -> Path:
         exe_base = get_base_directory(self.executable_path)
 
         path_entries: set[str] = set()

@@ -5,7 +5,7 @@ from pathlib import Path
 from .base import BaseGameAdapter
 
 
-def _load_adapters() -> None:
+def _load_adapters():
     """Imports every game adapter and registers its subclasses."""
 
     package_dir = Path(__file__).resolve().parent

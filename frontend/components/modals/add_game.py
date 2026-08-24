@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 
 from frontend.components.dropdown import Dropdown
@@ -5,7 +7,7 @@ from backend.games import get_adapter_classes
 
 
 class AddGameModalBody(QWidget):
-    def __init__(self, on_add: callable):
+    def __init__(self, on_add: Callable[[str], None]):
         super().__init__()
 
         layout = QVBoxLayout(self)
