@@ -1,7 +1,7 @@
 {
     "executable_paths": {
         "linux": [
-            "~/.local/share/OldUnreal/UT2004/System/ut2004-bin"
+            "~/.local/share/OldUnreal/UT2004/System/UT2004"
         ],
 
         "windows": [

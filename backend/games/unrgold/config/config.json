@@ -1,0 +1,21 @@
+{
+    "executable_paths": {
+        "linux": [
+            "~/.local/share/OldUnreal/UnrealGold/System64/unreal-bin-amd64"
+        ],
+
+        "windows": [
+            "C:\\Unreal\\System\\Unreal.exe"
+        ]
+    },
+
+    "config_paths": {
+        "linux": [
+            "~/.local/share/OldUnreal/UnrealGold/System64/UnrealLinux.ini"
+        ],
+
+        "windows": [
+            "C:\\Unreal\\System\\Unreal.ini"
+        ]
+    }
+}
