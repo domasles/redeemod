@@ -30,12 +30,3 @@ class GameConfig:
         }  # fmt: skip
 
         return cls(paths=paths)
-
-
-@dataclass
-class Config:
-    games: dict[str, GameConfig]
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Config:
-        return cls(games={game_id: GameConfig.from_dict(cfg) for game_id, cfg in data.items() if isinstance(cfg, dict)})

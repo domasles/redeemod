@@ -1,0 +1,22 @@
+{
+    "executable_paths": {
+        "linux": [
+            "~/.local/share/OldUnreal/UT2004/System/ut2004-bin"
+        ],
+
+        "windows": [
+            "C:\\UnrealTournament2004\\System\\UT2004.exe"
+        ]
+    },
+
+    "config_paths": {
+        "linux": [
+            "~/.ut2004/System/UT2004.ini",
+            "~/.local/share/OldUnreal/UT2004/System/UT2004.ini"
+        ],
+
+        "windows": [
+            "C:\\UnrealTournament2004\\System\\UT2004.ini"
+        ]
+    }
+}

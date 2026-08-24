@@ -4,11 +4,11 @@ import sys
 from pathlib import Path
 
 from backend.utils.filesystem import expand_path
-from backend.models import Config, GameConfig
+from backend.models import GameConfig
 
 
-def load_config(path: str | Path) -> Config:
-    """Loads and parses the JSON configuration."""
+def load_game_config(path: str | Path) -> GameConfig:
+    """Loads and parses a per-game JSON configuration."""
 
     path = expand_path(path)
 
@@ -18,19 +18,7 @@ def load_config(path: str | Path) -> Config:
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    return Config.from_dict(data)
-
-
-def find_first_valid_path(paths: list[str]) -> Path | None:
-    """Returns the first path that exists on disk."""
-
-    for raw_path in paths:
-        resolved_path = expand_path(raw_path)
-
-        if resolved_path.exists():
-            return resolved_path.resolve()
-
-    return None
+    return GameConfig.from_dict(data)
 
 
 def _get_platform_key() -> str:
@@ -46,21 +34,19 @@ def _get_platform_key() -> str:
 
 
 def discover_all_paths(game_config: GameConfig, custom_paths: dict[str, str] | None = None) -> dict[str, list[Path]]:
-    """Discovers all configured paths for a game and merges custom paths."""
+    """Discovers all configured path candidates for a game and merges custom overrides."""
 
     discovered: dict[str, list[Path]] = {}
 
-    if not game_config or not hasattr(game_config, "paths"):
+    if not game_config:
         return discovered
 
     platform_key = _get_platform_key()
 
-    # Load pre-configured paths
     for path_key, platform_paths in game_config.paths.items():
         candidates = getattr(platform_paths, platform_key, [])
         discovered[path_key] = [expand_path(p) for p in candidates]
 
-    # Merge custom path overrides
     for custom_key, custom_val in (custom_paths or {}).items():
         if not custom_val:
             continue
@@ -75,7 +61,7 @@ def discover_all_paths(game_config: GameConfig, custom_paths: dict[str, str] | N
 
         if target_key in discovered:
             if expanded not in discovered[target_key]:
-                discovered[target_key].append(expanded)
+                discovered[target_key].insert(0, expanded)
 
         else:
             discovered[target_key] = [expanded]
@@ -84,11 +70,19 @@ def discover_all_paths(game_config: GameConfig, custom_paths: dict[str, str] | N
 
 
 def discover_installation(game_config: GameConfig, custom_paths: dict[str, str] | None = None) -> dict[str, Path | None]:  # fmt: skip
-    """Discovers game installation based on configured data."""
+    """Resolves every configured path group to a single usable path."""
 
-    all_data = discover_all_paths(game_config, custom_paths)
+    resolved: dict[str, Path | None] = {}
 
-    return {
-        path_key.removesuffix("_paths") + "_path": find_first_valid_path([str(p) for p in paths])
-        for path_key, paths in all_data.items()
-    }
+    for path_key, candidates in discover_all_paths(game_config, custom_paths).items():
+        singular_key = path_key.removesuffix("_paths") + "_path"
+        custom_val = (custom_paths or {}).get(singular_key)
+
+        if custom_val:
+            resolved[singular_key] = expand_path(custom_val)
+            continue
+
+        valid_path = next((p for p in candidates if p.exists()), None)
+        resolved[singular_key] = valid_path.resolve() if valid_path else candidates[0].resolve() if candidates else None
+
+    return resolved

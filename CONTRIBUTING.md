@@ -98,20 +98,18 @@ See `backend/games/ut99/adapter.py` and `backend/games/ut2k4/adapter.py` for com
 
 #### Configuration (config.json)
 
-All filesystem locations live in `backend/config/config.json`. Add a top-level object keyed by your `game_id`:
+All filesystem locations must live in `backend/games/<game_id>/config/config.json`, next to your adapter:
 
 ```json
 {
-    "<game_id>": {
-        "executable_paths": {
-            "linux": ["~/.local/share/MyGame/Binaries/mygame"],
-            "windows": ["C:\\MyGame\\Binaries\\mygame.exe"]
-        },
+    "executable_paths": {
+        "linux": ["~/.local/share/MyGame/Binaries/mygame"],
+        "windows": ["C:\\MyGame\\Binaries\\mygame.exe"]
+    },
 
-        "config_paths": {
-            "linux": ["~/.mygame/mygame.ini"],
-            "windows": ["C:\\MyGame\\MyGame.ini"]
-        }
+    "config_paths": {
+        "linux": ["~/.mygame/mygame.ini"],
+        "windows": ["C:\\MyGame\\MyGame.ini"]
     }
 }
 ```

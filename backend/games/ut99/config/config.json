@@ -1,0 +1,22 @@
+{
+    "executable_paths": {
+        "linux": [
+            "~/.local/share/OldUnreal/UnrealTournament/System64/ut-bin-amd64"
+        ],
+
+        "windows": [
+            "C:\\UnrealTournament\\System\\UnrealTournament.exe"
+        ]
+    },
+
+    "config_paths": {
+        "linux": [
+            "~/.utpg/System/UnrealTournament.ini",
+            "~/.local/share/OldUnreal/UnrealTournament/System64/UnrealTournament.ini"
+        ],
+
+        "windows": [
+            "C:\\UnrealTournament\\System\\UnrealTournament.ini"
+        ]
+    }
+}
