@@ -4,7 +4,7 @@ from pathlib import Path
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QPushButton
 from PySide6.QtCore import QObject, Qt
 
-from frontend.components.images.banner import BannerImageLabel
+from frontend.components.images.banner import BannerImage
 from frontend.components.elided_label import ElidedLabel
 from frontend.components.card import Card
 
@@ -35,7 +35,7 @@ class ModCard(Card):
         banner_layout = QVBoxLayout(banner)
         banner_layout.setContentsMargins(0, 0, 0, 0)
 
-        banner_lbl = BannerImageLabel(logo)
+        banner_lbl = BannerImage(logo)
         banner_lbl.setObjectName("BannerLabel")
         banner_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

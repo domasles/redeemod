@@ -13,11 +13,6 @@ def get_project_directory() -> Path:
     return Path(__file__).resolve().parent.parent.parent
 
 
-def get_base_directory(path: str | Path) -> Path:
-    """Gets the parent directory of a path."""
-    return Path(path).parent
-
-
 def expand_path(path: str | Path) -> Path:
     """Expands environment variables and user home."""
 

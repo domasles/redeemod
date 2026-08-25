@@ -2,8 +2,20 @@ import subprocess
 
 from pathlib import Path
 
-from backend.utils.filesystem import get_base_directory
+from backend.games.ioq3.checksum import calculate_archive_adler32
 from backend.games.base import BaseGameAdapter
+
+QUAKE_3_CHECKSUMS = {
+    3006842482,
+    3197754754,
+    3232371534,
+    1331829193,
+    2238193561,
+    1513501394,
+    3770946489,
+    2583176489,
+    1594644322,
+}
 
 
 class IOQ3GameAdapter(BaseGameAdapter):
@@ -20,7 +32,7 @@ class IOQ3GameAdapter(BaseGameAdapter):
         return self.adapter_assets_path / "logo.svg"
 
     @property
-    def allowed_mod_amount(self):
+    def allowed_mod_amount(self) -> int:
         return 1
 
     @property
@@ -31,22 +43,39 @@ class IOQ3GameAdapter(BaseGameAdapter):
         super().__init__(custom_paths)
         self.content_extensions = {"pk3"}
 
-    def launch(self, selected_mod_paths: list[Path]):
+    def _validate_mod_asset(self, item: Path, mod_path: Path, ext: str) -> None:
+        """Ensures correct directory for official Quake 3 Arena files."""
+
+        if mod_path.name == "baseq3" or ext.lower() not in self.content_extensions:
+            return
+
+        checksum = calculate_archive_adler32(item)
+
+        if checksum in QUAKE_3_CHECKSUMS:
+            raise ValueError(
+                "It seems like this mod contains Quake 3 Arena files.\n"
+                "Please rename the mod's folder to 'baseq3'.\n\n"
+                "This only applies to original Quake 3 Arena files."
+            )
+
+    def launch(self, selected_mod_paths: list[Path]) -> None:
         if not self.executable_path or not self.executable_path.exists():
             raise FileNotFoundError(f"{self.display_name} installation not found.")
 
         cmd = [str(self.executable_path)]
 
         if selected_mod_paths:
-            for item, _ext in self.scan_mod_directory(selected_mod_paths[0]):
-                if get_base_directory(item) != selected_mod_paths[0]:
-                    raise FileNotFoundError(f"All .pk3 files must be under the selected mod's root.")
+            mod_path = selected_mod_paths[0]
 
-            cmd.append("+set")
-            cmd.append("fs_steampath")
-            cmd.append(f"{get_base_directory(selected_mod_paths[0])}")
-            cmd.append("+set")
-            cmd.append("fs_game")
-            cmd.append(f"{selected_mod_paths[0].name}")
+            for item, ext in self.scan_mod_directory(mod_path):
+                if item.parent != mod_path:
+                    raise FileNotFoundError("All .pk3 files must be under the selected mod's root.")
 
-        subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
+                self._validate_mod_asset(item, mod_path, ext)
+
+            cmd.extend([
+                "+set", "fs_steampath", str(mod_path.parent),
+                "+set", "com_basegame", mod_path.name,
+            ])  # fmt: skip
+
+        subprocess.Popen(cmd, cwd=str(self.executable_path.parent))

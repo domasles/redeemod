@@ -26,8 +26,8 @@ class App(QMainWindow):
         super().__init__()
 
         self.setWindowTitle(APP_NAME)
-        self.resize(960, 600)
-        self.setMinimumSize(960, 600)
+        self.resize(1024, 640)
+        self.setMinimumSize(1024, 640)
 
         self.manager = Manager()
         self.adapters = {}

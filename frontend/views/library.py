@@ -31,6 +31,7 @@ class Library(QWidget):
         super().__init__(parent)
 
         self._last_width = 0
+        self._cards: list[QWidget] = []
 
         self.manager = manager
         self.adapters = adapters
@@ -113,7 +114,7 @@ class Library(QWidget):
 
         if current_width > 0 and abs(current_width - self._last_width) > 10:
             self._last_width = current_width
-            self.refresh_cards()
+            self._reposition_cards()
 
     def reset_state(self):
         self.selected_game_id = None
@@ -121,48 +122,32 @@ class Library(QWidget):
         self.refresh_cards()
 
     def refresh_cards(self):
+        self._clear_grid()
+        self._cards.clear()
+
         if self.scroll_area.viewport().width() <= 0:
             return
 
-        self.setUpdatesEnabled(False)
+        if self.selected_game_id is None:
+            self._build_game_cards()
+        else:
+            self._build_mod_cards()
 
-        try:
-            while self.grid_layout.count():
-                item = self.grid_layout.takeAt(0)
+        self._reposition_cards()
 
-                if item.widget():
-                    item.widget().deleteLater()
+    def _clear_grid(self):
+        while self.grid_layout.count():
+            item = self.grid_layout.takeAt(0)
 
-            cols = self._get_columns_count()
+            if item.widget():
+                item.widget().deleteLater()
 
-            for c in range(cols):
-                self.grid_layout.setColumnStretch(c, 0)
-
-            if self.selected_game_id is None:
-                idx = self._render_game_selection(cols)
-
-            else:
-                idx = self._render_mod_selection(cols)
-
-            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)  # fmt: skip
-            self.grid_layout.setColumnStretch(cols, 1)
-
-            if idx > 0:
-                bottom_row = ((idx - 1) // cols) + 1
-
-                self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)  # fmt: skip
-                self.grid_layout.setRowStretch(bottom_row, 1)
-
-        finally:
-            self.setUpdatesEnabled(True)
-
-    def _render_game_selection(self, cols: int) -> int:
+    def _build_game_cards(self):
         self.title_label.setText("Your mods")
         self.btn_back.setVisible(False)
         self.btn_launch.setVisible(False)
 
         added_games = self.manager.get_added_games()
-        idx = 0
 
         for game_id in added_games:
             adapter = self.adapters.get(game_id)
@@ -173,13 +158,9 @@ class Library(QWidget):
             card = GameCard(self.scroll_content, name, "Select to manage mods", logo=logo)
             card.clicked.connect(lambda g_id=game_id: self._select_game(g_id))
 
-            row, col = idx // cols, idx % cols
-            self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-            idx += 1
+            self._cards.append(card)
 
-        return idx
-
-    def _render_mod_selection(self, cols: int) -> int:
+    def _build_mod_cards(self):
         adapter = self.adapters.get(self.selected_game_id)
 
         name = adapter.display_name if adapter else self.selected_game_id.upper()
@@ -190,7 +171,6 @@ class Library(QWidget):
         self.btn_launch.setVisible(True)
 
         mods = self.manager.get_mods(self.selected_game_id)
-        idx = 0
 
         for mod_name, _ in mods.items():
             card = ModCard(
@@ -202,20 +182,44 @@ class Library(QWidget):
                 logo=logo,
             )
 
-            row, col = idx // cols, idx % cols
-            self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-            idx += 1
+            self._cards.append(card)
 
         add_card = ActionCard(self.scroll_content, "Add a mod", f"for {name}")
         add_card.clicked.connect(self._add_mod_dialog)
-
-        row, col = idx // cols, idx % cols
-        self.grid_layout.addWidget(add_card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        idx += 1
+        self._cards.append(add_card)
 
         self._update_launch_button_text()
 
-        return idx
+    def _reposition_cards(self):
+        if not self._cards or self.scroll_area.viewport().width() <= 0:
+            return
+
+        self.setUpdatesEnabled(False)
+
+        try:
+            while self.grid_layout.count():
+                self.grid_layout.takeAt(0)
+
+            cols = self._get_columns_count()
+
+            for c in range(cols):
+                self.grid_layout.setColumnStretch(c, 0)
+
+            for idx, card in enumerate(self._cards):
+                row, col = idx // cols, idx % cols
+                self.grid_layout.addWidget(card, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+            self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum), 0, cols)  # fmt: skip
+            self.grid_layout.setColumnStretch(cols, 1)
+
+            if self._cards:
+                bottom_row = ((len(self._cards) - 1) // cols) + 1
+
+                self.grid_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding), bottom_row, 0, 1, cols + 1)  # fmt: skip
+                self.grid_layout.setRowStretch(bottom_row, 1)
+
+        finally:
+            self.setUpdatesEnabled(True)
 
     def _select_game(self, game_id: str):
         self.selected_game_id = game_id

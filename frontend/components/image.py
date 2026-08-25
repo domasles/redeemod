@@ -14,6 +14,9 @@ class Image(QLabel):
         self.path = path
         self.image_size = size
 
+        self._pixmap = None
+        self._cached_path = None
+
         self.setFixedSize(self.image_size)
 
     def paintEvent(self, event):
@@ -25,10 +28,13 @@ class Image(QLabel):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
 
-        dpr = self.devicePixelRatio()
-        pixmap = QPixmap(self.path)
+        if self._pixmap is None or self._cached_path != self.path:
+            self._pixmap = QPixmap(self.path)
+            self._cached_path = self.path
 
-        scaled = pixmap.scaled(
+        dpr = self.devicePixelRatio()
+
+        scaled = self._pixmap.scaled(
             self.image_size * dpr,
             Qt.AspectRatioMode.KeepAspectRatioByExpanding,
             Qt.TransformationMode.SmoothTransformation,

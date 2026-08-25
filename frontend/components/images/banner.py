@@ -6,7 +6,7 @@ from PySide6.QtCore import QRectF, Qt
 from frontend.components.image import Image
 
 
-class BannerImageLabel(Image):
+class BannerImage(Image):
     """Image label that center-crops and clips an image."""
 
     def __init__(self, path: str | Path | None = None, corner_radius: float = 8.0, parent=None):
@@ -15,10 +15,15 @@ class BannerImageLabel(Image):
         self.path = path
         self._corner_radius = corner_radius
 
-    def paintEvent(self, event):
-        pixmap = QPixmap(str(self.path)) if self.path else QPixmap()
+        self._pixmap = None
+        self._cached_path = None
 
-        if not pixmap.isNull():
+    def paintEvent(self, event):
+        if self.path and self._pixmap is None or self._cached_path != self.path:
+            self._pixmap = QPixmap(str(self.path)) if self.path else QPixmap()
+            self._cached_path = self.path
+
+        if not self._pixmap.isNull():
             painter = QPainter(self)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
             painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
@@ -29,7 +34,7 @@ class BannerImageLabel(Image):
             if w > 0 and h > 0:
                 dpr = self.devicePixelRatio()
 
-                scaled = pixmap.scaled(
+                scaled = self._pixmap.scaled(
                     rect.size() * dpr,
                     Qt.AspectRatioMode.KeepAspectRatioByExpanding,
                     Qt.TransformationMode.SmoothTransformation,

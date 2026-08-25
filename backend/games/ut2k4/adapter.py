@@ -3,7 +3,7 @@ import shutil
 
 from pathlib import Path
 
-from backend.utils.filesystem import get_base_directory, get_relative_path
+from backend.utils.filesystem import get_relative_path
 from backend.games.base import BaseGameAdapter
 from backend.constants import *
 
@@ -45,7 +45,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
 
             cmd.append(f"-mod={APP_NAME}")
 
-        subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
+        subprocess.Popen(cmd, cwd=str(self.executable_path.parent))
 
     def _cleanup_generated_files(self):
         candidate_config_paths = self.all_configured_data.get("config_paths", [])
@@ -55,7 +55,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
             if not cfg_path:
                 continue
 
-            target_app_dir = get_base_directory(cfg_path).parent / APP_NAME
+            target_app_dir = cfg_path.parent.parent / APP_NAME
 
             if target_app_dir not in cleaned_dirs:
                 cleaned_dirs.add(target_app_dir)
@@ -64,7 +64,7 @@ class UT2K4GameAdapter(BaseGameAdapter):
                     shutil.rmtree(target_app_dir)
 
     def _write_mod_files(self, mod_paths: list[Path]):
-        exe_base = get_base_directory(self.executable_path)
+        exe_base = self.executable_path.parent
         install_dir = exe_base.parent
         app_mod_dir = install_dir / APP_NAME
         app_sys_dir = app_mod_dir / "System"

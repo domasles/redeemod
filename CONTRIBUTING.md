@@ -116,7 +116,7 @@ Rules of the format:
 The heart of every adapter is `launch(selected_mod_paths)`, receiving the list of selected mod directories. Game processes are spawned through `subprocess.Popen()`, so the game runs independently without freezing the launcher:
 
 ```python
-subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
+subprocess.Popen(cmd, cwd=str(self.executable_path.parent))
 ```
 
 What happens beforehand depends entirely on your game's modding mechanics. Both bundled adapters follow the same pattern - point the game at selected mods and pass them to game's executable as a command-line argument. However, if your game does not support dedicated modding capabilities, any other implementation is fine! No game is like the others, thus why extensible adapter system of RedeeMOD exists!

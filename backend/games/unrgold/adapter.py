@@ -2,8 +2,8 @@ import subprocess
 
 from pathlib import Path
 
-from backend.utils.filesystem import get_base_directory, get_relative_path
 from backend.games.unrgold.ini import prepend_to_ini_section
+from backend.utils.filesystem import get_relative_path
 from backend.games.base import BaseGameAdapter
 from backend.constants import *
 
@@ -40,16 +40,16 @@ class UnrGoldGameAdapter(BaseGameAdapter):
 
         if selected_mod_paths and self.config_path and self.config_path.exists():
             mod_ini_path = get_relative_path(
-                get_base_directory(self.executable_path),
+                self.executable_path.parent,
                 self._apply_mods_to_ini(selected_mod_paths),
             )
 
             cmd.append(f"INI={mod_ini_path}")
 
-        subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
+        subprocess.Popen(cmd, cwd=str(self.executable_path.parent))
 
     def _apply_mods_to_ini(self, mod_paths: list[Path]) -> Path:
-        exe_base = get_base_directory(self.executable_path)
+        exe_base = self.executable_path.parent
 
         path_entries: set[str] = set()
         lang_entries: set[str] = set()
@@ -70,7 +70,7 @@ class UnrGoldGameAdapter(BaseGameAdapter):
 
         new_content = "\n".join(sorted(path_entries | lang_entries)) + "\n"
 
-        mod_ini_path = get_base_directory(self.config_path) / f"{APP_NAME}.ini"
+        mod_ini_path = self.config_path.parent / f"{APP_NAME}.ini"
         mod_ini_path.parent.mkdir(parents=True, exist_ok=True)
 
         if new_content.strip():
