@@ -54,7 +54,7 @@ Adapters are discovered automatically: every directory under `backend/games` con
 
 Everything revolves around `BaseGameAdapter` (`backend/games/base.py`) - a small abstract class that handles configuration loading, path resolution and mod scanning for you. Your adapter only describes your game and how to launch it.
 
-> NOTE: Name your directory exactly as your `game_id`. Configuration lookups and asset resolution rely on the ID, so keeping them identical avoids confusion
+> NOTE: Name your directory exactly as your `game_id`. Configuration lookups and asset resolution rely on the ID, so keeping them identical is necessary
 
 #### Properties
 
@@ -73,32 +73,19 @@ Alongside these, you inherit several helpers:
 - `self.scan_mod_directory(target_dir)` - recursively collects files matching `file_extensions`, returning `(file_path, lowercase_extension)` tuples
 - `self.all_configured_data` - every path group defined for your game in `config.json`, resolved for the current platform (as of now, only **Linux** and **Windows** are supported)
 - `self.get_missing_paths()` - names of paths within `config.json` that couldn't be resolved on a machine (the interface uses this to warn users before launching)
+- And more useful methods from across the backend!
 
 You are not **required** to use any of these, but they can speed up development significantly!
 
 #### Game Setup
 
-If your game requires some form of setup before being added to RedeeMOD, instead of prompting users, any game can be set up automatically!
+If your game requires some form of setup before being added to RedeeMOD, instead of prompting users for manual work, any game can be set up automatically!
 
-By implementing the `setup_message` property and `setup` method you can control what happens when a user adds the game.
-
-#### Launching the Game
-
-The heart of every adapter is `launch(selected_mod_paths)`, receiving the list of selected mod directories. Game processes are spawned through `subprocess.Popen()`, so the game runs independently without freezing the launcher:
-
-```python
-subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
-```
-
-What happens beforehand depends entirely on your game's modding mechanics. Both bundled adapters follow the same pattern - point the game at selected mods and pass them to game's executable as a command-line argument. However, if your game does not support dedicated modding capabilities, any other implementation is fine! No game is like the others, thus why extensible adapter system of RedeeMOD exists!
-
-See `backend/games/ut99/adapter.py` and `backend/games/ut2k4/adapter.py` for complete working examples!
-
-> NOTE: Validate that your executable exists and fail early if it doesn't (`raise FileNotFoundError(...)`), exactly like the bundled adapters do
+By implementing the `setup_message` property and `setup` method you can control what happens the exact moment a user adds the game.
 
 #### Configuration (config.json)
 
-All filesystem locations must live in `backend/games/<game_id>/config/config.json`, next to your adapter:
+All required filesystem locations must live in `backend/games/<game_id>/config/config.json`:
 
 ```json
 {
@@ -114,13 +101,29 @@ All filesystem locations must live in `backend/games/<game_id>/config/config.jso
 }
 ```
 
+> NOTE: Leaving any `*_paths` object empty will make it required for user to input without automatic discovery. This is useful if your game does NOT have a standard install path (as seen in `backend/games/ioq3/`)
+
 Rules of the format:
 
 - Any key ending in `_paths` defines a path group, holding a `linux` and/or `windows` list of candidate locations - the first one that exists on disk wins
 - Each group becomes a singular attribute on your adapter automatically: `executable_paths` gives you `self.executable_path`, `config_paths` gives you `self.config_path`, and so on
-- Paths support `~` and environment variables, expanded transparently
-- Users may override any group through the interface; their custom paths are merged in and take priority over pre-configured candidates
+- Paths support `~` and environment variables, they are later expanded
+- Users may override any group through the interface and their custom paths are merged in. Custom paths take priority over pre-configured ones
 - Only define groups your adapter actually references - don't configure things you'll never read
+
+#### Launching the Game
+
+The heart of every adapter is `launch(selected_mod_paths)`, receiving the list of selected mod directories. Game processes are spawned through `subprocess.Popen()`, so the game runs independently without freezing the launcher:
+
+```python
+subprocess.Popen(cmd, cwd=str(get_base_directory(self.executable_path)))
+```
+
+What happens beforehand depends entirely on your game's modding mechanics. Both bundled adapters follow the same pattern - point the game at selected mods and pass them to game's executable as a command-line argument. However, if your game does not support dedicated modding capabilities, any other implementation is fine! No game is like the others, thus why extensible adapter system of RedeeMOD exists!
+
+See existing `backend/games/<game_id>/adapter.py` files for complete working examples!
+
+> NOTE: Validate that your executable exists and fail early if it doesn't (`raise FileNotFoundError(...)`), exactly like the bundled adapters do
 
 #### Adding a Logo
 
@@ -130,7 +133,7 @@ Create an `assets` directory next to your `adapter.py` and drop your logo in:
 backend/games/<game_id>/assets/logo.svg
 ```
 
-> NOTE: Many image formats are supported, not only `.svg`
+> NOTE: Many image formats are supported, but using `.svg` is recommended
 
 Then override the property:
 
@@ -149,8 +152,6 @@ The interface is built with **PySide6** (Qt 6) and kept deliberately thin - it r
 - `frontend/components/` - reusable widgets: card variants (`cards/`), modal dialogs (`modals/`), banners, dropdowns, labels, etc.
 - `frontend/styles/style.qss` - all styling lives here, written as Qt Style Sheets
 - `backend/manager.py` - the bridge between both halves. A `QObject` exposing signals (e.g. `games_changed`) and persisting user choices into `user_settings.json` in the application data directory
-
-Adapters reach the interface exclusively through `backend.games.get_adapter_classes()`, so anything you add on the backend side shows up in the UI without frontend changes.
 
 > NOTE: If you ever find yourself importing a specific game adapter inside `frontend/`, stop and keep the layers separate!
 

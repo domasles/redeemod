@@ -28,8 +28,9 @@ As of today, RedeeMOD supports **Unreal Tournament 99** and **Unreal Tournament 
 
 ## Supported Games
 
-- **Unreal Tournament 99** - Mod loading through INI patching
+- **Unreal Tournament 99** and **Unreal Gold** - Mod loading through INI patching
 - **Unreal Tournament 2004** - Mod "stitching" and loading using methods native to this game
+- **IOQuake 3** (modern fork of Quake 3 engine) - Mod loading throuugh native `cvar`s (only supports a single mod loaded at once)
 
 ## Requirements to Run
 

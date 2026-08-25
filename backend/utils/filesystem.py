@@ -25,18 +25,6 @@ def expand_path(path: str | Path) -> Path:
     return Path(expanded).expanduser()
 
 
-def traverse_directory_by_extension(base_path: str | Path, extension: str) -> list[Path]:
-    """Traverses a directory and return files with matching extension."""
-
-    path_obj = Path(base_path)
-
-    if not path_obj.exists():
-        raise ValueError(f"Base path does not exist: {base_path}")
-
-    ext = extension.lstrip(".")
-    return [f for f in path_obj.rglob(f"*.{ext}") if f.is_file()]
-
-
 def get_relative_path(base_path: str | Path, target_path: str | Path) -> Path:
     """Gets relative path from base_path to target_path."""
     return Path(target_path).relative_to(Path(base_path), walk_up=True)
