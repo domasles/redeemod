@@ -1,7 +1,5 @@
 ![RedeeMODLogo](./RedeeMODLogo.svg)
 
-<br>
-
 # RedeeMOD Contributing Guide
 
 [![Python code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
@@ -13,9 +11,9 @@ Welcome! If you wish to add any new game adapter, improve the interface or anyho
 
 ## Setup
 
-As almost any other project, RedeeMOD has dependencies and follows strict development rules:
-1. It's **Python-exclusive** (to be easily distributable across platforms)
-2. Everything must be modularized (to be easily maintainable)
+RedeeMOD has dependencies and follows strict development rules:
+1. It's **Python-exclusive**
+2. Everything must be modularized
 3. Do NOT modify anything that's unnecessary for the planned improvement
 4. As this is both a fully-built application and a framework, coding style and file architecture must remain intact
 
@@ -124,6 +122,8 @@ What happens beforehand depends entirely on your game's modding mechanics. Both 
 See existing `backend/games/<game_id>/adapter.py` files for complete working examples!
 
 > NOTE: Validate that your executable exists and fail early if it doesn't (`raise FileNotFoundError(...)`), exactly like the bundled adapters do
+
+> NOTE: Raising any other error on launch will notify users on frontend. This is useful if you want to validate game asset presence or handle edge cases
 
 #### Adding a Logo
 

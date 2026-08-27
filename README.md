@@ -1,7 +1,5 @@
 ![RedeeMODLogo](./RedeeMODLogo.svg)
 
-<br>
-
 # RedeeMOD
 
 [![Python code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
@@ -9,45 +7,38 @@
 [![License](https://img.shields.io/github/license/domasles/redeemod?color=red&style=flat-square)](https://github.com/domasles/redeemod/blob/main/LICENSE)
 [![Build status](https://img.shields.io/github/actions/workflow/status/domasles/redeemod/build-app.yml?color=blue&style=flat-square)](https://github.com/domasles/redeemod/actions)
 
-A custom and easily extensible game launcher with modding capabilities.
-
-## What is It?
-
-RedeeMOD is a custom mod launcher that keeps your mods organized, per game. Not only does it find your game installations, but also launches with mods applied automatically.
-
-As of today, RedeeMOD supports **Unreal Tournament 99** and **Unreal Tournament 2004**, with a modular adapter system that makes adding more games painless.
+A custom mod launcher for games.
 
 ## Features
 
-- **Automatic Game Discovery** - Finds your UT installations on Linux and Windows without any manual setup
-- **Mod Management** - Add, track, and remove mods per game. Everything continues where you left off
-- **Custom Path Overrides** - Games installed somewhere unexpected? Point them to the right place!
-- **Modular Adapter System** - Each game gets its own adapter, so everything stays clean, isolated, and enables every game to use its native modding capabilities
-- **Cross-Platform** - Runs natively on Linux and Windows
-- **Standalone Builds** - Single-file executables built with PyInstaller, along with automated CI via GitHub Actions
+1. **Automatic** discovery of game installations
+2. **Easy** mod management
+3. **Modular** architecture for future game adaptations
+4. **Cross-platform** support
 
 ## Supported Games
 
-- **Unreal Tournament 99** and **Unreal Gold** - Mod loading through INI patching
-- **Unreal Tournament 2004** - Mod "stitching" and loading using methods native to this game
-- **IOQuake 3** (modern fork of Quake 3 engine) - Mod loading throuugh native `cvar`s (only supports a single mod loaded at once)
+- **Unreal Tournament 99** and **Unreal Gold**
+- **Unreal Tournament 2004**
+- **IOQuake 3** (modern fork of Quake 3 engine)
 
 ## Requirements to Run
 
-These only apply if you want to run RedeeMOD from downloaded source. If not, look [here](https://github.com/domasles/redeemod/releases)!
+These only apply if you want to run RedeeMOD from downloaded source. If not, see [releases](https://github.com/domasles/redeemod/releases).
 
 - **Python 3.12** or higher
-- **PySide6** - The Qt framework powering the interface
+- **PySide6** (Qt6 framework)
 
 ## Requirements for a Build
 
-- **Python 3.12+**
-- **PyInstaller** - To compile everything into a single binary
-- **act** - To run the local GitHub actions runner (optional)
+- **PyInstaller** (Python app packager)
+- **act** (Local GitHub actions runner (optional))
 
 ## Build Instructions
 
-RedeeMOD supports **2 methods** for building after cloning:
+RedeeMOD supports **2 methods** of building.
+
+To build, clone the repo:
 ```bash
 git clone https://github.com/domasles/redeemod.git
 cd redeemod
@@ -80,8 +71,6 @@ python -m venv venv
 pip install -e .
 redeemod
 ```
-
-> NOTE: Omit -e flag if you are not planning to edit the source files
 
 3. **OR build a standalone binary**:
 
@@ -119,7 +108,7 @@ python -m PyInstaller `
 
 ### Method 2 (act)
 
-**act** lets you run a local isolated environment for building that leaves nothing behind:
+**act** allows running an isolated build environment:
 ```bash
 act workflow_dispatch
 ```
@@ -128,32 +117,23 @@ act workflow_dispatch
 
 ## Known Issues
 
-This project isn't without its flaws, and they could get pretty irritating:
-
-1. **On Windows, Smart App Control blocks RedeeMOD from launching**<br>
-    Unfortunately, there is no way around that. As long as this project doesn't receive its certificate for signing Windows apps, Windows will block the executable, even when it doesn't have any malicious code. Your options are either:
-    1. Disable **Smart App Control** (and re-enable it after, if you feel like needing it)
-    2. Download source and build yourself
-    3. Install it as a pip module and launch from terminal/make a shortcut
-
-    Linux installations are not affected by this and should work perfectly fine.
-
 1. **Some mods not working**<br>
     If you're on **Linux**, this might be due to the Linux nature of case sensitivity and the mod files must be either:
     1. Renamed (a common fix)
     2. Patched/modified (especially some .int and .ini files)
 
-    If it happens across both platforms on some older Unreal Tournament '99 mods, the mod itself might be broken. During testing, a small amount of mods needed modifications to get running, thus it's not RedeeMOD's responsibility.
+    If it happens across both platforms on some older Unreal Tournament '99 mods, the mod itself might be broken.
 
 2. **Unreal Tournament 2004 mods load, but don't fully work in-game**<br>
     Mods with heavy hardcoding or GUI customizations might not work. Luckily, this game has an internal way of triggering standalone mods by visiting `Community` tab in the main menu.
 
-    Some mods might also be conflicting, as Unreal Tournament 2004 was designed to support at most 1 mod loaded at a time, however such cases didn't appear while testing.
+    Some mods might also be conflicting, as Unreal Tournament 2004 was designed to support at most 1 mod loaded.
+
+3. **IOQuake 3 non-standalone mods not working**<br>
+    Due to no 100% accurate way of detecting if a mod requires Quake 3 Arena files, some mods might not work. Such mods include a `default.cfg` file which conflicts with detection.
+
+    If you found such a mod, open an issue on GitHub. This might get fixed in future releases.
 
 ## Support
 
-Found a bug, have an idea or want to add a game adapter? Open an issue or pull request on GitHub.
-
----
-
-Built with love for the gaming community. _Open source, as intended._
+If you found a bug, have an idea or want to add a new game, open an issue or pull request on GitHub!
