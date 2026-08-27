@@ -173,6 +173,11 @@ class Library(QWidget):
 
         mods = self.manager.get_mods(self.selected_game_id)
 
+        add_card = ActionCard(self.scroll_content, "Add a mod", f"for {name}")
+        add_card.clicked.connect(self._add_mod_dialog)
+
+        self._cards.append(add_card)
+
         for mod_name, _ in mods.items():
             card = ModCard(
                 self.scroll_content,
@@ -184,10 +189,6 @@ class Library(QWidget):
             )
 
             self._cards.append(card)
-
-        add_card = ActionCard(self.scroll_content, "Add a mod", f"for {name}")
-        add_card.clicked.connect(self._add_mod_dialog)
-        self._cards.append(add_card)
 
         self._update_launch_button_text()
 

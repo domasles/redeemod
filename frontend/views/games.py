@@ -107,6 +107,16 @@ class Games(QWidget):
     def _build_game_cards(self):
         added_games = self.manager.get_added_games()
 
+        add_card = ActionCard(
+            self.scroll_content,
+            "Add a game",
+            "Before adding, launch it once",
+            "to set up necessary files!",
+        )
+
+        add_card.clicked.connect(self._open_add_game_modal)
+        self._cards.append(add_card)
+
         for game_id in added_games:
             adapter = self.adapters.get(game_id)
 
@@ -122,16 +132,6 @@ class Games(QWidget):
             )
 
             self._cards.append(card)
-
-        add_card = ActionCard(
-            self.scroll_content,
-            "Add a game",
-            "Before adding, launch it once",
-            "to set up necessary files!",
-        )
-
-        add_card.clicked.connect(self._open_add_game_modal)
-        self._cards.append(add_card)
 
     def _reposition_cards(self):
         if not self._cards or self.scroll_area.viewport().width() <= 0:
