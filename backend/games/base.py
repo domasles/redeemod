@@ -90,6 +90,11 @@ class BaseGameAdapter(ABC):
         return missing
 
     def scan_mod_directory(self, target_dir: Path) -> list[tuple[Path, str]]:
+        """
+        Returns pairs of (file_path, extension) of the scanned mod directory.
+        Discards any file with an extension within self.file_extensions.
+        """
+
         target_dir = expand_path(target_dir)
         mod_files = []
 

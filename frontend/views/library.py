@@ -130,6 +130,7 @@ class Library(QWidget):
 
         if self.selected_game_id is None:
             self._build_game_cards()
+
         else:
             self._build_mod_cards()
 
@@ -246,8 +247,8 @@ class Library(QWidget):
                 and adapter.allowed_mod_amount is not None
                 and len(self.selected_mods) >= adapter.allowed_mod_amount
             ):
-                self._show_mod_limit_reached(adapter)
                 self.refresh_cards()
+                self._show_mod_limit_reached(adapter)
 
                 return
 
@@ -255,6 +256,20 @@ class Library(QWidget):
 
         else:
             self.selected_mods.discard(mod_name)
+
+        all_mods = self.manager.get_mods(self.selected_game_id)
+
+        if not Path(all_mods[mod_name]).exists():
+            message = (
+                f"The mod '{mod_name}' does not exist on disk.\n"
+                "Remove it from your library or restore its folder."
+            )  # fmt: skip
+
+            self.selected_mods.discard(mod_name)
+            self.refresh_cards()
+            show_error_modal(message)
+
+            return
 
         self._update_launch_button_text()
 
@@ -301,14 +316,8 @@ class Library(QWidget):
                 show_error_modal(str(e))
                 return
 
-            if adapter.allowed_mod_amount is not None and len(self.selected_mods) > adapter.allowed_mod_amount:
-                self._show_mod_limit_reached(adapter)
-                return
-
             all_mods = self.manager.get_mods(self.selected_game_id)
-
             selected_paths = []
-            missing_mods = []
 
             for name in sorted(self.selected_mods):
                 if name not in all_mods:
@@ -318,21 +327,6 @@ class Library(QWidget):
 
                 if path.exists():
                     selected_paths.append(path)
-
-                else:
-                    missing_mods.append(name)
-
-            if missing_mods:
-                listing = "\n".join(f"- {name}" for name in missing_mods)
-
-                message = (
-                    "The following mods are missing from disk:\n\n"
-                    f"{listing}\n\n"
-                    "Remove them from your library or restore their folders."
-                )
-
-                show_error_modal(message)
-                return
 
             try:
                 adapter.launch(selected_paths)
