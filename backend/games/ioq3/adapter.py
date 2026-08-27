@@ -1,6 +1,7 @@
 import subprocess
 import zipfile
 
+from dataclasses import dataclass
 from pathlib import Path
 
 from backend.games.ioq3.checksum import calculate_archive_adler32
@@ -24,6 +25,12 @@ TEAM_ARENA_CHECKSUMS = {
     609103545,
     356785886,
 }
+
+
+@dataclass
+class ModProfile:
+    is_missionpack: bool = False
+    is_standalone: bool = False
 
 
 class IOQ3GameAdapter(BaseGameAdapter):
@@ -51,67 +58,100 @@ class IOQ3GameAdapter(BaseGameAdapter):
         super().__init__(custom_paths)
         self.content_extensions = {"pk3"}
 
-    def _validate_mod_asset(self, item: Path, mod_path: Path) -> bool:
-        checksum = calculate_archive_adler32(item)
-
-        if checksum in QUAKE_3_CHECKSUMS:
-            raise ValueError(
-                "It seems like this mod contains Quake 3 Arena files.\n"
-                "Place the 'baseq3' folder alongside the IOQuake 3 executable.\n\n"
-                "This only applies to original Quake 3 Arena files."
-            )
-
-        if checksum in TEAM_ARENA_CHECKSUMS:
-            if mod_path.name != "missionpack":
-                raise ValueError(
-                    "It seems like this mod contains Team Arena files.\n"
-                    "Rename the mod's folder to 'missionpack'.\n\n"
-                )
-
-            return True
-
-        return False
-
     def launch(self, selected_mod_paths: list[Path]):
         if not self.executable_path or not self.executable_path.exists():
             raise FileNotFoundError(f"{self.display_name} installation not found.")
 
         cmd = [str(self.executable_path)]
+        self.quake_3_path = self.executable_path.parent / "baseq3"
 
         if selected_mod_paths:
             mod_path = selected_mod_paths[0]
+            cmd = self._build_launch_command(mod_path, self._analyze_mod(mod_path))
 
-            is_missionpack = False
-            is_standalone = False
-
-            for item, _ext in self.scan_mod_directory(mod_path):
-                if item.parent != mod_path:
-                    raise FileNotFoundError("All .pk3 files must be under the selected mod's root.")
-
-                if self._validate_mod_asset(item, mod_path):
-                    is_missionpack = True
-
-                if not is_standalone and zipfile.is_zipfile(item):
-                    with zipfile.ZipFile(item, "r") as z:
-                        if any(name.lower().endswith("gfx/2d/bigchars.tga") for name in z.namelist()):
-                            is_standalone = True
-
-            if not is_standalone and not (self.executable_path.parent / "baseq3").exists():
-                raise ValueError(
-                    "This mod requires Quake 3 Arena to be installed.\n"
-                    "Place the 'baseq3' folder alongside the IOQuake 3 executable."
+        else:
+            if not self._verify_quake_3():
+                raise FileNotFoundError(
+                    "Launching standalone requires Quake 3 Arena to be installed.\n"
+                    "Place valid Quake 3 Arena 'baseq3' assets alongside the IOQuake 3 executable."
                 )
 
-            if is_missionpack or not is_standalone:
-                cmd.extend([
-                    "+set", "fs_steampath", str(mod_path.parent),
-                    "+set", "fs_game", str(mod_path.name)
-                ])  # fmt: skip
-
-            else:
-                cmd.extend([
-                    "+set", "fs_steampath", str(mod_path.parent),
-                    "+set", "com_basegame", str(mod_path.name)
-                ])  # fmt: skip
-
         subprocess.Popen(cmd, cwd=str(self.executable_path.parent))
+
+    def _build_launch_command(self, mod_path: Path, profile: ModProfile) -> list[str]:
+        cmd = [str(self.executable_path)]
+        cmd.extend(["+set", "fs_steampath", str(mod_path.parent)])
+
+        if not profile.is_standalone and not self._verify_quake_3():
+            raise ValueError(
+                "This mod requires Quake 3 Arena to be installed.\n"
+                "Place valid Quake 3 Arena 'baseq3' assets alongside the IOQuake 3 executable."
+            )
+
+        if profile.is_missionpack or not profile.is_standalone:
+            cmd.extend(["+set", "fs_game", str(mod_path.name)])
+
+        else:
+            cmd.extend(["+set", "com_basegame", str(mod_path.name)])
+
+        return cmd
+
+    def _contains_quake_3(self, checksum: int) -> bool:
+        return checksum in QUAKE_3_CHECKSUMS
+
+    def _verify_quake_3(self) -> bool:
+        """Checks if a valid Quake 3 Arena directory sits alongside the executable."""
+
+        if not self.quake_3_path.is_dir():
+            return False
+
+        for item in self.scan_mod_directory(self.quake_3_path):
+            if self._contains_quake_3(calculate_archive_adler32(item[0])):
+                return True
+
+        return False
+
+    def _analyze_mod(self, mod_path: Path) -> ModProfile:
+        """Scans a mod's .pk3 files and classifies the mod."""
+
+        profile = ModProfile()
+
+        for item, _ext in self.scan_mod_directory(mod_path):
+            if item.parent != mod_path:
+                raise FileNotFoundError("All .pk3 files must be under the selected mod's root.")
+
+            asset_profile = self._classify_asset(item, mod_path)
+
+            profile.is_missionpack |= asset_profile.is_missionpack
+            profile.is_standalone |= asset_profile.is_standalone
+
+        return profile
+
+    def _classify_asset(self, item: Path, mod_path: Path) -> ModProfile:
+        """Classifies a single .pk3 file and handles engine requirements."""
+
+        checksum = calculate_archive_adler32(item)
+
+        if self._contains_quake_3(checksum):
+            raise ValueError(
+                "It seems like this mod contains Quake 3 Arena files.\n"
+                "Place the 'baseq3' folder alongside the IOQuake 3 executable.\n\n"
+                "RedeeMOD can't launch original Quake 3 Arena as a mod."
+            )
+
+        profile = ModProfile()
+
+        if checksum in TEAM_ARENA_CHECKSUMS:
+            if mod_path.name != "missionpack":
+                raise ValueError(
+                    "It seems like this mod contains Team Arena files.\n"
+                    "Rename the mod's folder to 'missionpack'."
+                )  # fmt: skip
+
+            profile.is_missionpack = True
+
+        if zipfile.is_zipfile(item):
+            with zipfile.ZipFile(item, "r") as z:
+                profile.is_standalone = any(name.lower().endswith("default.cfg") for name in z.namelist())
+
+        return profile
