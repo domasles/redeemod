@@ -1,5 +1,8 @@
+import subprocess
+
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import final
 
 from backend.discovery import discover_all_paths, discover_installation, load_game_config
 from backend.utils.filesystem import expand_path, get_project_directory
@@ -31,7 +34,7 @@ class BaseGameAdapter(ABC):
     @property
     def file_extensions(self) -> set[str]:
         """File extensions associated with the game."""
-        pass
+        return set()
 
     @property
     def allowed_mod_amount(self) -> int | None:
@@ -49,12 +52,12 @@ class BaseGameAdapter(ABC):
 
         return [
             key.removesuffix("_paths") + "_path"
-            for key in self.config.paths
+            for key in self._config.paths
             if key.endswith("_paths")
         ]  # fmt: skip
 
     @property
-    def adapter_assets_path(self) -> Path | None:
+    def adapter_assets_path(self) -> Path:
         """Path to the game adapter assets directory."""
         return get_project_directory() / "backend" / "games" / self.game_id / "assets"
 
@@ -63,18 +66,39 @@ class BaseGameAdapter(ABC):
         pass
 
     @abstractmethod
-    def launch(self, selected_mod_paths: list[Path]):
-        """Prepares configuration/INI files and launches the executable."""
+    def build_arguments(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:
+        """Builds the extra command-line arguments for the game executable."""
         pass
 
+    @final
+    def launch(self, selected_mod_paths: list[Path]):
+        """Launches the executable with extra arguments (if provided)"""
+
+        executable = self.resolved_path("executable_path")
+
+        if not executable or not executable.exists():
+            raise FileNotFoundError(f"{self.display_name} installation not found.")
+
+        cmd = [str(executable), *self.build_arguments(executable, selected_mod_paths)]
+
+        subprocess.Popen(cmd, cwd=str(executable.parent))
+
     def init_paths(self, custom_paths: dict[str, str] | None = None):
+        """(Re)loads configuration and resolves paths."""
+
         config_file = get_project_directory() / "backend" / "games" / self.game_id / "config" / "config.json"
-        self.config = load_game_config(config_file)
 
-        self.all_configured_data = discover_all_paths(self.config, custom_paths)
+        self._config = load_game_config(config_file)
+        self._all_configured_data = discover_all_paths(self._config, custom_paths)
+        self._resolved_paths = discover_installation(self._config, custom_paths)
 
-        for key, value in discover_installation(self.config, custom_paths).items():
-            setattr(self, key, value)
+    def resolved_path(self, key: str) -> Path | None:
+        """Returns a single resolved path for ``config.json`` key, or ``None``."""
+        return self._resolved_paths.get(key)
+
+    def resolved_paths(self, key: str) -> list[Path]:
+        """Returns every configured candidate path from ``config.key`` or ``[]``."""
+        return self._all_configured_data.get(key, [])
 
     def get_missing_paths(self) -> list[str]:
         """Checks all required_path_keys."""
@@ -82,7 +106,7 @@ class BaseGameAdapter(ABC):
         missing = []
 
         for key in self.required_path_keys:
-            path_val = getattr(self, key, None)
+            path_val = self.resolved_path(key)
 
             if not path_val or not Path(path_val).exists():
                 missing.append(key)

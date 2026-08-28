@@ -12,8 +12,9 @@ from PySide6.QtWidgets import (
     QSpacerItem,
 )
 
-from PySide6.QtCore import QObject, Qt
+from PySide6.QtCore import Qt
 
+from backend.games.base import BaseGameAdapter
 from backend.manager import Manager
 
 from frontend.components.cards import GameCard, ModCard, ActionCard
@@ -27,7 +28,7 @@ class Library(QWidget):
     CARD_WIDTH = Card.CARD_WIDTH
     CARD_GAP = 20
 
-    def __init__(self, parent: QObject, manager: Manager, adapters: dict):
+    def __init__(self, parent: QWidget, manager: Manager, adapters: dict[str, BaseGameAdapter]):
         super().__init__(parent)
 
         self._last_width = 0
@@ -140,8 +141,13 @@ class Library(QWidget):
         while self.grid_layout.count():
             item = self.grid_layout.takeAt(0)
 
-            if item.widget():
-                item.widget().deleteLater()
+            if item is None:
+                continue
+
+            widget = item.widget()
+
+            if widget:
+                widget.deleteLater()
 
     def _build_game_cards(self):
         self.title_label.setText("Your mods")
@@ -162,6 +168,8 @@ class Library(QWidget):
             self._cards.append(card)
 
     def _build_mod_cards(self):
+        assert self.selected_game_id is not None
+
         adapter = self.adapters.get(self.selected_game_id)
 
         name = adapter.display_name if adapter else self.selected_game_id.upper()
@@ -240,6 +248,8 @@ class Library(QWidget):
         show_info_modal("Mod limit reached", f"{adapter.display_name} allows only {amount} {unit} to be selected.")
 
     def _toggle_mod(self, mod_name: str, enabled: bool):
+        assert self.selected_game_id is not None
+
         if enabled:
             adapter = self.adapters.get(self.selected_game_id) if self.selected_game_id else None
 

@@ -8,7 +8,7 @@ def get_project_directory() -> Path:
     """Returns base directory of the project."""
 
     if hasattr(sys, "_MEIPASS"):
-        return Path(sys._MEIPASS)
+        return Path(getattr(sys, "_MEIPASS"))
 
     return Path(__file__).resolve().parent.parent.parent
 

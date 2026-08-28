@@ -1,8 +1,8 @@
 from collections.abc import Callable
 from pathlib import Path
 
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QPushButton
-from PySide6.QtCore import QObject, Qt
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QPushButton, QWidget
+from PySide6.QtCore import Qt
 
 from frontend.components.images.banner import BannerImage
 from frontend.components.elided_label import ElidedLabel
@@ -14,7 +14,7 @@ class ModCard(Card):
 
     def __init__(
         self,
-        parent: QObject,
+        parent: QWidget,
         mod_name: str,
         is_selected: bool,
         on_toggle: Callable[[str, bool], None],

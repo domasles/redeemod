@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QDialog
-from PySide6.QtCore import QObject, Signal, Qt
+from PySide6.QtCore import Signal, Qt
 
 from frontend.components.modal_dialog import ModalDialog
 
@@ -30,11 +30,11 @@ class MessageModalBody(QWidget):
         layout.addWidget(btn_ok)
 
 
-def show_error_modal(message: str, parent: QObject | None = None) -> None:
+def show_error_modal(message: str, parent: QWidget | None = None) -> None:
     show_info_modal("Something went wrong", message, parent)
 
 
-def show_info_modal(title: str, message: str, parent: QObject | None = None) -> None:
+def show_info_modal(title: str, message: str, parent: QWidget | None = None) -> None:
     body = MessageModalBody(message)
     modal = ModalDialog(title, body, parent)
     body.confirmed.connect(modal.accept)
@@ -42,7 +42,7 @@ def show_info_modal(title: str, message: str, parent: QObject | None = None) -> 
     modal.exec()
 
 
-def show_setup_modal(title: str, message: str, on_confirm: Callable[[], None], parent: QObject | None = None) -> bool:
+def show_setup_modal(title: str, message: str, on_confirm: Callable[[], None], parent: QWidget | None = None) -> bool:
     body = MessageModalBody(message)
     modal = ModalDialog(title, body, parent)
     body.confirmed.connect(modal.accept)

@@ -17,7 +17,7 @@ RedeeMOD has dependencies and follows strict development rules:
 3. Do NOT modify anything that's unnecessary for the planned improvement
 4. As this is both a fully-built application and a framework, coding style and file architecture must remain intact
 
-This repository utilizes the [_Black_ formatter](https://github.com/psf/black) that you must set up by running:
+This repository utilizes the [_Black_ formatter](https://github.com/psf/black) and [_pyright_ type checker](https://github.com/microsoft/pyright) that you must set up by running:
 ```bash
 pip install pre-commit
 pre-commit install
@@ -69,7 +69,8 @@ Alongside these, you inherit several helpers:
 
 - `self.adapter_assets_path` - resolves to `backend/games/<game_id>/assets`, whether or not it exists yet. You can put your file assets there, later to be used by the RedeeMOD app (for example, a logo)
 - `self.scan_mod_directory(target_dir)` - recursively collects files matching `file_extensions`, returning `(file_path, lowercase_extension)` tuples
-- `self.all_configured_data` - every path group defined for your game in `config.json`, resolved for the current platform (as of now, only **Linux** and **Windows** are supported)
+- `self.resolved_path(key)` - returns a single resolved path for a config key (e.g. `"executable_path"`), or `None` if it couldn't be found
+- `self.resolved_paths(key)` - returns every configured candidate path for a key (e.g. `"config_paths"`), already expanded and merged with any custom overrides
 - `self.get_missing_paths()` - names of paths within `config.json` that couldn't be resolved on a machine (the interface uses this to warn users before launching)
 - And more useful methods from across the backend!
 
@@ -99,31 +100,40 @@ All required filesystem locations must live in `backend/games/<game_id>/config/c
 }
 ```
 
+> NOTE: `executable_paths` object is required. Without it, RedeeMOD won't be able to launch the game and will throw an error on launch
+
 > NOTE: Leaving any `*_paths` object empty will make it required for user to input without automatic discovery. This is useful if your game does NOT have a standard install path (as seen in `backend/games/ioq3/`)
 
 Rules of the format:
 
 - Any key ending in `_paths` defines a path group, holding a `linux` and/or `windows` list of candidate locations - the first one that exists on disk wins
-- Each group becomes a singular attribute on your adapter automatically: `executable_paths` gives you `self.executable_path`, `config_paths` gives you `self.config_path`, and so on
+- Read a group through `self.resolved_path("<singular>_path")` or iterate candidates with `self.resolved_paths("<plural>_paths")`: `executable_paths` is resolved via `self.resolved_path("executable_path")`, `config_paths` via `self.resolved_path("config_path")`, and so on
 - Paths support `~` and environment variables, they are later expanded
 - Users may override any group through the interface and their custom paths are merged in. Custom paths take priority over pre-configured ones
 - Only define groups your adapter actually references - don't configure things you'll never read
 
 #### Launching the Game
 
-The heart of every adapter is `launch(selected_mod_paths)`, receiving the list of selected mod directories. Game processes are spawned through `subprocess.Popen()`, so the game runs independently without freezing the launcher:
+The base class owns launching (you must not override `launch()` method). It validates the resolved `executable_path` (raising `FileNotFoundError` if the game isn't installed) and opens the game.
 
+As an adapter author, the **only** method you implement is `build_command(executable, selected_mod_paths) -> list[str]`. It receives the existing executable path, list of selected mods, and must return the extra command-line arguments to append after the executable if mods are selected:
 ```python
-subprocess.Popen(cmd, cwd=str(self.executable_path.parent))
+def build_command(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:
+    cmd: list[str] = []
+
+    if selected_mod_paths:
+        cmd.append("Any command line flag")
+        # or
+        cmd.extend(["Any", "flag"])
+
+    return cmd
 ```
 
-What happens beforehand depends entirely on your game's modding mechanics. Both bundled adapters follow the same pattern - point the game at selected mods and pass them to game's executable as a command-line argument. However, if your game does not support dedicated modding capabilities, any other implementation is fine! No game is like the others, thus why extensible adapter system of RedeeMOD exists!
+Raise inside `build_command` to validate assets or handle edge cases before the game starts. Any error is shown on the frontend.
 
-See existing `backend/games/<game_id>/adapter.py` files for complete working examples!
+What happens inside `build_command` depends entirely on your game's modding mechanics. However, if your game does not support dedicated modding capabilities, any other implementation is fine! No game is like the others, thus why this extensible adapter system exists.
 
-> NOTE: Validate that your executable exists and fail early if it doesn't (`raise FileNotFoundError(...)`), exactly like the bundled adapters do
-
-> NOTE: Raising any other error on launch will notify users on frontend. This is useful if you want to validate game asset presence or handle edge cases
+See existing `backend/games/<game_id>/adapter.py` files for complete working examples! Use `backend/games/adapter_template.py` as a starting point.
 
 #### Adding a Logo
 

@@ -8,8 +8,9 @@ from PySide6.QtWidgets import (
     QSizePolicy,
 )
 
-from PySide6.QtCore import QObject, Qt
+from PySide6.QtCore import Qt
 
+from backend.games.base import BaseGameAdapter
 from backend.manager import Manager
 
 from frontend.components.modals.check_paths import CheckPathsModalBody
@@ -25,7 +26,7 @@ class Games(QWidget):
     CARD_WIDTH = Card.CARD_WIDTH
     CARD_GAP = 20
 
-    def __init__(self, parent: QObject, manager: Manager, adapters: dict):
+    def __init__(self, parent: QWidget, manager: Manager, adapters: dict[str, BaseGameAdapter]):
         super().__init__(parent)
 
         self._last_width = 0
@@ -101,8 +102,13 @@ class Games(QWidget):
         while self.grid_layout.count():
             item = self.grid_layout.takeAt(0)
 
-            if item.widget():
-                item.widget().deleteLater()
+            if item is None:
+                continue
+
+            widget = item.widget()
+
+            if widget:
+                widget.deleteLater()
 
     def _build_game_cards(self):
         added_games = self.manager.get_added_games()
@@ -173,9 +179,10 @@ class Games(QWidget):
             modal.accept()
 
             custom_paths = self.manager.get_custom_paths(game_id)
-            adapter_cls = type(self.adapters.get(game_id)) if game_id in self.adapters else None
+            existing = self.adapters.get(game_id)
+            adapter_cls = type(existing) if existing is not None else None
 
-            if adapter_cls:
+            if adapter_cls is not None:
                 try:
                     adapter = adapter_cls(custom_paths=custom_paths)
                     missing = adapter.get_missing_paths()
@@ -198,9 +205,10 @@ class Games(QWidget):
         def handle_paths_confirmed(paths: dict[str, str]):
             try:
                 self.manager.save_custom_paths(game_id, paths)
-                adapter_cls = type(self.adapters.get(game_id))
+                existing = self.adapters.get(game_id)
+                adapter_cls = type(existing) if existing is not None else None
 
-                if adapter_cls:
+                if adapter_cls is not None:
                     self.adapters[game_id] = adapter_cls(custom_paths=paths)
 
             except Exception as e:

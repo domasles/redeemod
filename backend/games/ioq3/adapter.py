@@ -1,4 +1,3 @@
-import subprocess
 import zipfile
 
 from dataclasses import dataclass
@@ -58,16 +57,14 @@ class IOQ3GameAdapter(BaseGameAdapter):
         super().__init__(custom_paths)
         self.content_extensions = {"pk3"}
 
-    def launch(self, selected_mod_paths: list[Path]):
-        if not self.executable_path or not self.executable_path.exists():
-            raise FileNotFoundError(f"{self.display_name} installation not found.")
+    def build_arguments(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:
+        cmd: list[str] = []
 
-        cmd = [str(self.executable_path)]
-        self.quake_3_path = self.executable_path.parent / "baseq3"
+        self.quake_3_path = executable.parent / "baseq3"
 
         if selected_mod_paths:
             mod_path = selected_mod_paths[0]
-            cmd = self._build_launch_command(mod_path, self._analyze_mod(mod_path))
+            cmd = self._set_cvars(mod_path, self._analyze_mod(mod_path))
 
         else:
             if not self._verify_quake_3():
@@ -76,11 +73,10 @@ class IOQ3GameAdapter(BaseGameAdapter):
                     "Place valid Quake 3 Arena 'baseq3' assets alongside the IOQuake 3 executable."
                 )
 
-        subprocess.Popen(cmd, cwd=str(self.executable_path.parent))
+        return cmd
 
-    def _build_launch_command(self, mod_path: Path, profile: ModProfile) -> list[str]:
-        cmd = [str(self.executable_path)]
-        cmd.extend(["+set", "fs_steampath", str(mod_path.parent)])
+    def _set_cvars(self, mod_path: Path, profile: ModProfile) -> list[str]:
+        cmd = ["+set", "fs_steampath", str(mod_path.parent)]
 
         if not profile.is_standalone and not self._verify_quake_3():
             raise ValueError(
@@ -135,7 +131,7 @@ class IOQ3GameAdapter(BaseGameAdapter):
         if self._contains_quake_3(checksum):
             raise ValueError(
                 "It seems like this mod contains Quake 3 Arena files.\n"
-                "Place the 'baseq3' folder alongside the IOQuake 3 executable.\n\n"
+                "Place valid Quake 3 Arena 'baseq3' assets alongside the IOQuake 3 executable.\n"
                 "RedeeMOD can't launch original Quake 3 Arena as a mod."
             )
 

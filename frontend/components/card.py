@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QFrame, QVBoxLayout
-from PySide6.QtCore import QObject, Qt
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
 
 
 class Card(QFrame):
@@ -8,7 +8,7 @@ class Card(QFrame):
     CARD_WIDTH = 200
     CARD_HEIGHT = 250
 
-    def __init__(self, parent: QObject):
+    def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
 
         self.setFixedSize(self.CARD_WIDTH, self.CARD_HEIGHT)

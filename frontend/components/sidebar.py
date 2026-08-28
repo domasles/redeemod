@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
-from PySide6.QtCore import QObject, QSize, Signal, Qt
+from PySide6.QtCore import QSize, Signal, Qt
 
 from backend.manager import Manager
 from backend.constants import *
@@ -10,7 +10,7 @@ from frontend.components.image import Image
 class Sidebar(QWidget):
     navigated = Signal(str)
 
-    def __init__(self, parent: QObject, manager: Manager):
+    def __init__(self, parent: QWidget, manager: Manager):
         super().__init__(parent)
 
         self.manager = manager

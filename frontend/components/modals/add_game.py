@@ -27,6 +27,6 @@ class AddGameModalBody(QWidget):
 
         btn = QPushButton("Add selected game")
         btn.setObjectName("LaunchBtn")
-        btn.clicked.connect(lambda: on_add(self.combo.currentData()))
+        btn.clicked.connect(lambda: on_add(str(self.combo.currentData())))
 
         layout.addWidget(btn)

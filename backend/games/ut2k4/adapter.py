@@ -1,4 +1,3 @@
-import subprocess
 import shutil
 
 from pathlib import Path
@@ -31,27 +30,25 @@ class UT2K4GameAdapter(BaseGameAdapter):
         self.content_extensions = {"u", "ut2", "utx", "usx", "ukx", "uax", "upl"}
         self.music_extensions = {"ogg"}
         self.cache_extensions = {"ucl"}
+
         self.all_extensions = self.content_extensions | self.music_extensions | self.cache_extensions
 
-    def launch(self, selected_mod_paths: list[Path]):
-        if not self.executable_path or not self.executable_path.exists():
-            raise FileNotFoundError(f"{self.display_name} installation not found.")
+    def build_arguments(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:
+        cmd: list[str] = []
+        config_path = self.resolved_path("config_path")
 
-        cmd = [str(self.executable_path)]
-
-        if selected_mod_paths and self.config_path and self.config_path.exists():
+        if selected_mod_paths and config_path and config_path.exists():
             self._cleanup_generated_files()
-            self._write_mod_files(selected_mod_paths)
+            self._write_mod_files(selected_mod_paths, executable)
 
             cmd.append(f"-mod={APP_NAME}")
 
-        subprocess.Popen(cmd, cwd=str(self.executable_path.parent))
+        return cmd
 
     def _cleanup_generated_files(self):
-        candidate_config_paths = self.all_configured_data.get("config_paths", [])
         cleaned_dirs = set()
 
-        for cfg_path in candidate_config_paths:
+        for cfg_path in self.resolved_paths("config_paths"):
             if not cfg_path:
                 continue
 
@@ -63,8 +60,9 @@ class UT2K4GameAdapter(BaseGameAdapter):
                 if target_app_dir.exists():
                     shutil.rmtree(target_app_dir)
 
-    def _write_mod_files(self, mod_paths: list[Path]):
-        exe_base = self.executable_path.parent
+    def _write_mod_files(self, mod_paths: list[Path], executable: Path):
+        exe_base = executable.parent
+
         install_dir = exe_base.parent
         app_mod_dir = install_dir / APP_NAME
         app_sys_dir = app_mod_dir / "System"

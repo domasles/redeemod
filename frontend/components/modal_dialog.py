@@ -1,5 +1,4 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QWidget
-from PySide6.QtCore import QObject
 
 from backend.constants import *
 
@@ -7,7 +6,7 @@ from backend.constants import *
 class ModalDialog(QDialog):
     """Modal dialog."""
 
-    def __init__(self, title: str, body_widget: QWidget, parent: QObject | None = None):
+    def __init__(self, title: str, body_widget: QWidget, parent: QWidget | None = None):
         super().__init__(parent)
 
         self.setWindowTitle(APP_NAME)
@@ -33,8 +32,10 @@ class ModalDialog(QDialog):
         if focused:
             focused.clearFocus()
 
-        if self.parentWidget():
-            self.parentWidget().setFocus()
+        parent = self.parentWidget()
+
+        if parent:
+            parent.setFocus()
 
     def closeEvent(self, event):
         self._clear_focus_before_close()

@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel
-from PySide6.QtCore import QObject, Qt, Signal
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget
+from PySide6.QtCore import Qt, Signal
 
 from frontend.components.elided_label import ElidedLabel
 from frontend.components.card import Card
@@ -10,7 +10,7 @@ class ActionCard(Card):
 
     clicked = Signal()
 
-    def __init__(self, parent: QObject, title: str, *subtitles: str):
+    def __init__(self, parent: QWidget, title: str, *subtitles: str):
         super().__init__(parent)
 
         self.setObjectName("ActionCard")

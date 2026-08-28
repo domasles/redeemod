@@ -30,15 +30,18 @@ class Dropdown(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        self.trigger_btn = QPushButton(self, objectName="DropdownTrigger")
+        self.trigger_btn = QPushButton(self)
+        self.trigger_btn.setObjectName("DropdownTrigger")
         self.trigger_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.trigger_btn.clicked.connect(self._toggle_popup)
 
         btn_layout = QHBoxLayout(self.trigger_btn)
         btn_layout.setContentsMargins(12, 0, 12, 0)
 
-        self.text_label = ElidedLabel(self, objectName="DropdownTextLabel")
-        self.arrow_label = QLabel("▼", self, objectName="DropdownArrowLabel")
+        self.text_label = ElidedLabel(self)
+        self.text_label.setObjectName("DropdownTextLabel")
+        self.arrow_label = QLabel("▼", self)
+        self.arrow_label.setObjectName("DropdownArrowLabel")
 
         for lbl in (self.text_label, self.arrow_label):
             lbl.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
@@ -50,14 +53,16 @@ class Dropdown(QWidget):
 
         flags = Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint | Qt.WindowType.NoDropShadowWindowHint
 
-        self.popup_frame = QFrame(None, flags, objectName="DropdownPopupFrame")
+        self.popup_frame = QFrame(None, flags)
+        self.popup_frame.setObjectName("DropdownPopupFrame")
         self.popup_frame.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
 
         popup_layout = QVBoxLayout(self.popup_frame)
         popup_layout.setContentsMargins(0, 0, 0, 0)
         popup_layout.setSpacing(0)
 
-        self.popup_list = QListWidget(self.popup_frame, objectName="DropdownPopup")
+        self.popup_list = QListWidget(self.popup_frame)
+        self.popup_list.setObjectName("DropdownPopup")
         self.popup_list.setMinimumHeight(0)
         self.popup_list.setVerticalScrollMode(QListWidget.ScrollMode.ScrollPerPixel)
         self.popup_list.verticalScrollBar().setSingleStep(12)
@@ -69,7 +74,7 @@ class Dropdown(QWidget):
 
         popup_layout.addWidget(self.popup_list)
 
-    def addItem(self, text: str, userData=None):
+    def addItem(self, text: str, userData: object = None):
         self._items.append((text, userData))
         self.popup_list.addItem(text)
 
@@ -86,7 +91,7 @@ class Dropdown(QWidget):
     def currentIndex(self) -> int:
         return self._current_index
 
-    def currentData(self):
+    def currentData(self) -> object | None:
         return self._items[self._current_index][1] if 0 <= self._current_index < len(self._items) else None
 
     def _toggle_popup(self):

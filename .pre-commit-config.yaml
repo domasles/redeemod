@@ -3,3 +3,11 @@ repos:
     rev: 26.5.1
     hooks:
       - id: black
+
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.411
+    hooks:
+      - id: pyright
+        files: \.py$
+        additional_dependencies:
+          - pyside6

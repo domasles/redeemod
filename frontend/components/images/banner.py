@@ -15,15 +15,17 @@ class BannerImage(Image):
         self.path = path
         self._corner_radius = corner_radius
 
-        self._pixmap = None
-        self._cached_path = None
+        self._pixmap: QPixmap | None = None
+        self._cached_path: str | Path | None = None
 
     def paintEvent(self, event):
         if self.path and self._pixmap is None or self._cached_path != self.path:
             self._pixmap = QPixmap(str(self.path)) if self.path else QPixmap()
             self._cached_path = self.path
 
-        if not self._pixmap.isNull():
+        pixmap = self._pixmap
+
+        if pixmap is not None and not pixmap.isNull():
             painter = QPainter(self)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
             painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
@@ -34,7 +36,7 @@ class BannerImage(Image):
             if w > 0 and h > 0:
                 dpr = self.devicePixelRatio()
 
-                scaled = self._pixmap.scaled(
+                scaled = pixmap.scaled(
                     rect.size() * dpr,
                     Qt.AspectRatioMode.KeepAspectRatioByExpanding,
                     Qt.TransformationMode.SmoothTransformation,

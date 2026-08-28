@@ -1,5 +1,3 @@
-import subprocess
-
 from pathlib import Path
 
 from backend.games.unrgold.ini import prepend_to_ini_section
@@ -32,25 +30,21 @@ class UnrGoldGameAdapter(BaseGameAdapter):
         self.locale_extensions = {"int", "det", "frt", "est", "itt", "rut"}
         self.all_extensions = self.content_extensions | self.locale_extensions
 
-    def launch(self, selected_mod_paths: list[Path]):
-        if not self.executable_path or not self.executable_path.exists():
-            raise FileNotFoundError(f"{self.display_name} installation not found.")
+    def build_arguments(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:
+        cmd: list[str] = []
+        config_path = self.resolved_path("config_path")
 
-        cmd = [str(self.executable_path)]
-
-        if selected_mod_paths and self.config_path and self.config_path.exists():
+        if selected_mod_paths and config_path and config_path.exists():
             mod_ini_path = get_relative_path(
-                self.executable_path.parent,
-                self._apply_mods_to_ini(selected_mod_paths),
+                executable.parent,
+                self._apply_mods_to_ini(selected_mod_paths, executable.parent, config_path),
             )
 
             cmd.append(f"INI={mod_ini_path}")
 
-        subprocess.Popen(cmd, cwd=str(self.executable_path.parent))
+        return cmd
 
-    def _apply_mods_to_ini(self, mod_paths: list[Path]) -> Path:
-        exe_base = self.executable_path.parent
-
+    def _apply_mods_to_ini(self, mod_paths: list[Path], exe_base: Path, config_path: Path) -> Path:
         path_entries: set[str] = set()
         lang_entries: set[str] = set()
 
@@ -70,11 +64,11 @@ class UnrGoldGameAdapter(BaseGameAdapter):
 
         new_content = "\n".join(sorted(path_entries | lang_entries)) + "\n"
 
-        mod_ini_path = self.config_path.parent / f"{APP_NAME}.ini"
+        mod_ini_path = config_path.parent / f"{APP_NAME}.ini"
         mod_ini_path.parent.mkdir(parents=True, exist_ok=True)
 
         if new_content.strip():
-            updated_ini = prepend_to_ini_section(self.config_path, "Core.System", new_content)
+            updated_ini = prepend_to_ini_section(config_path, "Core.System", new_content)
             mod_ini_path.write_text(updated_ini, "utf-8")
 
         return mod_ini_path

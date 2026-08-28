@@ -49,3 +49,8 @@ include = ["backend*", "frontend*"]
 
 [tool.black]
 line-length = 120
+
+[tool.pyright]
+include = ["backend", "frontend"]
+pythonVersion = "3.12"
+typeCheckingMode = "standard"

@@ -39,6 +39,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install . pyinstaller
 
+      - name: Check Types
+        run: |
+          python -m pip install pyright
+          pyright
+
       - name: Compile Standalone Binary
         shell: bash
         run: |
