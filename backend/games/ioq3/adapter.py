@@ -33,13 +33,8 @@ class ModProfile:
 
 
 class IOQ3GameAdapter(BaseGameAdapter):
-    @property
-    def game_id(self) -> str:
-        return "ioq3"
-
-    @property
-    def display_name(self) -> str:
-        return "IOQuake 3"
+    game_id = "ioq3"
+    display_name = "IOQuake 3"
 
     @property
     def logo(self) -> Path | None:
@@ -53,8 +48,8 @@ class IOQ3GameAdapter(BaseGameAdapter):
     def file_extensions(self) -> set[str]:
         return self.content_extensions
 
-    def __init__(self, custom_paths: dict[str, str] | None = None):
-        super().__init__(custom_paths)
+    def __init__(self, custom_paths: dict[str, str] | None = None, **kwargs):
+        super().__init__(custom_paths, **kwargs)
         self.content_extensions = {"pk3"}
 
     def build_arguments(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:

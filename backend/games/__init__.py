@@ -37,7 +37,7 @@ def get_adapter_class(game_id: str) -> type[BaseGameAdapter]:
     """Gets adapter class by game ID."""
 
     for adapter_class in ADAPTERS:
-        if adapter_class().game_id == game_id:
+        if adapter_class.game_id == game_id:
             return adapter_class
 
     raise ValueError(f"Unknown game ID: {game_id}")
@@ -45,4 +45,4 @@ def get_adapter_class(game_id: str) -> type[BaseGameAdapter]:
 
 def get_adapter_classes() -> dict[str, type[BaseGameAdapter]]:
     """Gets all registered adapter classes."""
-    return {adapter_class().game_id: adapter_class for adapter_class in ADAPTERS}
+    return {adapter_class.game_id: adapter_class for adapter_class in ADAPTERS}

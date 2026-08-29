@@ -4,16 +4,11 @@ from backend.games.base import BaseGameAdapter
 
 
 class TemplateAdapter(BaseGameAdapter):
-    @property
-    def game_id(self) -> str:
-        return "template"
+    game_id = "template"
+    display_name = "Game Adapter Template"
 
-    @property
-    def display_name(self) -> str:
-        return "Game Adapter Template"
-
-    def __init__(self, custom_paths: dict[str, str] | None = None):
-        super().__init__(custom_paths)
+    def __init__(self, custom_paths: dict[str, str] | None = None, **kwargs):
+        super().__init__(custom_paths, **kwargs)
 
     def build_arguments(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:
         return []

@@ -1,30 +1,40 @@
 import subprocess
 
+from typing import Any, ClassVar, final
+from collections.abc import Callable
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import final
 
 from backend.discovery import discover_all_paths, discover_installation, load_game_config
 from backend.utils.filesystem import expand_path, get_project_directory
+from backend.models import GameConfig
+
+_REQUIRED: Any = object()
 
 
 class BaseGameAdapter(ABC):
     """Abstract base class for all game adapters."""
 
-    def __init__(self, custom_paths: dict[str, str] | None = None):
-        self.init_paths(custom_paths)
+    game_id: ClassVar[str] = _REQUIRED
+    display_name: ClassVar[str] = _REQUIRED
 
-    @property
-    @abstractmethod
-    def game_id(self) -> str:
-        """Unique key for the game."""
-        pass
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
 
-    @property
-    @abstractmethod
-    def display_name(self) -> str:
-        """User-friendly name."""
-        pass
+        for name in BaseGameAdapter.__annotations__:
+            value = cls.__dict__.get(name, _REQUIRED)
+
+            if value is _REQUIRED or not isinstance(value, str) or not value.strip():
+                raise TypeError(f"{cls.__name__} must override `{name}` with a non-empty string")
+
+    def __init__(
+        self,
+        custom_paths: dict[str, str] | None = None,
+        config: GameConfig | None = None,
+        process_launcher: Callable[..., Any] = subprocess.Popen,
+    ):
+        self._process_launcher = process_launcher
+        self.init_paths(custom_paths, config)
 
     @property
     def logo(self) -> Path | None:
@@ -81,14 +91,16 @@ class BaseGameAdapter(ABC):
 
         cmd = [str(executable), *self.build_arguments(executable, selected_mod_paths)]
 
-        subprocess.Popen(cmd, cwd=str(executable.parent))
+        self._process_launcher(cmd, cwd=str(executable.parent))
 
-    def init_paths(self, custom_paths: dict[str, str] | None = None):
+    def init_paths(self, custom_paths: dict[str, str] | None = None, config: GameConfig | None = None):
         """(Re)loads configuration and resolves paths."""
 
-        config_file = get_project_directory() / "backend" / "games" / self.game_id / "config" / "config.json"
+        if config is None:
+            config_file = get_project_directory() / "backend" / "games" / self.game_id / "config" / "config.json"
+            config = load_game_config(config_file)
 
-        self._config = load_game_config(config_file)
+        self._config = config
         self._all_configured_data = discover_all_paths(self._config, custom_paths)
         self._resolved_paths = discover_installation(self._config, custom_paths)
 

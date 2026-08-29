@@ -32,6 +32,12 @@ dependencies = [
     "pyside6>=6.11.2"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/domasles/redeemod"
 "Bug Reports" = "https://github.com/domasles/redeemod/issues"
@@ -49,6 +55,15 @@ include = ["backend*", "frontend*"]
 
 [tool.black]
 line-length = 120
+target-version = ["py312"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --import-mode=importlib"
+
+[tool.coverage.run]
+source = ["backend", "frontend"]
 
 [tool.pyright]
 include = ["backend", "frontend"]

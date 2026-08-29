@@ -17,7 +17,9 @@ RedeeMOD has dependencies and follows strict development rules:
 3. Do NOT modify anything that's unnecessary for the planned improvement
 4. As this is both a fully-built application and a framework, coding style and file architecture must remain intact
 
-This repository utilizes the [_Black_ formatter](https://github.com/psf/black) and [_pyright_ type checker](https://github.com/microsoft/pyright) that you must set up by running:
+> NOTE: Using a Python virtual environment (venv) is highly advised
+
+This repository utilizes the [_Black_ formatter](https://github.com/psf/black), [_Pyright_ type checker](https://github.com/microsoft/pyright) and [_pytest_ testing library](https://github.com/pytest-dev/pytest) that you must set up by running:
 ```bash
 pip install pre-commit
 pre-commit install
@@ -37,7 +39,13 @@ pip install pyside6     # The only required dependency
 python -m frontend.app  # From the project's root directory
 ```
 
-> NOTE: Using a Python virtual environment (venv) is highly advised
+If you want to run (or write) tests, you can use `pytest`:
+```bash
+pip install pytest
+pytest
+```
+
+Tests within `tests/` directory should run without issues.
 
 ## Case 1. You Want to Add a New Game Adapter
 
@@ -54,12 +62,16 @@ Everything revolves around `BaseGameAdapter` (`backend/games/base.py`) - a small
 
 > NOTE: Name your directory exactly as your `game_id`. Configuration lookups and asset resolution rely on the ID, so keeping them identical is necessary
 
-#### Properties
+#### Required Identity
 
-Override the following properties on your adapter class:
+Only two fields are required when creating an adapter:
 
-- `game_id` (**required**) - unique string used as a short identifier
-- `display_name` (**required**) - the user-friendly name shown on game cards in the UI
+- `game_id` (**required, class attribute**) - unique string used as a short identifier
+- `display_name` (**required, class attribute**) - the user-friendly name shown on game cards in the UI
+
+#### Optional Properties
+
+The following are ordinary instance properties you may override on your adapter class:
 - `logo` (**optional**) - path to your game's logo image, displayed on its card in the UI
 - `file_extensions` (**optional**) - set of extensions RedeeMOD treats as mod files when scanning mod directories. Without it, every file in a selected directory will be added as a mod file. Useful when you want to restrict which files can be treated as mod files and which not
 - `allowed_mod_amount` (**optional**) - caps how many mods may be selected simultaneously when launching. When unset, selection is unlimited
@@ -116,9 +128,9 @@ Rules of the format:
 
 The base class owns launching (you must not override `launch()` method). It validates the resolved `executable_path` (raising `FileNotFoundError` if the game isn't installed) and opens the game.
 
-As an adapter author, the **only** method you implement is `build_command(executable, selected_mod_paths) -> list[str]`. It receives the existing executable path, list of selected mods, and must return the extra command-line arguments to append after the executable if mods are selected:
+As an adapter author, the **only** method you implement is `build_arguments(executable, selected_mod_paths) -> list[str]`. It receives the existing executable path, list of selected mods, and must return the extra command-line arguments to append after the executable if mods are selected:
 ```python
-def build_command(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:
+def build_arguments(self, executable: Path, selected_mod_paths: list[Path]) -> list[str]:
     cmd: list[str] = []
 
     if selected_mod_paths:
@@ -129,9 +141,9 @@ def build_command(self, executable: Path, selected_mod_paths: list[Path]) -> lis
     return cmd
 ```
 
-Raise inside `build_command` to validate assets or handle edge cases before the game starts. Any error is shown on the frontend.
+Raise inside `build_arguments` to validate assets or handle edge cases before the game starts. Any error is shown on the frontend.
 
-What happens inside `build_command` depends entirely on your game's modding mechanics. However, if your game does not support dedicated modding capabilities, any other implementation is fine! No game is like the others, thus why this extensible adapter system exists.
+What happens inside `build_arguments` depends entirely on your game's modding mechanics. However, if your game does not support dedicated modding capabilities, any other implementation is fine! No game is like the others, thus why this extensible adapter system exists.
 
 See existing `backend/games/<game_id>/adapter.py` files for complete working examples! Use `backend/games/adapter_template.py` as a starting point.
 

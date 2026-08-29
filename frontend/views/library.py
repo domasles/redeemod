@@ -21,6 +21,7 @@ from frontend.components.cards import GameCard, ModCard, ActionCard
 from frontend.components.elided_label import ElidedLabel
 from frontend.components.card import Card
 
+from frontend.logic import ToggleOutcome, assemble_launch_paths, get_launch_button_text, toggle_mod
 from frontend.components.modals.message import show_error_modal, show_info_modal
 
 
@@ -250,34 +251,31 @@ class Library(QWidget):
     def _toggle_mod(self, mod_name: str, enabled: bool):
         assert self.selected_game_id is not None
 
-        if enabled:
-            adapter = self.adapters.get(self.selected_game_id) if self.selected_game_id else None
-
-            if (
-                adapter
-                and adapter.allowed_mod_amount is not None
-                and len(self.selected_mods) >= adapter.allowed_mod_amount
-            ):
-                self.refresh_cards()
-                self._show_mod_limit_reached(adapter)
-
-                return
-
-            self.selected_mods.add(mod_name)
-
-        else:
-            self.selected_mods.discard(mod_name)
-
+        adapter = self.adapters.get(self.selected_game_id)
+        allowed = adapter.allowed_mod_amount if adapter else None
         all_mods = self.manager.get_mods(self.selected_game_id)
 
-        if not Path(all_mods[mod_name]).exists():
+        mod_exists = mod_name in all_mods and Path(all_mods[mod_name]).exists()
+        new_selection, outcome = toggle_mod(self.selected_mods, mod_name, enabled, allowed, mod_exists)
+
+        self.selected_mods = new_selection
+
+        if outcome is ToggleOutcome.LIMIT_REACHED:
+            self.refresh_cards()
+
+            if adapter is not None:
+                self._show_mod_limit_reached(adapter)
+
+            return
+
+        if outcome is ToggleOutcome.MISSING:
+            self.refresh_cards()
+
             message = (
                 f"The mod '{mod_name}' does not exist on disk.\n"
                 "Remove it from your library or restore its folder."
             )  # fmt: skip
 
-            self.selected_mods.discard(mod_name)
-            self.refresh_cards()
             show_error_modal(message)
 
             return
@@ -305,11 +303,7 @@ class Library(QWidget):
                     self.refresh_cards()
 
     def _update_launch_button_text(self):
-        if len(self.selected_mods) == 0:
-            self.btn_launch.setText("Launch standalone")
-
-        else:
-            self.btn_launch.setText("Launch with mods")
+        self.btn_launch.setText(get_launch_button_text(self.selected_mods))
 
     def _launch_game(self):
         if not self.selected_game_id:
@@ -328,16 +322,7 @@ class Library(QWidget):
                 return
 
             all_mods = self.manager.get_mods(self.selected_game_id)
-            selected_paths = []
-
-            for name in sorted(self.selected_mods):
-                if name not in all_mods:
-                    continue
-
-                path = Path(all_mods[name])
-
-                if path.exists():
-                    selected_paths.append(path)
+            selected_paths = assemble_launch_paths(all_mods, self.selected_mods)
 
             try:
                 adapter.launch(selected_paths)

@@ -16,12 +16,7 @@ class AddGameModalBody(QWidget):
         self.combo = Dropdown()
 
         for game_id, adapter_class in get_adapter_classes().items():
-            try:
-                adapter = adapter_class()
-                self.combo.addItem(adapter.display_name, game_id)
-
-            except Exception:
-                continue
+            self.combo.addItem(adapter_class.display_name, game_id)
 
         layout.addWidget(self.combo)
 

@@ -11,16 +11,23 @@ from backend.constants import *
 class Manager(QObject):
     games_changed = Signal()
 
-    def __init__(self):
+    def __init__(self, storage_file: Path | None = None):
         super().__init__()
 
-        storage_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)) / APP_NAME
-        storage_dir.mkdir(parents=True, exist_ok=True)
+        if storage_file is None:
+            storage_file = self._default_storage_file()
 
-        self.storage_file = storage_dir / USER_SETTINGS_FILE_NAME
+        self.storage_file = storage_file
         self.data: dict = {"games": [], "mods": {}, "paths": {}}
 
         self.load()
+
+    @staticmethod
+    def _default_storage_file() -> Path:
+        storage_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)) / APP_NAME
+        storage_dir.mkdir(parents=True, exist_ok=True)
+
+        return storage_dir / USER_SETTINGS_FILE_NAME
 
     def add_game(self, game_id: str):
         if game_id not in self.data["games"]:

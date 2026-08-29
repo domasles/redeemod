@@ -33,7 +33,11 @@ def _get_platform_key() -> str:
     raise RuntimeError(f"Unsupported platform: {sys.platform}")
 
 
-def discover_all_paths(game_config: GameConfig, custom_paths: dict[str, str] | None = None) -> dict[str, list[Path]]:
+def discover_all_paths(
+    game_config: GameConfig,
+    custom_paths: dict[str, str] | None = None,
+    platform_key: str | None = None,
+) -> dict[str, list[Path]]:
     """Discovers all configured path candidates for a game and merges custom overrides."""
 
     discovered: dict[str, list[Path]] = {}
@@ -41,7 +45,7 @@ def discover_all_paths(game_config: GameConfig, custom_paths: dict[str, str] | N
     if not game_config:
         return discovered
 
-    platform_key = _get_platform_key()
+    platform_key = platform_key or _get_platform_key()
 
     for path_key, platform_paths in game_config.paths.items():
         candidates = getattr(platform_paths, platform_key, [])
@@ -69,12 +73,16 @@ def discover_all_paths(game_config: GameConfig, custom_paths: dict[str, str] | N
     return discovered
 
 
-def discover_installation(game_config: GameConfig, custom_paths: dict[str, str] | None = None) -> dict[str, Path | None]:  # fmt: skip
+def discover_installation(
+    game_config: GameConfig,
+    custom_paths: dict[str, str] | None = None,
+    platform_key: str | None = None,
+) -> dict[str, Path | None]:
     """Resolves every configured path group to a single usable path."""
 
     resolved: dict[str, Path | None] = {}
 
-    for path_key, candidates in discover_all_paths(game_config, custom_paths).items():
+    for path_key, candidates in discover_all_paths(game_config, custom_paths, platform_key).items():
         singular_key = path_key.removesuffix("_paths") + "_path"
         custom_val = (custom_paths or {}).get(singular_key)
 

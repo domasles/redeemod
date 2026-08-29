@@ -8,13 +8,8 @@ from backend.constants import *
 
 
 class UT2K4GameAdapter(BaseGameAdapter):
-    @property
-    def game_id(self) -> str:
-        return "ut2k4"
-
-    @property
-    def display_name(self) -> str:
-        return "Unreal Tournament 2004"
+    game_id = "ut2k4"
+    display_name = "Unreal Tournament 2004"
 
     @property
     def logo(self) -> Path | None:
@@ -24,8 +19,8 @@ class UT2K4GameAdapter(BaseGameAdapter):
     def file_extensions(self) -> set[str]:
         return self.all_extensions
 
-    def __init__(self, custom_paths: dict[str, str] | None = None):
-        super().__init__(custom_paths)
+    def __init__(self, custom_paths: dict[str, str] | None = None, **kwargs):
+        super().__init__(custom_paths, **kwargs)
 
         self.content_extensions = {"u", "ut2", "utx", "usx", "ukx", "uax", "upl"}
         self.music_extensions = {"ogg"}

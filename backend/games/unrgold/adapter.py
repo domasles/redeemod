@@ -7,13 +7,8 @@ from backend.constants import *
 
 
 class UnrGoldGameAdapter(BaseGameAdapter):
-    @property
-    def game_id(self) -> str:
-        return "unrgold"
-
-    @property
-    def display_name(self) -> str:
-        return "Unreal Gold"
+    game_id = "unrgold"
+    display_name = "Unreal Gold"
 
     @property
     def logo(self) -> Path | None:
@@ -23,8 +18,8 @@ class UnrGoldGameAdapter(BaseGameAdapter):
     def file_extensions(self) -> set[str]:
         return self.all_extensions
 
-    def __init__(self, custom_paths: dict[str, str] | None = None):
-        super().__init__(custom_paths)
+    def __init__(self, custom_paths: dict[str, str] | None = None, **kwargs):
+        super().__init__(custom_paths, **kwargs)
 
         self.content_extensions = {"u", "unr", "utx", "uax", "umx"}
         self.locale_extensions = {"int", "det", "frt", "est", "itt", "rut"}

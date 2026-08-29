@@ -17,6 +17,7 @@ from backend.manager import Manager
 from backend.constants import *
 
 from frontend.components.sidebar import Sidebar
+from frontend.logic import can_open_library
 from frontend.views.library import Library
 from frontend.views.games import Games
 
@@ -71,7 +72,7 @@ class App(QMainWindow):
         self.sidebar.refresh_library_visibility()
 
         if screen_name == "library":
-            if not self.manager.get_added_games():
+            if not can_open_library(self.manager.get_added_games()):
                 self.screen_stack.setCurrentWidget(self.games_view)
                 return
 

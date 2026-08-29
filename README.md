@@ -32,7 +32,7 @@ These only apply if you want to run RedeeMOD from downloaded source. If not, see
 ## Requirements for a Build
 
 - **PyInstaller** (Python app packager)
-- **act** (Local GitHub actions runner (optional))
+- **act** (Local GitHub actions runner) (optional)
 
 ## Build Instructions
 
@@ -106,7 +106,7 @@ python -m PyInstaller `
 
 > NOTE: You'll find the executable in `dist` directory
 
-### Method 2 (act)
+### Method 2 (act) (Linux builds only)
 
 **act** allows running an isolated build environment:
 ```bash

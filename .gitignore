@@ -10,5 +10,10 @@ dist/
 # Virtual environments
 venv/
 
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
 # Development environment specific files
 .vscode/
