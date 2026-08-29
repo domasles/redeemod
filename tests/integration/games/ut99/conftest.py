@@ -8,7 +8,7 @@ from backend.models import GameConfig
 
 
 @pytest.fixture
-def game_install(tmp_path) -> tuple[Path, Path, GameConfig]:
+def installed_game(tmp_path) -> tuple[Path, Path, GameConfig]:
     """Sets up the installed UT99 game."""
 
     exe = tmp_path / "System" / "game-bin"
@@ -16,7 +16,7 @@ def game_install(tmp_path) -> tuple[Path, Path, GameConfig]:
     exe.touch()
 
     ini = tmp_path / "System" / "Game.ini"
-    ini.write_text("[Core.System]\r\n", encoding="utf-8")
+    ini.write_text("[Core.System]\r\n", encoding="utf-8", newline="")
 
     config = GameConfig.from_dict(
         {

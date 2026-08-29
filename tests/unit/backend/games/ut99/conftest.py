@@ -15,7 +15,7 @@ def installed_game(tmp_path) -> tuple[Path, Path, Path]:
     exe.touch()
 
     ini = tmp_path / "Game.ini"
-    ini.write_text("[Core.System]\r\n", encoding="utf-8")
+    ini.write_text("[Core.System]\r\n", encoding="utf-8", newline="")
 
     mod_dir = tmp_path / "mod" / "MyMod"
     mod_dir.mkdir(parents=True)

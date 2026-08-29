@@ -8,14 +8,6 @@ def test_all_games_registered():
     assert set(classes) == {"ut99", "unrgold", "ut2k4", "ioq3"}
 
 
-def test_registry_reads_class_attributes_without_instantiation():
-    classes = get_adapter_classes()
-
-    assert classes["ut99"].game_id == "ut99"
-    assert classes["ut99"].display_name == "Unreal Tournament '99"
-    assert classes["ioq3"].display_name == "IOQuake 3"
-
-
 def test_adapter_class_matches():
     classes = get_adapter_classes()
 

@@ -1,8 +1,8 @@
 from backend.games.ut2k4.adapter import UT2K4GameAdapter
 
 
-def test_build_arguments_writes_mod_files_and_flag(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_build_arguments_writes_mod_files_and_flag(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "SomeMod"
     mod_dir.mkdir(parents=True)
@@ -23,8 +23,8 @@ def test_build_arguments_writes_mod_files_and_flag(game_install, tmp_path):
     assert "+Paths=../Mods/SomeMod/*.u" in default_ini
 
 
-def test_music_extension_generates_music_path(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_music_extension_generates_music_path(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "SomeMod"
     mod_dir.mkdir(parents=True)
@@ -37,8 +37,8 @@ def test_music_extension_generates_music_path(game_install, tmp_path):
     assert "+MusicPath=../Mods/SomeMod" in default_ini
 
 
-def test_cache_extension_generates_cache_record_path(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_cache_extension_generates_cache_record_path(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "SomeMod"
     mod_dir.mkdir(parents=True)
@@ -51,8 +51,8 @@ def test_cache_extension_generates_cache_record_path(game_install, tmp_path):
     assert "+CacheRecordPath=../Mods/SomeMod/*.ucl" in default_ini
 
 
-def test_no_matching_files_still_builds_empty_scaffold(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_no_matching_files_still_builds_empty_scaffold(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "SomeMod"
     mod_dir.mkdir(parents=True)
@@ -67,8 +67,8 @@ def test_no_matching_files_still_builds_empty_scaffold(game_install, tmp_path):
     assert default_ini == "[Core.System]\n"
 
 
-def test_build_arguments_regenerates_after_cleanup(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_build_arguments_regenerates_after_cleanup(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "SomeMod"
     mod_dir.mkdir(parents=True)
@@ -85,8 +85,8 @@ def test_build_arguments_regenerates_after_cleanup(game_install, tmp_path):
     assert first_default == second_default
 
 
-def test_cleanup_removes_existing_generated_files(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_cleanup_removes_existing_generated_files(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     generated = tmp_path / "RedeeMOD" / "System"
     generated.mkdir(parents=True)

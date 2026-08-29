@@ -1,8 +1,8 @@
 from backend.games.unrgold.adapter import UnrGoldGameAdapter
 
 
-def test_content_extension_adds_path_entry(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_content_extension_adds_path_entry(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "MyMod"
     mod_dir.mkdir(parents=True)
@@ -17,8 +17,8 @@ def test_content_extension_adds_path_entry(game_install, tmp_path):
     assert content == "[Core.System]\nPaths=../Mods/MyMod/*.umx\n"
 
 
-def test_locale_extension_adds_langpath_entry(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_locale_extension_adds_langpath_entry(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "MyMod"
     mod_dir.mkdir(parents=True)
@@ -31,8 +31,8 @@ def test_locale_extension_adds_langpath_entry(game_install, tmp_path):
     assert content == "[Core.System]\nLangPaths=../Mods/MyMod/*.<lang>\n"
 
 
-def test_content_and_locale_entries_are_sorted(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_content_and_locale_entries_are_sorted(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "MyMod"
     mod_dir.mkdir(parents=True)
@@ -46,8 +46,8 @@ def test_content_and_locale_entries_are_sorted(game_install, tmp_path):
     assert content == "[Core.System]\nLangPaths=../Mods/MyMod/*.<lang>\nPaths=../Mods/MyMod/*.u\n"
 
 
-def test_nested_files_use_their_own_relative_dir(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_nested_files_use_their_own_relative_dir(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "MyMod"
     nested = mod_dir / "sub"
@@ -61,8 +61,8 @@ def test_nested_files_use_their_own_relative_dir(game_install, tmp_path):
     assert content == "[Core.System]\nPaths=../Mods/MyMod/sub/*.utx\n"
 
 
-def test_multiple_mods_produce_distinct_entries(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_multiple_mods_produce_distinct_entries(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     first = tmp_path / "Mods" / "First"
     first.mkdir(parents=True)
@@ -79,8 +79,8 @@ def test_multiple_mods_produce_distinct_entries(game_install, tmp_path):
     assert content == ("[Core.System]\n" "LangPaths=../Mods/Second/*.<lang>\n" "Paths=../Mods/First/*.u\n")
 
 
-def test_no_matching_files_writes_no_ini(game_install, tmp_path):
-    exe, ini, config = game_install
+def test_no_matching_files_writes_no_ini(installed_game, tmp_path):
+    exe, ini, config = installed_game
 
     mod_dir = tmp_path / "Mods" / "MyMod"
     mod_dir.mkdir(parents=True)

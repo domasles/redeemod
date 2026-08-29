@@ -1,2 +1,4 @@
+workflow-dispatch
+-j build-app
 --artifact-server-path ./build
 --matrix target-os:linux

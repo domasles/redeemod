@@ -8,7 +8,7 @@ from backend.models import GameConfig
 
 
 @pytest.fixture
-def game_install(tmp_path) -> tuple[Path, Path, GameConfig]:
+def installed_game(tmp_path) -> tuple[Path, Path, GameConfig]:
     """Sets up the installed UT2004 game."""
 
     exe = tmp_path / "System" / "game-bin"

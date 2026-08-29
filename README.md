@@ -108,10 +108,11 @@ python -m PyInstaller `
 
 ### Method 2 (act) (Linux builds only)
 
-**act** allows running an isolated build environment:
-```bash
-act workflow_dispatch
-```
+**act** allows running an isolated build environment.
+
+Simply run `act` inside of your terminal after installing it. Necessary flags for building will be handled by the `.actrc` file.
+
+**act** in this project is NOT meant for anything else other than testing CI/CD **builds** locally.
 
 > NOTE: You'll find the executable in `build` directory
 
