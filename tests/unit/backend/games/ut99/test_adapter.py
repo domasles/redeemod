@@ -19,7 +19,7 @@ def test_build_arguments_with_mods_adds_ini_flag(installed_game, game_config):
     adapter = UT99GameAdapter(config=game_config)
     cmd = adapter.build_arguments(exe, [mod_dir])
 
-    assert cmd == ["INI=RedeeMOD.ini"]
+    assert cmd == ["-INI=RedeeMOD.ini"]
 
 
 def test_launch_forwards_mod_ini_flag(installed_game, game_config, recording_launcher):
@@ -30,5 +30,5 @@ def test_launch_forwards_mod_ini_flag(installed_game, game_config, recording_lau
 
     command, cwd = recording_launcher.calls[0]
 
-    assert command == [str(exe), "INI=RedeeMOD.ini"]
+    assert command == [str(exe), "-INI=RedeeMOD.ini"]
     assert cwd == str(exe.parent)

@@ -35,7 +35,7 @@ class UnrGoldGameAdapter(BaseGameAdapter):
                 self._apply_mods_to_ini(selected_mod_paths, executable.parent, config_path),
             )
 
-            cmd.append(f"INI={mod_ini_path}")
+            cmd.append(f"-INI={mod_ini_path}")
 
         return cmd
 
