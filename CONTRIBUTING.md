@@ -172,7 +172,7 @@ The interface is built with **PySide6** (Qt 6) and kept deliberately thin - it r
 - `frontend/app.py` - the entry point. Assembles the main window: a `Sidebar` for navigation and a stacked widget holding the screens
 - `frontend/views/` - the screens themselves: `games.py` (game grid, adding/removing games) and `library.py` (browsing mods of a chosen game)
 - `frontend/components/` - reusable widgets: card variants (`cards/`), modal dialogs (`modals/`), banners, dropdowns, labels, etc.
-- `frontend/styles/style.qss` - all styling lives here, written as Qt Style Sheets
+- `frontend/styles/*.qss` - styling split across modular files (base, sidebar, buttons, scrollbar, cards, dropdown), written as Qt Style Sheets
 - `backend/manager.py` - the bridge between both halves. A `QObject` exposing signals (e.g. `games_changed`) and persisting user choices into `user_settings.json` in the application data directory
 
 > NOTE: If you ever find yourself importing a specific game adapter inside `frontend/`, stop and keep the layers separate!

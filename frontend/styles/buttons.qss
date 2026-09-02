@@ -1,0 +1,28 @@
+QPushButton#LaunchBtn {
+    background-color: #007ACC;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 8px 16px;
+    border: none;
+}
+
+QPushButton#LaunchBtn:hover {
+    background-color: #005999;
+}
+
+QPushButton#RemoveBtn {
+    background: transparent;
+    color: #FF5555;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 6px 16px;
+    border: none;
+}
+
+QPushButton#RemoveBtn:hover {
+    background-color: #db2e2e;
+    color: #FFFFFF;
+}

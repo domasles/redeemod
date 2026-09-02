@@ -1,0 +1,55 @@
+Card, ActionCard, ModCard, GameCard {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    border: 2px solid #2d2d2d;
+}
+
+Card[selected="true"] {
+    border: 2px solid #007ACC;
+}
+
+QFrame#BannerFrame {
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    border: none;
+}
+
+QLabel#BannerLabel {
+    color: #888888;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QLabel#ActionPlusLabel {
+    color: #FFFFFF;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+QLabel#CardTitleLabel {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+}
+
+QCheckBox#CardCheckBox {
+    color: #888888;
+    font-size: 11px;
+    background: transparent;
+    border: none;
+}
+
+QCheckBox#CardCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid #444444;
+    background-color: #2a2a2a;
+}
+
+QCheckBox#CardCheckBox::indicator:checked {
+    background-color: #007ACC;
+    border-color: #007ACC;
+}

@@ -1,0 +1,32 @@
+QScrollArea#LibraryScrollArea {
+    border: none;
+    background: transparent;
+}
+
+QWidget#LibraryScrollContent {
+    background: transparent;
+}
+
+QScrollBar:vertical {
+    background: transparent;
+    width: 10px;
+    margin: 0px;
+    border: none;
+}
+
+QScrollBar::handle:vertical {
+    background: #3d3d3d;
+    min-height: 20px;
+    border-radius: 3px;
+    margin: 2px 2px 2px 2px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #007ACC;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical,
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    height: 0px;
+    background: none;
+}

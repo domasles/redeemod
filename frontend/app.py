@@ -85,13 +85,14 @@ class App(QMainWindow):
 
 
 def load_stylesheet(app: QApplication):
-    style_path = get_project_directory() / "frontend" / "styles" / "style.qss"
+    styles_dir = get_project_directory() / "frontend" / "styles"
+    css = ""
 
-    if not style_path.exists():
-        raise FileNotFoundError(f"Stylesheet missing at expected location: {style_path}")
+    for path in sorted(styles_dir.glob("*.qss")):
+        with open(path, "r", encoding="utf-8") as f:
+            css += f.read() + "\n"
 
-    with open(style_path, "r", encoding="utf-8") as f:
-        app.setStyleSheet(f.read())
+    app.setStyleSheet(css)
 
 
 def main():

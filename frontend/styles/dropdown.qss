@@ -1,0 +1,58 @@
+QPushButton#DropdownTrigger {
+    background-color: #2a2a2a;
+    border: 1px solid #3d3d3d;
+    border-radius: 6px;
+    min-height: 38px;
+}
+
+QPushButton#DropdownTrigger:hover {
+    border-color: #555555;
+}
+
+QPushButton#DropdownTrigger:focus {
+    border: 1px solid #007ACC;
+}
+
+QLabel#DropdownTextLabel {
+    color: #FFFFFF;
+    font-size: 13px;
+    background: transparent;
+    border: none;
+}
+
+QLabel#DropdownArrowLabel {
+    color: #888888;
+    font-size: 9px;
+    background: transparent;
+    border: none;
+}
+
+QFrame#DropdownPopupFrame {
+    background: transparent;
+    border: none;
+}
+
+QListWidget#DropdownPopup {
+    background-color: #1e1e1e;
+    color: #FFFFFF;
+    border: 1px solid #3d3d3d;
+    border-radius: 8px;
+    outline: 0px;
+    padding: 4px;
+}
+
+QListWidget#DropdownPopup::item {
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: #FFFFFF;
+    padding: 6px 10px;
+    border-radius: 4px;
+    min-height: 22px;
+}
+
+QListWidget#DropdownPopup::item:selected,
+QListWidget#DropdownPopup::item:hover {
+    background-color: #007ACC;
+    color: #FFFFFF;
+    border: 1px solid #121212;
+}
