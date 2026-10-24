@@ -49,7 +49,7 @@ class App(QMainWindow):
 
         self.sidebar = Sidebar(self, self.manager)
         self.sidebar.navigated.connect(self._navigate_screen)
-        self.manager.games_changed.connect(self.sidebar.refresh_library_visibility)
+        self.manager.add_change_listener(self.sidebar.refresh_library_visibility)
 
         main_layout.addWidget(self.sidebar)
 

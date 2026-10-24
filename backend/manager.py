@@ -1,39 +1,47 @@
 import json
 
+from collections.abc import Callable
 from pathlib import Path
 
-from PySide6.QtCore import QObject, Signal, QStandardPaths
-
-from backend.utils.filesystem import expand_path
+from backend.utils.filesystem import expand_path, get_app_data_directory
 from backend.constants import *
 
 
-class Manager(QObject):
-    games_changed = Signal()
-
+class Manager:
     def __init__(self, storage_file: Path | None = None):
-        super().__init__()
-
         if storage_file is None:
             storage_file = self._default_storage_file()
 
         self.storage_file = storage_file
         self.data: dict = {"games": [], "mods": {}, "paths": {}}
 
+        self._change_listeners: list[Callable[[], None]] = []
+
         self.load()
 
     @staticmethod
     def _default_storage_file() -> Path:
-        storage_dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)) / APP_NAME
+        storage_dir = get_app_data_directory(APP_NAME)
         storage_dir.mkdir(parents=True, exist_ok=True)
 
         return storage_dir / USER_SETTINGS_FILE_NAME
+
+    def add_change_listener(self, listener: Callable[[], None]) -> None:
+        self._change_listeners.append(listener)
+
+    def remove_change_listener(self, listener: Callable[[], None]) -> None:
+        if listener in self._change_listeners:
+            self._change_listeners.remove(listener)
+
+    def _notify_listeners(self) -> None:
+        for listener in self._change_listeners.copy():
+            listener()
 
     def add_game(self, game_id: str):
         if game_id not in self.data["games"]:
             self.data["games"].append(game_id)
             self.save()
-            self.games_changed.emit()
+            self._notify_listeners()
 
     def remove_game(self, game_id: str):
         if game_id in self.data["games"]:
@@ -42,7 +50,7 @@ class Manager(QObject):
             self.data["paths"].pop(game_id, None)
 
             self.save()
-            self.games_changed.emit()
+            self._notify_listeners()
 
     def add_mod(self, game_id: str, path_str: str) -> str:
         path = expand_path(path_str)

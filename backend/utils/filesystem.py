@@ -13,6 +13,23 @@ def get_project_directory() -> Path:
     return Path(__file__).resolve().parent.parent.parent
 
 
+def get_app_data_directory(app_name: str) -> Path:
+    """Returns the application data directory for given app name."""
+
+    home = Path.home()
+
+    if sys.platform.startswith("linux"):
+        return home / ".local" / "share" / app_name
+
+    if sys.platform in ("win32", "cygwin"):
+        return home / "AppData" / "Local" / app_name
+
+    if sys.platform == "darwin":
+        return home / "Library" / "Application Support" / app_name
+
+    raise RuntimeError(f"Unsupported platform: {sys.platform}")
+
+
 def expand_path(path: str | Path) -> Path:
     """Expands environment variables and user home."""
 
