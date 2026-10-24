@@ -20,10 +20,12 @@ jobs:
           - target-os: linux
             os: ubuntu-latest
             binary_name: redeemod-linux
+            cli_binary_name: redeemod-cli
             path_sep: ":"
           - target-os: windows
             os: windows-latest
             binary_name: redeemod-windows.exe
+            cli_binary_name: redeemod-cli.exe
             path_sep: ";"
 
     steps:
@@ -54,6 +56,15 @@ jobs:
             --add-data "backend${{ matrix.path_sep }}backend" \
             frontend/app.py
 
+      - name: Compile Standalone Binary (CLI)
+        shell: bash
+        run: |
+          python -m PyInstaller \
+            -F -p . -n "${{ matrix.cli_binary_name }}" \
+            -i frontend/assets/logo.ico \
+            --add-data "backend${{ matrix.path_sep }}backend" \
+            cli/app.py
+
       - name: Make Binary Executable
         if: ${{ matrix.target-os == 'linux' }}
         run: chmod +x dist/${{ matrix.binary_name }}
@@ -71,3 +82,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/${{ matrix.binary_name }}
+
+      - name: Upload CLI Executable to GitHub Release
+        if: ${{ env.ACT != 'true' && github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ matrix.cli_binary_name }}

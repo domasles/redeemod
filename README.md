@@ -38,7 +38,8 @@ All you have to do is:
 These only apply if you want to run RedeeMOD from downloaded Python source.
 
 - Python 3.12+
-- PySide6
+- PySide6 (GUI flavor)
+- Rich (CLI flavor)
 
 ## Requirements for a Build
 
@@ -46,6 +47,10 @@ These only apply if you want to run RedeeMOD from downloaded Python source.
 - That's it!
 
 ## Build Instructions
+
+RedeeMOD can be built in both GUI and CLI mode. While GUI is likely to be more used by standalone client users, CLI mode allows server owners to integrate RedeeMOD.
+
+### GUI builds
 
 Linux:
 ```bash
@@ -55,4 +60,16 @@ python -m PyInstaller -F -p . -n redeemod -i frontend/assets/logo.ico --add-data
 Powershell:
 ```bash
 python -m PyInstaller -w -F -p . -n redeemod -i frontend/assets/logo.ico --add-data "frontend;frontend" --add-data "backend;backend" frontend/app.py
+```
+
+### CLI builds
+
+Linux:
+```bash
+python -m PyInstaller -F -p . -n redeemod-cli -i frontend/assets/logo.ico --add-data "backend:backend" cli/app.py
+```
+
+Powershell:
+```bash
+python -m PyInstaller -F -p . -n redeemod-cli -i frontend/assets/logo.ico --add-data "backend;backend" cli/app.py
 ```

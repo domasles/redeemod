@@ -12,6 +12,7 @@ repos:
         exclude: ^tests/
         additional_dependencies:
           - pyside6
+          - rich
 
   - repo: local
     hooks:
@@ -21,6 +22,7 @@ repos:
         language: python
         additional_dependencies:
           - pytest
+          - rich
           - pyside6
         pass_filenames: false
         always_run: true

@@ -29,7 +29,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "pyside6>=6.11.2"
+    "pyside6>=6.11.2",
+    "rich>=13.0.0"
 ]
 
 [project.optional-dependencies]
@@ -45,10 +46,11 @@ dev = [
 
 [project.scripts]
 redeemod = "frontend.app:main"
+redeemod-cli = "cli.app:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["backend*", "frontend*"]
+include = ["backend*", "frontend*", "cli*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.svg", "*.qss"]
