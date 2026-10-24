@@ -15,6 +15,7 @@ This project was never actually supposed to also have a nice adapter making API 
 ## Features
 
 1. Auto-discovery of games
+2. Both GUI and CLI shells provided
 3. Modular architecture for future game adaptations
 4. It's cross-platform!
 

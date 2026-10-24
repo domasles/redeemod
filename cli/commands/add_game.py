@@ -24,7 +24,7 @@ def add_game(
                 custom_paths[key] = set_paths[key]
                 continue
 
-            value = Prompt.ask(f"Path for '{key}'", default="")
+            value = Prompt.ask(f"Path for '{key}'")
 
             if value:
                 custom_paths[key] = value
