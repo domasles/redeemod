@@ -20,12 +20,12 @@ jobs:
           - target-os: linux
             os: ubuntu-latest
             binary_name: redeemod-linux
-            cli_binary_name: redeemod-cli
+            cli_binary_name: redeemod-cli-linux
             path_sep: ":"
           - target-os: windows
             os: windows-latest
             binary_name: redeemod-windows.exe
-            cli_binary_name: redeemod-cli.exe
+            cli_binary_name: redeemod-cli-windows.exe
             path_sep: ";"
 
     steps:
