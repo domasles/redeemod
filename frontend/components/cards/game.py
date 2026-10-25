@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from pathlib import Path
 
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QPushButton, QWidget
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QWidget
 from PySide6.QtCore import Qt, Signal
 
 from frontend.components.images.banner import BannerImage
@@ -20,12 +20,14 @@ class GameCard(Card):
         display_name: str,
         subtitle: str | None = None,
         on_delete: Callable[[], None] | None = None,
+        on_settings: Callable[[], None] | None = None,
         logo: str | Path | None = None,
     ):
         super().__init__(parent)
 
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.on_delete = on_delete
+        self.on_settings = on_settings
 
         banner = QFrame()
         banner.setObjectName("BannerFrame")
@@ -57,17 +59,36 @@ class GameCard(Card):
 
         self.card_layout.addStretch()
 
-        if self.on_delete:
-            btn_delete = QPushButton("Remove game")
-            btn_delete.setObjectName("RemoveBtn")
-            btn_delete.setCursor(Qt.CursorShape.PointingHandCursor)
-            btn_delete.clicked.connect(self._handle_delete)
+        if self.on_settings or self.on_delete:
+            button_layout = QHBoxLayout()
+            button_layout.setContentsMargins(0, 0, 0, 0)
+            button_layout.setSpacing(4)
 
-            self.card_layout.addWidget(btn_delete, alignment=Qt.AlignmentFlag.AlignCenter)
+            if self.on_settings:
+                btn_settings = QPushButton("Settings")
+                btn_settings.setObjectName("SettingsBtn")
+                btn_settings.setCursor(Qt.CursorShape.PointingHandCursor)
+                btn_settings.clicked.connect(self._handle_settings)
+
+                button_layout.addWidget(btn_settings)
+
+            if self.on_delete:
+                btn_delete = QPushButton("Remove game")
+                btn_delete.setObjectName("RemoveBtn")
+                btn_delete.setCursor(Qt.CursorShape.PointingHandCursor)
+                btn_delete.clicked.connect(self._handle_delete)
+
+                button_layout.addWidget(btn_delete)
+
+            self.card_layout.addLayout(button_layout)
 
     def _handle_delete(self):
         if self.on_delete:
             self.on_delete()
+
+    def _handle_settings(self):
+        if self.on_settings:
+            self.on_settings()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:

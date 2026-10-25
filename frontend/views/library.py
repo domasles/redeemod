@@ -325,7 +325,7 @@ class Library(QWidget):
             selected_paths = assemble_launch_paths(all_mods, self.selected_mods)
 
             try:
-                adapter.launch(selected_paths)
+                adapter.launch(selected_paths, self.manager.get_launch_options(self.selected_game_id))
 
             except Exception as e:
                 show_error_modal(str(e))

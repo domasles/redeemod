@@ -14,6 +14,7 @@ from backend.games.base import BaseGameAdapter
 from backend.manager import Manager
 
 from frontend.components.modals.check_paths import CheckPathsModalBody
+from frontend.components.modals.settings import SettingsModalBody
 from frontend.components.modals.add_game import AddGameModalBody
 from frontend.components.cards import GameCard, ActionCard
 from frontend.components.modal_dialog import ModalDialog
@@ -134,6 +135,7 @@ class Games(QWidget):
                 name,
                 "To manage mods, visit Library",
                 on_delete=lambda g_id=game_id: self._remove_game(g_id),
+                on_settings=lambda g_id=game_id: self._open_settings_modal(g_id),
                 logo=logo,
             )
 
@@ -173,6 +175,22 @@ class Games(QWidget):
     def _remove_game(self, game_id: str):
         self.manager.remove_game(game_id)
         self.refresh_games()
+
+    def _open_settings_modal(self, game_id: str):
+        body = SettingsModalBody(game_id, self.manager.get_launch_options(game_id))
+
+        def handle_options_saved(options: list[str]):
+            self.manager.save_launch_options(game_id, options)
+            modal.accept()
+
+        def handle_options_cancelled():
+            modal.reject()
+
+        body.options_saved.connect(handle_options_saved)
+        body.options_cancelled.connect(handle_options_cancelled)
+
+        modal = ModalDialog("Settings", body)
+        modal.exec()
 
     def _open_add_game_modal(self):
         def handle_add(game_id: str):

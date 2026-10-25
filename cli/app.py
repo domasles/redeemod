@@ -22,27 +22,27 @@ def build_parser() -> argparse.ArgumentParser:
     list_parser.add_argument(
         "--available",
         action="store_true",
-        help="List all available games instead of added ones."
+        help="List all available games."
     )
 
     add_parser = subparsers.add_parser("add-game", help="Add a game to the library.")
-    add_parser.add_argument("game_id", help="Game ID to add, e.g. ut99.")
+    add_parser.add_argument("game_id", help="Game's ID to add.")
     add_parser.add_argument(
         "--set-path",
         action="append",
         default=[],
         metavar="KEY=VALUE",
-        help="Manually set up a missing path, e.g. --set-path executable_path=/games/ut99/ut-bin.",
+        help="Manually set up a missing path.",
     )
 
     remove_parser = subparsers.add_parser("remove-game", help="Remove a game from the library.")
-    remove_parser.add_argument("game_id", help="Game ID to remove, e.g. ut99.")
+    remove_parser.add_argument("game_id", help="Game's ID to reset preferences of.")
 
     list_mods_parser = subparsers.add_parser("list-mods", help="List added mods for a game.")
-    list_mods_parser.add_argument("game_id", help="Added game ID, e.g. ut99.")
+    list_mods_parser.add_argument("game_id", help="Already added game's ID.")
 
     add_mods_parser = subparsers.add_parser("add-mods", help="Add mod directory paths to a game.")
-    add_mods_parser.add_argument("game_id", help="Added game ID, e.g. ut99.")
+    add_mods_parser.add_argument("game_id", help="Already added game's ID.")
     add_mods_parser.add_argument(
         "mod_paths",
         nargs="*",
@@ -51,7 +51,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     remove_mods_parser = subparsers.add_parser("remove-mods", help="Remove mods from a game by name or path.")
-    remove_mods_parser.add_argument("game_id", help="Added game ID, e.g. ut99.")
+    remove_mods_parser.add_argument("game_id", help="Already added game's ID.")
     remove_mods_parser.add_argument(
         "mod_refs",
         nargs="*",
@@ -60,12 +60,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     launch_parser = subparsers.add_parser("launch", help="Launch a game, optionally with mod names or paths.")
-    launch_parser.add_argument("game_id", help="Added game ID, e.g. ut99.")
+    launch_parser.add_argument("game_id", help="Already added game's ID.")
     launch_parser.add_argument(
         "mod_refs",
         nargs="*",
         default=[],
         help="Mod names or existing mod directory paths to launch with."
+    )
+    launch_parser.add_argument(
+        "--flags",
+        type=str,
+        default="",
+        help="Extra launch options."
     )
     # fmt: on
 
@@ -116,7 +122,7 @@ def main(argv: list[str] | None = None) -> int:
             remove_mods(manager, args.game_id, args.mod_refs)
 
         elif args.command == "launch":
-            launch_game(manager, adapters, args.game_id, args.mod_refs)
+            launch_game(manager, adapters, args.game_id, args.mod_refs, args.flags)
 
     except Exception as error:
         console.print(f"[red]Error:[/red] {error}")

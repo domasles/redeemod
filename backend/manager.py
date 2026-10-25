@@ -13,7 +13,7 @@ class Manager:
             storage_file = self._default_storage_file()
 
         self.storage_file = storage_file
-        self.data: dict = {"games": [], "mods": {}, "paths": {}}
+        self.data: dict = {"games": [], "mods": {}, "paths": {}, "launch_options": {}}
 
         self._change_listeners: list[Callable[[], None]] = []
 
@@ -48,6 +48,7 @@ class Manager:
             self.data["games"].remove(game_id)
             self.data["mods"].pop(game_id, None)
             self.data["paths"].pop(game_id, None)
+            self.data["launch_options"].pop(game_id, None)
 
             self.save()
             self._notify_listeners()
@@ -85,6 +86,15 @@ class Manager:
     def get_custom_paths(self, game_id: str) -> dict[str, str]:
         return self.data.get("paths", {}).get(game_id, {})
 
+    def save_launch_options(self, game_id: str, options: list[str]):
+        launch_options = self.data.setdefault("launch_options", {})
+        launch_options[game_id] = list(options)
+
+        self.save()
+
+    def get_launch_options(self, game_id: str) -> list[str]:
+        return list(self.data.get("launch_options", {}).get(game_id, []))
+
     def save(self):
         with open(self.storage_file, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=4)
@@ -96,4 +106,4 @@ class Manager:
                     self.data = json.load(f)
 
             except Exception:
-                self.data = {"games": [], "mods": {}}
+                self.data = {"games": [], "mods": {}, "paths": {}, "launch_options": {}}

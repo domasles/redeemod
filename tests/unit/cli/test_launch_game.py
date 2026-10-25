@@ -13,6 +13,7 @@ class FakeAdapter:
     display_name = "Fake Game"
     allowed_mod_amount: int | None = 1
     custom_paths: dict = {}
+    last_extra_options: list[str] = []
 
     def __init__(self):
         self.launched: list[list[Path]] = []
@@ -24,8 +25,10 @@ class FakeAdapter:
         self.custom_paths = dict(custom_paths or {})
         return None
 
-    def launch(self, selected_mod_paths):
+    def launch(self, selected_mod_paths, extra_options: list[str] | None = None):
         self.launched.append(list(selected_mod_paths))
+        self.last_extra_options = list(extra_options or [])
+
         return None
 
 
@@ -99,3 +102,18 @@ def test_launch_game_standalone_launches_without_mods(manager: Manager) -> None:
 
     launch_game(manager, cast(dict[str, BaseGameAdapter], {"fake": adapter}), "fake", [])
     assert adapter.launched == [[]]
+
+
+def test_launch_game_passes_extra_options(manager: Manager, tmp_path: Path) -> None:
+    manager.add_game("fake")
+
+    adapter = FakeAdapter()
+    adapter.allowed_mod_amount = None
+
+    mod_1 = tmp_path / "mod-1"
+    mod_1.mkdir()
+
+    launch_game(manager, cast(dict[str, BaseGameAdapter], {"fake": adapter}), "fake", [str(mod_1)], "DM-Deck16][")
+
+    assert adapter.launched == [[mod_1]]
+    assert adapter.last_extra_options == ["DM-Deck16]["]

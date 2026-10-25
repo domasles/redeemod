@@ -1,4 +1,9 @@
-QMainWindow, QDialog {
+QMainWindow {
     background-color: #121212;
+    color: #FFFFFF;
+}
+
+QDialog {
+    background-color: #1e1e1e;
     color: #FFFFFF;
 }

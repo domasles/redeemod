@@ -54,6 +54,15 @@ def test_parser_launch_game_standalone():
     assert args.mod_refs == []
 
 
+def test_parser_launch_game_with_flags():
+    args = build_parser().parse_args(["launch", "ut99", "--flags", "DM-Deck16]["])
+
+    assert args.command == "launch"
+    assert args.game_id == "ut99"
+    assert args.mod_refs == []
+    assert args.flags == "DM-Deck16]["
+
+
 def test_parser_list_mods():
     args = build_parser().parse_args(["list-mods", "ut99"])
 

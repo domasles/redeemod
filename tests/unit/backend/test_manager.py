@@ -35,12 +35,14 @@ def test_remove_game_cleans_related_data(manager, mod_dir, exe_path):
     manager.add_game("ut99")
     manager.add_mod("ut99", mod_dir)
     manager.save_custom_paths("ut99", {"executable_path": exe_path})
+    manager.save_launch_options("ut99", ["DM-Deck16]["])
 
     manager.remove_game("ut99")
 
     assert manager.get_added_games() == []
     assert manager.get_mods("ut99") == {}
     assert manager.get_custom_paths("ut99") == {}
+    assert manager.get_launch_options("ut99") == []
 
 
 def test_add_mod_uses_directory_name(tmp_path):
@@ -64,6 +66,14 @@ def test_remove_mod(manager, mod_dir):
 def test_remove_unknown_mod_is_noop(manager):
     manager.remove_mod("ut99", "Nope")
     assert manager.get_mods("ut99") == {}
+
+
+def test_save_and_get_launch_options(manager):
+    manager.save_launch_options("ut99", ["DM-Deck16]["])
+    assert manager.get_launch_options("ut99") == ["DM-Deck16]["]
+
+    manager.save_launch_options("ut99", [])
+    assert manager.get_launch_options("ut99") == []
 
 
 def test_persistence_roundtrip(tmp_path):
@@ -94,4 +104,4 @@ def test_load_resets_on_corrupt_file(tmp_path):
     manager = Manager(storage_file=storage)
 
     assert manager.get_added_games() == []
-    assert manager.data == {"games": [], "mods": {}}
+    assert manager.data == {"games": [], "mods": {}, "paths": {}, "launch_options": {}}

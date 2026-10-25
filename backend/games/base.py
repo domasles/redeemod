@@ -81,7 +81,7 @@ class BaseGameAdapter(ABC):
         pass
 
     @final
-    def launch(self, selected_mod_paths: list[Path]):
+    def launch(self, selected_mod_paths: list[Path], extra_options: list[str] | None = None):
         """Launches the executable with extra arguments (if provided)"""
 
         executable = self.resolved_path("executable_path")
@@ -89,8 +89,7 @@ class BaseGameAdapter(ABC):
         if not executable or not executable.exists():
             raise FileNotFoundError(f"{self.display_name} installation not found.")
 
-        cmd = [str(executable), *self.build_arguments(executable, selected_mod_paths)]
-
+        cmd = [str(executable), *(extra_options or []), *self.build_arguments(executable, selected_mod_paths)]
         self._process_launcher(cmd, cwd=str(executable.parent))
 
     def init_paths(self, custom_paths: dict[str, str] | None = None, config: GameConfig | None = None):

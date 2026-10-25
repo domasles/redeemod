@@ -33,23 +33,3 @@ QLabel#CardTitleLabel {
     border: none;
     background: transparent;
 }
-
-QCheckBox#CardCheckBox {
-    color: #888888;
-    font-size: 11px;
-    background: transparent;
-    border: none;
-}
-
-QCheckBox#CardCheckBox::indicator {
-    width: 16px;
-    height: 16px;
-    border-radius: 3px;
-    border: 1px solid #444444;
-    background-color: #2a2a2a;
-}
-
-QCheckBox#CardCheckBox::indicator:checked {
-    background-color: #007ACC;
-    border-color: #007ACC;
-}

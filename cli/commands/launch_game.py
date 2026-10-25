@@ -1,3 +1,5 @@
+import shlex
+
 from pathlib import Path
 
 from backend.games.base import BaseGameAdapter
@@ -9,6 +11,7 @@ def launch_game(
     adapters: dict[str, BaseGameAdapter],
     game_id: str,
     mod_refs: list[str],
+    extra_flags: str = "",
 ) -> None:
     adapter = adapters.get(game_id)
 
@@ -29,5 +32,7 @@ def launch_game(
     if adapter.allowed_mod_amount is not None and len(mod_paths) > adapter.allowed_mod_amount:
         raise ValueError(f"{adapter.display_name} allows only {adapter.allowed_mod_amount} mod(s), got {len(mod_paths)}")  # fmt: skip
 
+    extra_options = shlex.split(extra_flags) if extra_flags.strip() else []
+
     adapter.init_paths(manager.get_custom_paths(game_id))
-    adapter.launch(mod_paths)
+    adapter.launch(mod_paths, extra_options)

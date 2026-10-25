@@ -4,11 +4,25 @@ QPushButton#LaunchBtn {
     font-size: 12px;
     font-weight: bold;
     border-radius: 6px;
-    padding: 8px 16px;
+    padding: 8px;
     border: none;
 }
 
 QPushButton#LaunchBtn:hover {
+    background-color: #005999;
+}
+
+QPushButton#SettingsBtn {
+    background-color: #007ACC;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 8px;
+    border: none;
+}
+
+QPushButton#SettingsBtn:hover {
     background-color: #005999;
 }
 
@@ -18,11 +32,12 @@ QPushButton#RemoveBtn {
     font-size: 12px;
     font-weight: bold;
     border-radius: 6px;
-    padding: 6px 16px;
-    border: none;
+    border: 2px solid #FF5555;
+    padding: 6px;
 }
 
 QPushButton#RemoveBtn:hover {
     background-color: #db2e2e;
     color: #FFFFFF;
+    border: none;
 }
