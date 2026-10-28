@@ -23,7 +23,7 @@ class MessageModalBody(QWidget):
         layout.addStretch()
 
         btn_ok = QPushButton("OK")
-        btn_ok.setObjectName("LaunchBtn")
+        btn_ok.setObjectName("ConfirmBtn")
         btn_ok.setCursor(Qt.CursorShape.PointingHandCursor)
         btn_ok.clicked.connect(self.confirmed.emit)
 

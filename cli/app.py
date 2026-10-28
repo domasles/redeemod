@@ -32,7 +32,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         default=[],
         metavar="KEY=VALUE",
-        help="Manually set up a missing path.",
+        help="Manually set up a path, overriding discovered defaults.",
     )
 
     remove_parser = subparsers.add_parser("remove-game", help="Remove a game from the library.")

@@ -51,7 +51,7 @@ class ModCard(Card):
         self.card_layout.addWidget(lbl_title, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.btn_enable = QPushButton("Enable mod")
-        self.btn_enable.setObjectName("LaunchBtn")
+        self.btn_enable.setObjectName("ConfirmBtn")
         self.btn_enable.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_enable.setCheckable(True)
         self.btn_enable.setChecked(is_selected)
@@ -61,7 +61,7 @@ class ModCard(Card):
         self.card_layout.addStretch()
 
         btn_delete = QPushButton("Remove mod")
-        btn_delete.setObjectName("RemoveBtn")
+        btn_delete.setObjectName("DenyBtn")
         btn_delete.setCursor(Qt.CursorShape.PointingHandCursor)
         btn_delete.clicked.connect(lambda: self.on_delete(self.mod_name))
 

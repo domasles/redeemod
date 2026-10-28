@@ -66,7 +66,7 @@ class GameCard(Card):
 
             if self.on_settings:
                 btn_settings = QPushButton("Settings")
-                btn_settings.setObjectName("SettingsBtn")
+                btn_settings.setObjectName("ConfirmBtn")
                 btn_settings.setCursor(Qt.CursorShape.PointingHandCursor)
                 btn_settings.clicked.connect(self._handle_settings)
 
@@ -74,7 +74,7 @@ class GameCard(Card):
 
             if self.on_delete:
                 btn_delete = QPushButton("Remove game")
-                btn_delete.setObjectName("RemoveBtn")
+                btn_delete.setObjectName("DenyBtn")
                 btn_delete.setCursor(Qt.CursorShape.PointingHandCursor)
                 btn_delete.clicked.connect(self._handle_delete)
 

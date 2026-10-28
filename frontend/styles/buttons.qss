@@ -1,4 +1,4 @@
-QPushButton#LaunchBtn {
+QPushButton#ConfirmBtn {
     background-color: #007ACC;
     color: #FFFFFF;
     font-size: 12px;
@@ -8,25 +8,11 @@ QPushButton#LaunchBtn {
     border: none;
 }
 
-QPushButton#LaunchBtn:hover {
+QPushButton#ConfirmBtn:hover {
     background-color: #005999;
 }
 
-QPushButton#SettingsBtn {
-    background-color: #007ACC;
-    color: #FFFFFF;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 6px;
-    padding: 8px;
-    border: none;
-}
-
-QPushButton#SettingsBtn:hover {
-    background-color: #005999;
-}
-
-QPushButton#RemoveBtn {
+QPushButton#DenyBtn {
     background: transparent;
     color: #FF5555;
     font-size: 12px;
@@ -36,7 +22,7 @@ QPushButton#RemoveBtn {
     padding: 6px;
 }
 
-QPushButton#RemoveBtn:hover {
+QPushButton#DenyBtn:hover {
     background-color: #db2e2e;
     color: #FFFFFF;
     border: none;

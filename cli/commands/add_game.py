@@ -18,10 +18,13 @@ def add_game(
     custom_paths = dict(manager.get_custom_paths(game_id))
     missing = adapter.get_missing_paths()
 
-    if missing:
+    if set_paths or missing:
+        for key, value in set_paths.items():
+            if value:
+                custom_paths[key] = value
+
         for key in missing:
             if set_paths.get(key):
-                custom_paths[key] = set_paths[key]
                 continue
 
             value = Prompt.ask(f"Path for '{key}'")

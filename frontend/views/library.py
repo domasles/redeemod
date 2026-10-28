@@ -69,7 +69,7 @@ class Library(QWidget):
         top_layout.addWidget(self.btn_back)
 
         self.btn_launch = QPushButton("Launch standalone")
-        self.btn_launch.setObjectName("LaunchBtn")
+        self.btn_launch.setObjectName("ConfirmBtn")
         self.btn_launch.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_launch.clicked.connect(self._launch_game)
 

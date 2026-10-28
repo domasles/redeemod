@@ -1,16 +1,7 @@
-from pathlib import Path
-
-from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QFileDialog,
-)
-
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Signal, Qt
+
+from frontend.components.path_picker import PathPickerBody
 
 
 class CheckPathsModalBody(QWidget):
@@ -23,8 +14,7 @@ class CheckPathsModalBody(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
         self.game_id = game_id
-        self.missing_path_keys = missing_path_keys
-        self.selected_paths: dict[str, str] = {}
+        self.missing_path_keys = list(missing_path_keys)
 
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
@@ -34,62 +24,22 @@ class CheckPathsModalBody(QWidget):
         info_label.setWordWrap(True)
 
         layout.addWidget(info_label)
-        self.inputs: dict[str, QLineEdit] = {}
 
-        for key in missing_path_keys:
-            label_text = key.replace("_", " ").title()
-
-            picker_layout = QHBoxLayout()
-            picker_layout.setSpacing(8)
-
-            line_edit = QLineEdit()
-            line_edit.setObjectName("DropdownTrigger")
-            line_edit.setReadOnly(True)
-            line_edit.setPlaceholderText(f"Select {label_text}...")
-
-            btn_browse = QPushButton("Browse")
-            btn_browse.setObjectName("LaunchBtn")
-            btn_browse.setCursor(Qt.CursorShape.PointingHandCursor)
-            btn_browse.clicked.connect(lambda _, k=key, le=line_edit: self._browse_file(k, le))
-
-            picker_layout.addWidget(line_edit)
-            picker_layout.addWidget(btn_browse)
-
-            layout.addLayout(picker_layout)
-            self.inputs[key] = line_edit
+        self.picker = PathPickerBody(self.missing_path_keys)
+        self.picker.selection_changed.connect(self._on_selection_changed)
+        layout.addWidget(self.picker)
 
         self.btn_add = QPushButton("Add selected game")
-        self.btn_add.setObjectName("LaunchBtn")
+        self.btn_add.setObjectName("ConfirmBtn")
         self.btn_add.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.btn_add.setEnabled(False)
-        self.btn_add.clicked.connect(self._on_save)
+        self.btn_add.setEnabled(self.picker.validate())
+        self.btn_add.clicked.connect(self._on_confirm)
 
         layout.addWidget(self.btn_add)
 
-    def _browse_file(self, key: str, line_edit: QLineEdit):
-        label_text = key.replace("_", " ").title()
-        file_path, _ = QFileDialog.getOpenFileName(caption=f"Select {label_text}")
+    def _on_selection_changed(self):
+        self.btn_add.setEnabled(self.picker.validate())
 
-        if file_path:
-            resolved_path = Path(file_path).resolve()
-
-            if resolved_path.exists():
-                resolved_str = str(resolved_path)
-                line_edit.setText(resolved_str)
-                self.selected_paths[key] = resolved_str
-
-            else:
-                line_edit.clear()
-                self.selected_paths.pop(key, None)
-
-            self._validate_all()
-
-    def _validate_all(self):
-        all_filled = len(self.selected_paths) == len(self.missing_path_keys) and all(
-            bool(path) for path in self.selected_paths.values()
-        )
-
-        self.btn_add.setEnabled(all_filled)
-
-    def _on_save(self):
-        self.paths_confirmed.emit(self.selected_paths)
+    def _on_confirm(self):
+        if self.picker.validate():
+            self.paths_confirmed.emit(dict(self.picker.selected_paths))

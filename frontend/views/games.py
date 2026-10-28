@@ -177,7 +177,14 @@ class Games(QWidget):
         self.refresh_games()
 
     def _open_settings_modal(self, game_id: str):
-        body = SettingsModalBody(game_id, self.manager.get_launch_options(game_id))
+        adapter = self.adapters.get(game_id)
+
+        body = SettingsModalBody(
+            game_id,
+            self.manager.get_launch_options(game_id),
+            adapter=adapter,
+            custom_paths=self.manager.get_custom_paths(game_id),
+        )
 
         def handle_options_saved(options: list[str]):
             self.manager.save_launch_options(game_id, options)
@@ -186,8 +193,19 @@ class Games(QWidget):
         def handle_options_cancelled():
             modal.reject()
 
+        def handle_paths_saved(paths: dict[str, str]):
+            try:
+                self._save_custom_paths(game_id, paths)
+
+            except Exception as e:
+                show_error_modal(str(e))
+                return
+
+            modal.accept()
+
         body.options_saved.connect(handle_options_saved)
         body.options_cancelled.connect(handle_options_cancelled)
+        body.paths_saved.connect(handle_paths_saved)
 
         modal = ModalDialog("Settings", body)
         modal.exec()
@@ -219,15 +237,19 @@ class Games(QWidget):
         modal = ModalDialog("Select game", body)
         modal.exec()
 
+    def _save_custom_paths(self, game_id: str, paths: dict[str, str]) -> None:
+        self.manager.save_custom_paths(game_id, paths)
+
+        existing = self.adapters.get(game_id)
+        adapter_cls = type(existing) if existing is not None else None
+
+        if adapter_cls is not None:
+            self.adapters[game_id] = adapter_cls(custom_paths=paths)
+
     def _open_check_paths_modal(self, game_id: str, missing_path_keys: list[str]):
         def handle_paths_confirmed(paths: dict[str, str]):
             try:
-                self.manager.save_custom_paths(game_id, paths)
-                existing = self.adapters.get(game_id)
-                adapter_cls = type(existing) if existing is not None else None
-
-                if adapter_cls is not None:
-                    self.adapters[game_id] = adapter_cls(custom_paths=paths)
+                self._save_custom_paths(game_id, paths)
 
             except Exception as e:
                 show_error_modal(str(e))
